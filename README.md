@@ -25,11 +25,18 @@
 |   README.md
 ```
 
+## Dependencies
+To install all the neccessary dependancies on your machine go to the project's root and run:
+
+`$ sudo bash get-deps.sh`
+
+This process might take a while, so go grab some coffee.
+
 ## Basic Compilation Guidelines
 In project's root folder:
-
-`$ mkdir build`
-
-`$ cd build`
-
-`$ cmake ..`
+```
+$ mkdir -p build
+$ cd build
+$ cmake ..
+$ make
+```
