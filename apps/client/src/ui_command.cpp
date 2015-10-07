@@ -1,5 +1,9 @@
 //user interface for command
 #include <iostream>
+#include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp> 
+
+using namespace boost;
 
 class ui_command
 {
@@ -37,6 +41,22 @@ std::string ui_command::readUserCommand (){
 	std::string command;
 	std::cout << "Enter Command: ";
 	std::getline(std::cin, command);
+
+	std::string commandString[2];
+	int i = 0;
+
+	tokenizer<> tok(command);
+   	for(tokenizer<>::iterator beg=tok.begin(); beg!=tok.end();++beg){
+		commandString[i] = *beg;
+		++i;
+   	}
+
+	std::string sendCommandString = "command:" + commandString[0] + ";" + "data:" + commandString[1];
+	to_lower(sendCommandString);
+
+	//Send this string to server
+	std::cout << sendCommandString << std::endl;
+	
 	return command;
 }
 

@@ -20,7 +20,7 @@ int main() {
 
 	std::string userName;
 	std::string userPassword;
-	std::string userLoginInfo;
+	std::string sendUserLoginInfo;
 
 	std::cout << "Text Gale Online " << std::endl << std::endl;
 	std::cout << "Enter Username: ";
@@ -29,9 +29,10 @@ int main() {
 	std::cout << "Enter Password: ";
 	std::getline(std::cin, userPassword);
 	
-	userLoginInfo = userName + ":" + userPassword;
+	sendUserLoginInfo = "command:login;data:" + userName + "," + userPassword;
 
-	//Sends the string to server using:
+	//Sends this string to server:
+	std::cout << sendUserLoginInfo;
 	//connector->sendMessage(userLoginInfo);
 	//Wait for server response
 	sleep(1);
@@ -41,7 +42,7 @@ int main() {
 
 	sleep(1);
 
-	/*int menuOption;
+	int menuOption;
 
 	std::cout << "Welcome, choose a menu item below (#)" << std::endl;
 	std::cout << "1. Create Character" << std::endl;
@@ -57,10 +58,10 @@ int main() {
 		default:
 			std::cout << "Choice not valid, choose again" << std::endl;
 			
-	}*/
+	}
 
-	ui_command ui;
-	ui.readUserCommand();
+	//ui_command ui;
+	//ui.readUserCommand();
 		
 
 	return 0;
