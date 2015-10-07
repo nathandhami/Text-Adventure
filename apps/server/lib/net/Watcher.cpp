@@ -16,13 +16,44 @@ Watcher::~Watcher() {
 }
 
 
-void Watcher::run() {
-	std::thread( asyncRun );
+void Watcher::asyncRun(  ) {
+	try {
+		while ( true ) {
+			tcp::socket socket = tcp::socket( this->ioService );
+			acceptor->accept( socket );
+			std::cout << "Connection Accepted." << std::endl;
+			
+			//TO-DO: request information from the engine
+			std::string message = "PING";
+			//END-TO-DO
+
+			boost::system::error_code ignoredError;
+			boost::asio::write( socket, boost::asio::buffer( message ), ignoredError );
+			std::cout << "Sent message: " << message << std::endl;
+		}
+	} catch ( std::exception& exception ) {
+		std::cerr << exception.what() << std::endl;
+	}
 }
 
-void Watcher::asyncRun() {
-	
+
+void Watcher::run() {
+	this->runnerThread = std::thread( &Watcher::asyncRun, this );
+	this->runnerThread.join();
 }
+
+
+bool Watcher::getRunningState() {
+	bool stateHolder;
+	this->stateMutex.lock();
+
+	stateHolder = this->running;
+
+	this->stateMutex.unlock();
+
+	return stateHolder;
+}
+
 
 void Watcher::setRunningState( bool state ) {
 	this->stateMutex.lock();
@@ -30,15 +61,4 @@ void Watcher::setRunningState( bool state ) {
 	this->running = state;
 	
 	this->stateMutex.unlock();
-}
-
-bool Watcher::getRunningState() {
-	bool stateHolder;
-	this->stateMutex.lock();
-	
-	stateHolder = this->running;
-	
-	this->stateMutex.unlock();
-	
-	return stateHolder;
 }

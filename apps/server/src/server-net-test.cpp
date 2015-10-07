@@ -8,6 +8,7 @@
 
 int main() {
 	Watcher watcher;
+	watcher.run();
 	
 	
 	return 0;
