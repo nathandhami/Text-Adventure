@@ -4,6 +4,8 @@
 #include <unistd.h>
 
 #include "Connector.hpp"
+#include "ui_command.cpp"
+#include "ui_world.cpp"
 
 //attempt at a client with sockets
 
@@ -27,7 +29,7 @@ int main() {
 	std::cout << "Enter Password: ";
 	std::getline(std::cin, userPassword);
 	
-	userLoginInfo = userName + "." + userPassword;
+	userLoginInfo = userName + ":" + userPassword;
 
 	//Sends the string to server using:
 	//connector->sendMessage(userLoginInfo);
@@ -39,7 +41,7 @@ int main() {
 
 	sleep(1);
 
-	int menuOption;
+	/*int menuOption;
 
 	std::cout << "Welcome, choose a menu item below (#)" << std::endl;
 	std::cout << "1. Create Character" << std::endl;
@@ -55,7 +57,10 @@ int main() {
 		default:
 			std::cout << "Choice not valid, choose again" << std::endl;
 			
-	}
+	}*/
+
+	ui_command ui;
+	ui.readUserCommand();
 		
 
 	return 0;
