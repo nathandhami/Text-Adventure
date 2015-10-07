@@ -12,7 +12,7 @@ public:
 	bool sendInput (std::string validInput);
 	
 	void askForValidCommand();
-}
+};
 
 /*
 int main(){
