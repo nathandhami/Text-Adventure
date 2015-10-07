@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <unistd.h>
 
 #include "Connector.hpp"
 
@@ -12,7 +13,6 @@ int main() {
 	Connector* connector = new Connector();
 	connector->sendMessage( "Text" );
 	std::cout << connector->getLastResponseFromHost() << std::endl;
-	
 	
 	delete connector;
 
@@ -27,13 +27,36 @@ int main() {
 	std::cout << "Enter Password: ";
 	std::getline(std::cin, userPassword);
 	
-	userLoginInfo = userName + userPassword;
-	std::cout << userLoginInfo << std::endl;
+	userLoginInfo = userName + "." + userPassword;
 
-	//Sends the string to server to
-	connector->sendMessage(userLoginInfo);
+	//Sends the string to server using:
+	//connector->sendMessage(userLoginInfo);
+	//Wait for server response
+	sleep(1);
 
-	//Parse server reponse here
-	
+	//Parse server reponse here and database here
+	std::cout << "\nSuccessfully logged in" << std::endl;
+
+	sleep(1);
+
+	int menuOption;
+
+	std::cout << "Welcome, choose a menu item below (#)" << std::endl;
+	std::cout << "1. Create Character" << std::endl;
+	std::cout << "2. Exit" << std::endl;
+	std::cin >> menuOption;
+
+	switch(menuOption){
+		case 1:
+			std::cout << "Game start" << std::endl;
+			break;
+		case 2:
+			break;
+		default:
+			std::cout << "Choice not valid, choose again" << std::endl;
+			
+	}
+		
+
 	return 0;
 }
