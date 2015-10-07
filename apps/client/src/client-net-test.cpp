@@ -15,5 +15,25 @@ int main() {
 	
 	
 	delete connector;
+
+	std::string userName;
+	std::string userPassword;
+	std::string userLoginInfo;
+
+	std::cout << "Text Gale Online " << std::endl << std::endl;
+	std::cout << "Enter Username: ";
+	std::getline(std::cin, userName);
+
+	std::cout << "Enter Password: ";
+	std::getline(std::cin, userPassword);
+	
+	userLoginInfo = userName + userPassword;
+	std::cout << userLoginInfo << std::endl;
+
+	//Sends the string to server to
+	connector->sendMessage(userLoginInfo);
+
+	//Parse server reponse here
+	
 	return 0;
 }
