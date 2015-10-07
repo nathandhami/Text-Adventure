@@ -40,6 +40,9 @@ This process might take a while, so go grab some coffee.
 In project's root folder:
 
 `$ mkdir -p build` do this only once (or if your build folder is missing)
+
 `$ cd build`
+
 `$ cmake ..` do this everytime any of the CMakeLists are updated
+
 `$ make`
