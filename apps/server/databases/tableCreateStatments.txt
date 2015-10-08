@@ -7,7 +7,9 @@ CREATE TABLE characters (
   charID integer primary key,
   name varchar(30) NOT NULL,
   userID varchar(30),
+  lastLocation integer,
   FOREIGN KEY(userID) REFERENCES user(userID)
+  FOREIGN KEY(lastLocation) REFERENCES zones(zoneID)
 );
 
 CREATE TABLE zones(
