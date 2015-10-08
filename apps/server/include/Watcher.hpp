@@ -6,6 +6,8 @@
 #include <thread>
 #include <mutex>
 
+#include "Connection.hpp"
+
 using boost::asio::ip::tcp;
 
 class Watcher {
@@ -14,19 +16,16 @@ public:
 	~Watcher();
 
 	void run();
-	bool getRunningState();
 	
 private:
 	boost::asio::io_service ioService;
-	tcp::acceptor* acceptor;
-	std::thread runnerThread;
-	bool running;
-	std::mutex stateMutex;
+	tcp::acceptor* connectionAcceptor;
 	
-	
-	void asyncRun();
-	void setRunningState( bool state );
-	
+	void startAccept();
+	void handleAccept( 
+		Connection::pointer newConnection, 
+		const boost::system::error_code& error 
+	);
 };
 
 

@@ -9,7 +9,7 @@ using boost::asio::ip::tcp;
 
 Connector::Connector() {
 	tcp::resolver resolver( this->ioService );
-	tcp::resolver::query query( HOST_ADDRESS_IP4, HOST_PORT );
+	tcp::resolver::query query( HOST_ADDRESS_IP4, std::to_string( HOST_PORT ) );
 	this->endpointIterator = resolver.resolve( query );
 }
 
