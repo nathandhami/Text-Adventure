@@ -3,4 +3,4 @@ target_link_libraries ( servertest ${Boost_LIBRARIES} Watcher )
 
 
 add_executable(dbtest databaseTest.cpp)
-target_link_libraries (dbtest sqlite3)
+target_link_libraries (dbtest DatabaseTool)

@@ -1,20 +1,23 @@
-// #ifndef DATABASE_HPP
-// #define DATABASE_HPP
-
-// #include <iostream>
-// #include <sqlite3.h>
+#ifndef DATABASE
+#define DATABASE
 
 
-// class DatabaseTool {
-// public:
-// 	DatabaseTool();
-// 	~DatabaseTool();
+#include <string>
+#include <stdexcept>
+#include <iostream>
+#include <sqlite3.h>
+#include <fstream>
 
-// 	//bool checkPassword(String *username, String *password);
-	
-// private:
-// 	sqlite3 *db;
-// };
+using namespace std;
 
+class DatabaseTool{
+	public:
+		DatabaseTool();
+		~DatabaseTool();
+		
+		
+	private:
+		sqlite3 *db;
+};
 
-// #endif
+#endif

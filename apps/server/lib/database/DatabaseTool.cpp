@@ -1,22 +1,23 @@
-// #include "DatabaseTool.hpp"
-// #include <sqlite3.h>
-// #include <string>
+#include <cstdlib>
+#include <iostream>
+#include <stdexcept>
+#include <sqlite3.h>
+#include <string>
+#include "DatabaseTool.hpp"
 
+using namespace std;
 
+const char * DB_LOCATION = "file:../../apps/server/databases/adventureDB";
 
-// DatabaseTool::DatabaseTool() {
-// 	int rc = sqlite3_open("../../databases/adventureDB", &this->db);
-// 	if( rc ){
-// 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(this->db));
-// 		exit(0);
-// 	}else{
-// 		fprintf(stderr, "Opened database successfully\n");
-// 	}
+DatabaseTool::DatabaseTool() {
+	int openDbCheck;
+	sqlite3_config(SQLITE_CONFIG_URI, 1);
+	openDbCheck = sqlite3_open(DB_LOCATION, &this->db);
+	if( openDbCheck != SQLITE_OK ){
+		throw runtime_error("Can't open database");
+	}
+}
 
-// }
-
-
-// DatabaseTool::~DatabaseTool() {
-// 	sqlite3_close(this->db);
-// }
-
+DatabaseTool::~DatabaseTool() {
+	sqlite3_close(this->db);
+}
