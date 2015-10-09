@@ -2,6 +2,7 @@
 #define ZONE_HPP
 
 #include "WorldConstants.hpp"
+#include "DatabaseTool.hpp"
 
 using namespace std;
 
