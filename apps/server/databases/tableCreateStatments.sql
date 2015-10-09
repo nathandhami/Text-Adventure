@@ -8,7 +8,8 @@ CREATE TABLE characters (
   name varchar(30) NOT NULL,
   userID varchar(30),
   lastLocation integer,
-  FOREIGN KEY(userID) REFERENCES user(userID)
+  isOnline integer,
+  FOREIGN KEY(userID) REFERENCES user(userID),
   FOREIGN KEY(lastLocation) REFERENCES zones(zoneID)
 );
 
@@ -37,13 +38,6 @@ CREATE TABLE npcs (
   keywords text,
   longDesc text,
   shortDesc varchar(30)
-);
-
-CREATE TABLE is_in (
-  charID integer,
-  zoneID integer,
-  FOREIGN KEY(charID) REFERENCES characters(charID),
-  FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
 );
 
 CREATE TABLE populated_by (

@@ -8,12 +8,18 @@
 #include <sqlite3.h>
 #include <fstream>
 #include <vector>
+#include "Database.h"
+#include "Query.h"
 
 using namespace std;
+
+
 
 class DatabaseTool{
 	public:
 		 static void addUser(string userID, string password);
+
+		 static string getPassword(string userID);
 
 		 static void addCharacter(string name, string userID);
 
@@ -22,9 +28,7 @@ class DatabaseTool{
 		 //sets charecters last know location
 		 static void putCharInZone(int charID, int zoneID);
 
-		 static int getCharsLastKnowLocation(int charId);
-
-		 static void removeCharFromCurrentZone(int charID);
+		 static int getCharsLocation(int charID);
 
 		 static vector<int> getAllCharsInZone(int zoneID);
 
@@ -63,10 +67,24 @@ class DatabaseTool{
 		 	string westKWs
 		 	);
 
+		 static string getZoneName(int zoneID);
+
+		 static string getZoneDesc(int zoneID);
+
+		 static string getzoneExtendedDesc(int zoneID);
+
+		 static int getDirectionID(int zoneID, Direction d);
+
+		 static string getDirectionDesc(int zoneID, Direction d);
+
+		 static string getDirectionKWs(int zoneID, Direction d);
+
 
 
 	private:
+		enum Direction = {NORTH, EAST, SOUTH, WEST};
 		static string quotesql( const string& s );
+		static void executeSQLInsert(string statment);
 };
 
 #endif
