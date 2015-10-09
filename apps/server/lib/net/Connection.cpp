@@ -10,14 +10,15 @@ Connection::pointer Connection::createPointer( boost::asio::io_service& ioServic
 
 
 tcp::socket& Connection::getSocket() {
-	return socket;
+	return this->socket;
 }
 
 
 void Connection::start() {
-	std::string message = "PING PING";
+	std::cout << "Client Connected" << std::endl;
+	std::string message = "Size: 4\n";
 	boost::asio::async_write(
-		socket, 
+		this->socket, 
 		boost::asio::buffer( message ),
 		boost::bind( 
 			&Connection::handleWrite, 

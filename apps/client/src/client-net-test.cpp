@@ -2,16 +2,15 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 
-#include "Connector.hpp"
+#include "Transceiver.hpp"
 
 //attempt at a client with sockets
 
 using boost::asio::ip::tcp;
 
 int main() {
-	Connector* connector = new Connector();
-	connector->sendMessage( "Text" );
-	std::cout << connector->getLastResponseFromHost() << std::endl;
+	Transceiver* connector = new Transceiver();
+	connector->run();
 	
 	
 	delete connector;
