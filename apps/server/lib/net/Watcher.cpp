@@ -5,6 +5,8 @@
 using boost::asio::ip::tcp;
 
 
+// ------------------- PUBLIC -------------------
+
 Watcher::Watcher() {
 	this->connectionAcceptor =
 		std::make_shared< tcp::acceptor >( 
@@ -17,6 +19,7 @@ Watcher::Watcher() {
 
 Watcher::~Watcher() {}
 
+
 void Watcher::run() {
 	try {
 		this->ioService.run();
@@ -24,6 +27,9 @@ void Watcher::run() {
 		std::cerr << exception.what() << std::endl;
 	}
 }
+
+
+// ------------------- PRIVATE ------------------
 
 void Watcher::startAccept() {
 	std::shared_ptr< Connection > newConnection = 
@@ -39,6 +45,7 @@ void Watcher::startAccept() {
 	);
 	
 }
+
 
 void Watcher::handleAccept( 
 	std::shared_ptr< Connection > newConnection, 

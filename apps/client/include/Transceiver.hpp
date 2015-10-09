@@ -29,6 +29,7 @@ private:
 	tcp::resolver::iterator endpointIterator;
 	std::shared_ptr< ServerConnection > connection;
 	boost::asio::streambuf response;
+	std::size_t bufferVolume = 0;
 
 	void connectToHost();
 	

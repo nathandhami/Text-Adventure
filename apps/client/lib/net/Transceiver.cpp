@@ -17,6 +17,7 @@ Transceiver::Transceiver() {
 	endpointIterator = resolver.resolve( query );
 	
 	this->connection = std::make_shared< ServerConnection >( ioService, endpointIterator );
+	
 	this->connectToHost();
 }
 
@@ -33,9 +34,16 @@ void Transceiver::write( std::string message ) {
 }
 
 std::string Transceiver::read() {
+	
+	
 	std::istream responseStream( &(this->response) );
+	std::cout << "cr1" << std::endl;
+//	this->response.consume(this->bufferVolume);
 	std::string message;
-	std::getline( responseStream, message );
+	std::cout << "cr2" << std::endl;
+	std::getline( responseStream, message, '\n' );
+	std::cout << "cr3" << std::endl;
+//	std::string message("wat");
 	
 	return message;
 }
@@ -48,6 +56,7 @@ void Transceiver::connectToHost() {
 			this->connection->getSocket(),
 			this->endpointIterator
 		);
+		
 		std::cout << "Connected to server." << std::endl;
 		this->readFromHost();
 		
@@ -58,18 +67,22 @@ void Transceiver::connectToHost() {
 }
 
 
-
-
 void Transceiver::readFromHost() {
 	boost::system::error_code error;
-	std::size_t responseLength = boost::asio::read_until(
+	std::size_t size = boost::asio::read_until(
 		this->connection->getSocket(),
 		this->response,
 		'\n',
 		error
 	);
+	this->response.commit(size);
+	std::istream is(&(this->response));
+	std::string msg;
+	is >> msg;
+	this->response.consume(size);
 	
 	if ( error ) { throw boost::system::system_error( error ); }
+	std::cout << "- read once" << std::endl;
 }
 
 void Transceiver::writeToHost( std::string message ) {
@@ -80,5 +93,9 @@ void Transceiver::writeToHost( std::string message ) {
 		error
 	);
 	
-	if ( error ) { throw boost::system::system_error( error ); }
+	if ( !error ) { 
+		std::cout << "- write once" << std::endl;
+		this->readFromHost();
+	}
+//	this->readFromHost();
 }
