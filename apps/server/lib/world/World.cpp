@@ -12,35 +12,32 @@ bool movePlayer(int playerID, Direction destination) {
 	if (!currentZone.roomForMorePlayers()) {
 		return false;
 	}
-	currentZone.playerEnteringZone(playerInfo.name);
+	//currentZone.playerEnteringZone(playerInfo.name);
 	querySetPlayerZone(playerID, destinationZoneID);   //TBD
 	return true;
 }
 
-bool playerLook(int playerID, string keyword) {
+string playerLook(int playerID, string keyword) {
 	object playerInfo = query(playerID);    // TBD
 	int currentZoneID = playerInfo.zoneID;  // TBD
 	currentZone.setID(currentZoneID);
-	currentZone.getDescription(keyword);
-	return true;
+	return currentZone.getDescription(keyword);
 }
 
 // --------Public functions--------
 
-bool executeCommand(struct givenCommand) {
-	if (givenCommand.command == "move") {       //TBD
-		bool success = movePlayer(givenCommand.playerID, givenCommand.argument);  //TBD
+string executeCommand(Command givenCommand) {
+	if (givenCommand.type == "move") {       //TBD
+		bool success = movePlayer(givenCommand.playerID, givenCommand.data);  //TBD
 		if (!success) {
-			return false;    // I don't know if we want to be returning an error message instead of bools
+			return "Unable to move player " + givenCommand.data;  //TBD
 		}
-	} 
-	else if (givenCommand.command == "look") {    //TBD
-
+		return playerLook(givenCommand.playerID, "");  //TBD
 	}
-	else {
-		return false;
+	else if (givenCommand.type == "look") {    //TBD
+		return playerLook(givenCommand.playerID, givenCommand.data);  //TBD
 	}
-	return true
+	return "The command " + givenCommand + " was not recognized. Check help for a list of valid commands.";
 }
 
 World() {

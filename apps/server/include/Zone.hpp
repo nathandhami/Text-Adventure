@@ -16,23 +16,23 @@ class Zone {
 
 public:
 
-	void setID(int id);
+	void setID(int);
 	int getID();
 
 	void setName();
 	string getName();
 
 	void setDescription();
-	string getDescription();
+	string getDescription(string);
 
-	void setNeighbourZone(int direction, int neighbourID);
-	int getNeighbourZone(int direction);
+	void setNeighbourZone(Direction, int);
+	int getNeighbourZone(Direction);
 
 	bool roomForMorePlayers();
 
-	void playerEnteringZone(int playerID);
+	void playerEnteringZone(int);
 
-	Zone(int givenZoneID);
+	Zone(int);
 	~Zone();
 };
 

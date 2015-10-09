@@ -41,15 +41,36 @@ void setDescription(string givenDescription) {
 	// Change this zone's description in database
 }
 
-string getDescription() {
-	// Query database for this zone's description
+string getDescription(string keyword) {
+	string description = "";
+	if (keyword == "") {
+		description = getZoneDesc(zoneID);
+		if (description == "") {
+			return "You seem to be floating in a void. You question your own existence, realize the irony of this, and laugh.\n";
+		}
+		return description;
+	}
+	else if (isDirection(keyword)) {
+		description = getDirectionDesc(zoneID, keyword);
+		if (description == "") {
+			return "There is nothing in that direction\n";
+		}
+	}
+	else {
+		description = getExtendedDescription(zoneID) {
+			if (description == "") {
+				return "You can't describe the " + keyword + "\n";
+			}
+		}
+	}
+	return description;
 }
 
-void setNeighbourZone(int direction, int neighbourID) {
+void setNeighbourZone(Direction direction, int neighbourID) {
 	// Change this zone's neighbouring zone (for direction) to new neighbourID
 }
 
-int getNeighbourZone(int direction) {
+int getNeighbourZone(Direction direction) {
 	// Query database for this zone's neighbour (in direction)
 }
 
