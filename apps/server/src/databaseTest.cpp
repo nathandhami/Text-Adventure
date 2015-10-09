@@ -8,10 +8,8 @@
 int main(int argc, char* argv[])
 {
    try {
-      DatabaseTool tool;
-      cout << "opened database" << endl;
-      return(1);
 
+      DatabaseTool::addUser("devon", "testingaslfdn");
 
    }
    catch(runtime_error e){

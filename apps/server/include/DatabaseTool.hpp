@@ -12,12 +12,11 @@ using namespace std;
 
 class DatabaseTool{
 	public:
-		DatabaseTool();
-		~DatabaseTool();
-		
+		 static bool addUser(string userID, string password);
 		
 	private:
-		sqlite3 *db;
+		// sqlite3 *db;
+		static string quotesql( const string& s );
 };
 
 #endif
