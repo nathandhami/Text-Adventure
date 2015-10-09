@@ -12,6 +12,15 @@ int main() {
 	Transceiver* connector = new Transceiver();
 	connector->run();
 	
+	connector->write( "lg" );
+	connector->writeWait( "email@email.doge" );
+	std::cout << connector->read() << std::endl;
+	
+	connector->write( "lgn" );
+	connector->writeWait( "email@email.doge" );
+	std::cout << connector->read() << std::endl;
+	
+	
 //	std::cout << connector->read() << std::endl;
 //
 //	connector->write( "hello woooolsta\n" );

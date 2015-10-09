@@ -20,21 +20,21 @@ void Connection::write( std::string message ) {
 		error
 	);
 	if ( !error ) { 
-		this->read();
+		this->readHeader();
 	}
 }
 
-
-// ------------------- PRIVATE ------------------
 
 void Connection::start() {
 	// Initial connection established
 	std::string address( this->getIP( Connection::IPType::v4 ) );
 	std::cout << "User Connected." << std::endl;
 	// Start listening to the client
-	this->read();
+	this->readHeader();
 }
 
+
+// ------------------- PRIVATE ------------------
 
 std::string Connection::getIP( IPType type ) {
 	return this->socket.remote_endpoint().address().to_string();
@@ -46,12 +46,22 @@ void Connection::readHeader() {
 	boost::system::error_code error;
 	
 	std::size_t length = this->socket.read_some(
-		
+		boost::asio::buffer( buffer ),
+		error
 	);
+	if ( !error ) { 
+		this->request.saveHeaderBuffer( buffer );
+		std::cout << "Received header: " << this->request.getHeader() << std::endl;
+		this->readBody();
+	} else {
+		//TO-DO inform database the user is offline
+		std::cout << "User Disconnected." << std::endl;
+	}
+	
 }
 
 
-void Connection::read() {
+void Connection::readBody() {
 	char buffer[512];
 	
 	boost::system::error_code error;
@@ -61,10 +71,19 @@ void Connection::read() {
 	);
 	if ( !error ) { 
 		this->request.saveBodyBuffer( buffer, length );
-//		std::cout
-		this->write( this->request.getBody() );
+		std::cout << "Received body: " << this->request.getBody() << std::endl;
+		this->handleRequest();
 	} else {
 		//TO-DO inform database the user is offline
 		std::cout << "User Disconnected." << std::endl;
+	}
+}
+
+
+void Connection::handleRequest() {
+	if ( this->request.getHeader() == "lgn" ) {
+		this->write( this->request.getBody() );
+	} else {
+		this->write( "not ok" );
 	}
 }

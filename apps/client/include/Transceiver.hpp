@@ -22,6 +22,7 @@ public:
 	void run();
 	
 	void write( std::string message );
+	void writeWait( std::string message );
 	std::string read();
 	
 	

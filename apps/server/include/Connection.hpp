@@ -29,12 +29,15 @@ private:
 	NetMessage request;
 	
 	int userId = 0;
+	bool authorized = false;
 	
 //	void handleWrite( const boost::system::error_code& /*error*/, size_t /*bytes*/ ) {}
 	std::string getIP( IPType type );
 	
-	void read();
 	void readHeader();
+	void readBody();
+	
+	void handleRequest();
 };
 
 

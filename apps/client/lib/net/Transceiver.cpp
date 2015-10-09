@@ -33,6 +33,11 @@ void Transceiver::write( std::string message ) {
 	this->writeToHost( message );
 }
 
+void Transceiver::writeWait( std::string message ) {
+	this->writeToHost( message );
+	this->readFromHost();
+}
+
 std::string Transceiver::read() {
 //    std::cout << this->response.getBodyLength() << std::endl;
 //	return this->response.getBodyString();
@@ -86,7 +91,7 @@ void Transceiver::writeToHost( std::string message ) {
 	
 	if ( !error ) { 
 		std::cout << "- write once" << std::endl;
-		this->readFromHost();
+//		this->readFromHost();
 	}
 //	this->readFromHost();
 }

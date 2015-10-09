@@ -3,7 +3,7 @@
 
 class NetMessage {
 public:
-    enum MaxLength { HEADER = 4, BODY = 512 };
+    enum MaxLength { HEADER = 3, BODY = 512 };
     
     NetMessage(){}
     ~NetMessage(){}

@@ -4,6 +4,10 @@
 #define HOST_ADDRESS_IP4 	"127.0.0.1"
 #define HOST_PORT 			9999
 
-enum RStatus { OK = 200 };
+#define HEADER_LOGIN 	"lgn"
+#define HEADER_LOGOUT	"lgo"
+#define HEADER_COMMAND	"cmd"
+
+enum ResponseCode { OK = 200 };
 
 #endif
