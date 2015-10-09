@@ -14,7 +14,6 @@ const string DB_LOCATION = "../../apps/server/databases/adventureDB";
 const string INITIAL_ZONE = "9999";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
-enum Direction = {NORTH, EAST, SOUTH, WEST};
 
 
 string DatabaseTool::quotesql( const string& s ) {
@@ -33,40 +32,58 @@ void DatabaseTool::executeSQLInsert(string statment){
 }
 
 void DatabaseTool::addUser(string userID, string password) {
-	string sqlStatment = "INSERT INTO users VALUES (" + quotesql(userID) + "," + quotesql(password) + ");";
+	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userID) + "," + quotesql(password) + ");";
 	executeSQLInsert(sqlStatment);
 }
 
-string DatabaseTool::getPassword(string userID) {
+int DatabaseTool::getUserID(string userName, string password){
 	Database db( DB_LOCATION );
 	if (!db.Connected())
 	{
 		throw runtime_error("could not open database");
 	}
 	Query q(db);
-	string sqlStatment = "select password from users where userID=" + quotesql(userID) +";";
+	string sqlStatment = "select userID from users where userName=" + quotesql(userName) + " AND password=" + quotesql(password) + ";";
+	int charID = (int) q.get_count(sqlStatment.c_str());
+	return charID;
+}
+
+string DatabaseTool::getPassword(int userID) {
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select password from users where userID=" + to_string(userID) +";";
 	string password = q.get_string(sqlStatment.c_str());
 	return password;
 
 }
 
-void DatabaseTool::addCharacter(string name, string userID){
-	//adds character only if user has no other character
-	if(getCharID(userID) == 0) {
-		string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + quotesql(userID) + "," + INITIAL_ZONE + "," + to_string(PLAYER_OFFLINE) + ");";
-		executeSQLInsert(sqlStatment);
-	}
+void DatabaseTool::addCharacter(string name, int userID){
+	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + "," + to_string(PLAYER_OFFLINE) + ");";
+	executeSQLInsert(sqlStatment);
+
 
 }
 
-int DatabaseTool::getCharID(string userID){
+void DatabaseTool::setCharOnline(int userID){
+	//!!!!!!!!!!!!!!!!
+}
+
+void DatabaseTool::setCharOffline(int userID){
+	//!!!!!!!!!!!!!!!
+}
+
+int DatabaseTool::getCharID(int userID){
 	Database db( DB_LOCATION );
 	if (!db.Connected())
 	{
 		throw runtime_error("could not open database");
 	}
 	Query q(db);
-	string sqlStatment = "select charID from characters where userID=" + quotesql(userID) +";";
+	string sqlStatment = "select charID from characters where userID=" + to_string(userID) +";";
 	int charID = (int) q.get_count(sqlStatment.c_str());
 	return charID;
 
@@ -129,16 +146,16 @@ void DatabaseTool::addZone(
 		 	string extendedDesc,
 		 	int northID,
 		 	string northDesc,
-		 	string northKWs,
 		 	int southID,
 		 	string southDesc,
-		 	string southKWs,
 		 	int eastID,
 		 	string eastDesc,
-		 	string eastKWs,
 		 	int westID,
 		 	string westDesc,
-		 	string westKWs
+		 	int upID,
+		 	string upDesc,
+		 	int downID,
+		 	string downDesc
 		 	){
 
 }
@@ -163,7 +180,4 @@ string DatabaseTool::getDirectionDesc(int zoneID, Direction d){
 
 }
 
-string DatabaseTool::getDirectionKWs(int zoneID, Direction d){
-	
-}
 

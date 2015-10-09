@@ -12,6 +12,7 @@
 #include "Query.h"
 
 using namespace std;
+enum Direction {NORTH, EAST, SOUTH, WEST, UP, DOWN};
 
 
 
@@ -19,11 +20,17 @@ class DatabaseTool{
 	public:
 		 static void addUser(string userID, string password);
 
-		 static string getPassword(string userID);
+		 static int getUserID(string userName, string password);
 
-		 static void addCharacter(string name, string userID);
+		 static string getPassword(int userID);
 
-		 static int getCharID(string userID);
+		 static void addCharacter(string name, int userID);
+
+		 static void setCharOnline(int userID);
+
+		 static void setCharOffline(int userID);
+
+		 static int getCharID(int userID);
 
 		 //sets charecters last know location
 		 static void putCharInZone(int charID, int zoneID);
@@ -55,16 +62,16 @@ class DatabaseTool{
 		 	string extendedDesc,
 		 	int northID,
 		 	string northDesc,
-		 	string northKWs,
 		 	int southID,
 		 	string southDesc,
-		 	string southKWs,
 		 	int eastID,
 		 	string eastDesc,
-		 	string eastKWs,
 		 	int westID,
 		 	string westDesc,
-		 	string westKWs
+		 	int upID,
+		 	string upDesc,
+		 	int downID,
+		 	string downDesc
 		 	);
 
 		 static string getZoneName(int zoneID);
@@ -82,7 +89,7 @@ class DatabaseTool{
 
 
 	private:
-		enum Direction = {NORTH, EAST, SOUTH, WEST};
+		
 		static string quotesql( const string& s );
 		static void executeSQLInsert(string statment);
 };

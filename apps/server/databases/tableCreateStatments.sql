@@ -1,12 +1,13 @@
 CREATE TABLE users (
-  userID varchar(30) primary key,
+  userID integer primary key,
+  userName varchar(30) unique,
   password varchar(20)
 );
 
 CREATE TABLE characters (
   charID integer primary key,
   name varchar(30) NOT NULL,
-  userID varchar(30),
+  userID int unique,
   lastLocation integer,
   isOnline integer,
   FOREIGN KEY(userID) REFERENCES user(userID),
@@ -20,16 +21,16 @@ CREATE TABLE zones(
   extendedDesc text,
   northID integer,
   northDesc text,
-  northKWs text,
   southID integer,
   southDesc text,
-  southKWs text,
   eastID integer,
   eastDesc text,
-  eastKWs text,
   westID integer,
   westDesc text,
-  westKWs text
+  upID integer,
+  upDesc text,
+  downID integer,
+  downDesc text
 );
 
 CREATE TABLE npcs (
