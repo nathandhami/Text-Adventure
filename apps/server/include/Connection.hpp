@@ -6,6 +6,8 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "NetMessage.hpp"
+
 
 using boost::asio::ip::tcp;
 
@@ -24,7 +26,7 @@ public:
 private:
 	tcp::socket socket;
 	std::string clientIP_v4;
-	boost::asio::streambuf request;
+	NetMessage request;
 	
 //	void handleWrite( const boost::system::error_code& /*error*/, size_t /*bytes*/ ) {}
 	std::string getIP( IPType type );

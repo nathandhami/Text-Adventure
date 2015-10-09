@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ServerConnection.hpp"
+#include "NetMessage.hpp"
 
 
 using boost::asio::ip::tcp;
@@ -24,12 +25,13 @@ public:
 	std::string read();
 	
 	
-private: 
+private:
+	
 	boost::asio::io_service ioService;
 	tcp::resolver::iterator endpointIterator;
 	std::shared_ptr< ServerConnection > connection;
-	boost::asio::streambuf response;
-	std::size_t bufferVolume = 0;
+	NetMessage response;
+	std::size_t bufLength = 0;
 
 	void connectToHost();
 	

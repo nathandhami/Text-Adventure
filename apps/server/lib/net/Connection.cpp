@@ -83,19 +83,16 @@ std::string Connection::getIP( IPType type ) {
 }
 
 void Connection::read() {
+	char buffer[512];
+	
 	boost::system::error_code error;
-	boost::asio::read_until(
-		this->socket,
-		this->request,
-		'\n',
+	size_t length = this->socket.read_some(
+		boost::asio::buffer( buffer ),
 		error
 	);
 	if ( !error ) { 
-		std::istream responseStream( &(this->request) );
-		std::string message;
-		std::getline( responseStream, message );
-		std::cout << message << std::endl;
-		this->write( message );
+		this->request.copyToBuffer( buffer, length );
+		this->write( this->request.getBody() );
 	}
 //	if ( error ) { throw boost::system::system_error( error ); }
 //	std::cout << "PING" << std::endl;

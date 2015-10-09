@@ -34,18 +34,9 @@ void Transceiver::write( std::string message ) {
 }
 
 std::string Transceiver::read() {
-	
-	
-	std::istream responseStream( &(this->response) );
-	std::cout << "cr1" << std::endl;
-//	this->response.consume(this->bufferVolume);
-	std::string message;
-	std::cout << "cr2" << std::endl;
-	std::getline( responseStream, message, '\n' );
-	std::cout << "cr3" << std::endl;
-//	std::string message("wat");
-	
-	return message;
+//    std::cout << this->response.getBodyLength() << std::endl;
+//	return this->response.getBodyString();
+    return this->response.getBody();
 }
 
 // ------------------- PRIVATE ------------------
@@ -68,21 +59,21 @@ void Transceiver::connectToHost() {
 
 
 void Transceiver::readFromHost() {
+    char buffer[512];
+    
 	boost::system::error_code error;
-	std::size_t size = boost::asio::read_until(
-		this->connection->getSocket(),
-		this->response,
-		'\n',
+	std::size_t length = this->connection->getSocket().read_some(
+		boost::asio::buffer( buffer ),
 		error
 	);
-	this->response.commit(size);
-	std::istream is(&(this->response));
-	std::string msg;
-	is >> msg;
-	this->response.consume(size);
-	
 	if ( error ) { throw boost::system::system_error( error ); }
+    
+	this->response.copyToBuffer( buffer, length );
+	
+//    this->response.setBodyLength( length );
 	std::cout << "- read once" << std::endl;
+//    std::cout << this->response.getBody() << std::endl;
+//    std::cout << "Data received: " << this->response.getBodyString() << std::endl;
 }
 
 void Transceiver::writeToHost( std::string message ) {
