@@ -17,11 +17,11 @@ public:
 	}
     
     void saveHeaderBuffer( char* buffer ) {
-		this->headerLine = std::string( buffer, length );
+		this->headerLine = std::string( buffer, MaxLength::HEADER );
 	}
 	
 	void saveBodyBuffer( char* buffer, std::size_t length ) {
-		this->BodyLbne = std::string( buffer, length );
+		this->bodyLine = std::string( buffer, length );
 	}
     
     void setBodyLength( std::size_t length ) {

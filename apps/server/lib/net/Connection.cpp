@@ -42,7 +42,12 @@ std::string Connection::getIP( IPType type ) {
 
 
 void Connection::readHeader() {
-//	char buffer[]
+	char buffer[ NetMessage::MaxLength::HEADER ];
+	boost::system::error_code error;
+	
+	std::size_t length = this->socket.read_some(
+		
+	);
 }
 
 
