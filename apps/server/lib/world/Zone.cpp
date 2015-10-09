@@ -66,11 +66,11 @@ string getDescription(string keyword) {
 	return description;
 }
 
-void setNeighbourZone(Direction direction, int neighbourID) {
+void setNeighbourZone(string direction, int neighbourID) {
 	// Change this zone's neighbouring zone (for direction) to new neighbourID
 }
 
-int getNeighbourZone(Direction direction) {
+int getNeighbourZone(string direction) {
 	// Query database for this zone's neighbour (in direction)
 }
 

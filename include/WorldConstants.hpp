@@ -1,9 +1,15 @@
-#ifndef COMPASS
-#define COMPASS
-	enum Direction = {NORTH, EAST, SOUTH, WEST};
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+#ifndef WORLD_COMPASS
+#define WORLD_COMPASS
+	const string possibleDirections[] = {"NORTH", "EAST", "SOUTH", "WEST", "UP", "DOWN"};
+
 	bool isDirection(string input) {
-		for (int i = 0; i < Direction.size(); i++) {
-			if (Direction[i] == input) {
+		for (int i = 0; i < possibleDirections->size(); i++) {
+			if (possibleDirections[i] == input) {
 				return true;
 			}
 		}
