@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
    try {
 
-      DatabaseTool::addUser("devon", "testingaslfdn");
+      DatabaseTool::addUser("devon", "tesdfgsdvfadn");
 
    }
    catch(runtime_error e){

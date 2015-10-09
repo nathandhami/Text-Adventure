@@ -22,7 +22,7 @@ CREATE TABLE zones(
   northKWs text,
   southID integer,
   southDesc text,
-  southKWS text,
+  southKWs text,
   eastID integer,
   eastDesc text,
   eastKWs text,
