@@ -1,7 +1,12 @@
 #ifndef COMPASS
 #define COMPASS
-	const int NORTH = 0;
-	const int EAST = 1
-	const int SOUTH = 2;
-	const int WEST = 3;
+	enum Direction = {NORTH, EAST, SOUTH, WEST}
+	bool isDirection(string input) {
+		for (int i = 0; i < Direction.size(); i++) {
+			if (Direction[i] == input) {
+				return true;
+			}
+		}
+		return false;
+	}
 #endif

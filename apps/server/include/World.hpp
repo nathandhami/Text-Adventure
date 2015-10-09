@@ -10,10 +10,11 @@ class World {
 	Zone *currentZone;
 
 	bool movePlayer(int, Direction);
+	bool playerLook(int, string);
 
 public:
 
-	
+	bool executeCommand(string);
 
 	World();
 	~World();
