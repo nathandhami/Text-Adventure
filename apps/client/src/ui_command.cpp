@@ -42,7 +42,7 @@ std::string ui_command::readUserCommand (){
 	std::cout << "Enter Command: ";
 	std::getline(std::cin, command);
 
-	std::string commandString[2];
+	std::string commandString[1024];
 	int i = 0;
 
 	tokenizer<> tok(command);
@@ -51,11 +51,8 @@ std::string ui_command::readUserCommand (){
 		++i;
    	}
 
-	std::string sendCommandString = "command:" + commandString[0] + ";" + "data:" + commandString[1];
-	to_lower(sendCommandString);
-
-	//Send this string to server
-	std::cout << sendCommandString << std::endl;
+	to_lower(commandString[0]);
+	command = "command:" + commandString[0] + ";" + "data:" + commandString[1];
 	
 	return command;
 }

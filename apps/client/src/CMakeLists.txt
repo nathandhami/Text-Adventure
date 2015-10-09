@@ -1,2 +1,2 @@
-add_executable (clienttest client-net-test.cpp)
-target_link_libraries ( clienttest ${Boost_LIBRARIES} Connector )
+add_executable (userInterface user_interface.cpp)
+target_link_libraries ( userInterface ${Boost_LIBRARIES} Connector )
