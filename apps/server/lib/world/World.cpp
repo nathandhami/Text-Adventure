@@ -1,5 +1,4 @@
 #include "World.hpp"
-#include <boost/algorithm/string.hpp>
 
 
 // --------Private functions--------
@@ -9,8 +8,7 @@ bool movePlayer(int playerID, string destination) {
 	if (!isDirection(destination)) {
 		return false;
 	}
-	object playerInfo = query(playerID);    // TBD
-	int currentZoneID = playerInfo.zoneID;  // TBD
+	int currentZoneID = getCharsLocation(playerID);
 	currentZone.setID(currentZoneID);
 	int destinationZoneID = currentZone.getNeighbourZone(destination);
 	currentZone.setID(destinationZoneID);
@@ -18,14 +16,13 @@ bool movePlayer(int playerID, string destination) {
 		return false;
 	}
 	//currentZone.playerEnteringZone(playerInfo.name);
-	querySetPlayerZone(playerID, destinationZoneID);   //TBD
+	putCharInZone(playerID, destinationZoneID);
 	return true;
 }
 
 string playerLook(int playerID, string keyword) {
 	boost::to_upper(keyword);
-	object playerInfo = query(playerID);    // TBD
-	int currentZoneID = playerInfo.zoneID;  // TBD
+	int currentZoneID = getCharsLocation(playerID);
 	currentZone.setID(currentZoneID);
 	return currentZone.getDescription(keyword);
 }
@@ -37,15 +34,15 @@ string executeCommand(Command givenCommand) {
 	string command = givenCommand.type;
 	string arguments = givenCommand.data;
 
-	if (command == "move") {       //TBD
-		bool success = movePlayer(playerID, arguments);  //TBD
+	if (command == "move") {
+		bool success = movePlayer(playerID, arguments);
 		if (!success) {
-			return "Unable to move " + arguments + "\n";  //TBD
+			return "Unable to move " + arguments + "\n";
 		}
-		return playerLook(playerID, "");  //TBD
+		return playerLook(playerID, "");
 	}
-	else if (givenCommand.type == "look") {    //TBD
-		return playerLook(playerID, arguments);  //TBD
+	else if (command == "look") {
+		return playerLook(playerID, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
 }

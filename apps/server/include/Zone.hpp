@@ -30,7 +30,7 @@ public:
 
 	bool roomForMorePlayers();
 
-	void playerEnteringZone(int);
+	//void playerEnteringZone(int);
 
 	Zone(int);
 	~Zone();

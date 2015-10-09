@@ -1,8 +1,9 @@
-#ifndef ZONE_HPP
-#define ZONE_HPP
+#ifndef WORLD_HPP
+#define WORLD_HPP
 
 #include "WorldConstants.hpp"
 #include "Zone.hpp"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 

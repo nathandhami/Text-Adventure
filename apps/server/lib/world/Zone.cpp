@@ -8,11 +8,11 @@ vector<int> getNeighbourZones() {
 }
 
 vector<int> getPlayerIDs() {
-	// Query database for all players who's currentZone is this zone's zoneID
+	return getAllCharsInZone(zoneID);
 }
 
 vector<int> getNpcIDs() {
-	// Query database for all NPCs who's currentZone is this zone's zoneID
+	return getAllNpcsInZone(zoneID);
 }
 
 vector<int> getObjectIDs() {
@@ -34,7 +34,7 @@ void setName(string givenName) {
 }
 
 string getName() {
-	// Query database for this zone's name
+	return getZoneName(zoneID);
 }
 
 void setDescription(string givenDescription) {
@@ -46,7 +46,7 @@ string getDescription(string keyword) {
 	if (keyword == "") {
 		description = getZoneDesc(zoneID);
 		if (description == "") {
-			return "You seem to be floating in a void. You question your own existence, realize the irony of this, and laugh.\n";
+			return "You seem to be floating in a void. You question your own existence, realize the irony of this, and decide to cry.\n";
 		}
 		return description;
 	}
@@ -57,7 +57,7 @@ string getDescription(string keyword) {
 		}
 	}
 	else {
-		description = getExtendedDescription(zoneID) {
+		description = getzoneExtendedDescription(zoneID) {
 			if (description == "") {
 				return "You can't describe the " + keyword + "\n";
 			}
@@ -71,7 +71,7 @@ void setNeighbourZone(string direction, int neighbourID) {
 }
 
 int getNeighbourZone(string direction) {
-	// Query database for this zone's neighbour (in direction)
+	return getDirectionID(zoneID, direction);
 }
 
 bool roomForMorePlayers() {
@@ -81,12 +81,14 @@ bool roomForMorePlayers() {
 	return true;
 }
 
+/*     
 void playerEnteringZone(int playerName) {
 	vector<int> playersInZone = getPlayerIDs();
 	for (int i = 0; i < playersInZone.size(); i++) {
 		// Notify playersInZone[i] that playerName entered the zone
 	}
 }
+*/
 
 Zone::Zone(int givenZoneID) {
 	zoneID = givenZoneID;
