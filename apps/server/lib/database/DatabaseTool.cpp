@@ -7,6 +7,7 @@
 #include "DatabaseTool.hpp"
 #include "Database.h"
 #include "Query.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -107,7 +108,6 @@ int DatabaseTool::getCharID(int userID){
 void DatabaseTool::putCharInZone(int charID, int zoneID){
 	string sqlStatment = "UPDATE characters SET location = " + to_string(zoneID) + " WHERE charID = " + to_string(charID) + ";";
 	executeSQLInsert(sqlStatment);
-
 }
 
 int DatabaseTool::getCharsLocation(int charID){
@@ -124,23 +124,38 @@ int DatabaseTool::getCharsLocation(int charID){
 
 
 vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
+	vector<int> charsInZone;
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + ";";
+	q.get_result(sqlStatment.c_str());
+	while(q.fetch_row()) {
+		int character = (int) q.getval();
+		charsInZone.push_back(character);
+	}
+	q.free_result();
+	return charsInZone;
 
 }
 
 void DatabaseTool::placeNpcInZone(int npcID, int zoneID){
-
+//TODO:implement
 }
 
 vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
-
+//TODO:implement
 }
 
 void DatabaseTool::removeNpcFromZone(int npcID, int zone){
-
+//TODO:implement
 }
 
 string DatabaseTool::getNPCDesc(int npcID){
-
+//TODO:implement
 }
 
 void DatabaseTool::addNPC(
@@ -150,7 +165,7 @@ void DatabaseTool::addNPC(
 		 	string longdesc,
 		 	string shortdesc
 		 	){
-
+//TODO:implement
 }
 
 void DatabaseTool::addZone(
@@ -171,27 +186,73 @@ void DatabaseTool::addZone(
 		 	int downID,
 		 	string downDesc
 		 	){
-
+//TODO:implement
 }
 
 string DatabaseTool::getZoneName(int zoneID){
-
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select zoneName from zones where zoneID=" + to_string(zoneID) +";";
+	string zoneName = q.get_string(sqlStatment.c_str());
+	return zoneName;
 }
 
 string DatabaseTool::getZoneDesc(int zoneID){
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select description from zones where zoneID=" + to_string(zoneID) +";";
+	string description = q.get_string(sqlStatment.c_str());
+	return description;
+}
+
+string DatabaseTool::getZoneExtendedDesc(int zoneID){
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select extendedDesc from zones where zoneID=" + to_string(zoneID) +";";
+	string extendedDesc = q.get_string(sqlStatment.c_str());
+	return extendedDesc;
 
 }
 
-string DatabaseTool::getzoneExtendedDesc(int zoneID){
+int DatabaseTool::getDirectionID(int zoneID, string direction){
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	boost::to_lower(direction);
+	string lowerCaseDirection = direction;
+	string sqlStatment = "select " + lowerCaseDirection + "ID from zones where zoneID=" + to_string(zoneID) + ";";
+	int directionID = (int) q.get_count(sqlStatment.c_str());
+	return directionID;
 
 }
 
-int DatabaseTool::getDirectionID(int zoneID, Direction d){
-
-}
-
-string DatabaseTool::getDirectionDesc(int zoneID, Direction d){
-
+string DatabaseTool::getDirectionDesc(int zoneID, string direction){
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	boost::to_lower(direction);
+	string lowerCaseDirection = direction;
+	string sqlStatment = "select " + lowerCaseDirection + "Desc from zones where zoneID=" + to_string(zoneID) + ";";
+	string directionDesc = q.get_string(sqlStatment.c_str());
+	return directionDesc;
 }
 
 

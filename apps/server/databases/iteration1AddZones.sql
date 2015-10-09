@@ -10,15 +10,15 @@ INSERT INTO zones VALUES (
   - plaque',
   3054,
   '- At the northern end of the temple hall is a statue and a huge altar.',
-  NULL,
   3005,
   '- You see the temple square.',
+  0,
   NULL,
   0,
   NULL,
-  NULL,
   0,
   NULL,
+  0,
   NULL
  );
 
@@ -43,15 +43,15 @@ INSERT INTO zones VALUES (
     - god',
     0,
     NULL,
-    NULL,
     3001,
     'You see the southern end of the temple',
+    0,
     NULL,
     0,
     NULL,
-    NULL,
     0,
     NULL,
+    0,
     NULL
 );
 
@@ -62,14 +62,14 @@ INSERT INTO zones VALUES (
 	NULL,
 	3001,
 	"You see the temple",
+	0,
 	NULL,
 	0,
 	NULL,
-	NULL,
 	0,
 	NULL,
-	NULL,
-	0,
-	NULL,
-	NULL
+  0,
+  NULL,
+  0,
+  NULL
 );

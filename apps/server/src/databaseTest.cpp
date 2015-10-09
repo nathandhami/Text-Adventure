@@ -17,13 +17,36 @@ int main(int argc, char* argv[])
    	// cout << DatabaseTool::getPassword(1) << endl;
    	// cout << DatabaseTool::getPassword(2) << endl;
 
-   	DatabaseTool::addCharacter("leeeroooy jeeenkins", 1);
-   	cout << "adding leroy" << endl;
+   	//DatabaseTool::addCharacter("leeeroooy jeeenkins", 1);
+   	//cout << "adding leroy" << endl;
 
-    //  DatabaseTool::addCharacter("leeroy jenkins", 1);
+      // cout << DatabaseTool::isCharOnline(1) << endl;
+      // DatabaseTool::setCharOnline(1);
+      // cout << DatabaseTool::isCharOnline(1) << endl;
+      // DatabaseTool::setCharOffline(1);
+      // cout << DatabaseTool::isCharOnline(1) << endl;
+  
+
+   	// cout << DatabaseTool::getCharsLocation(99) << endl;
+   	//DatabaseTool::putCharInZone(2, 8888);
    	// cout << DatabaseTool::getCharsLocation(1) << endl;
-   	// DatabaseTool::putCharInZone(1, 8888);
-   	// cout << DatabaseTool::getCharsLocation(1) << endl;
+
+      // cout << DatabaseTool::getZoneName(3001) << endl;
+      // cout << DatabaseTool::getZoneDesc(3001) << endl;
+      // //cout << DatabaseTool::getZoneExtendedDesc(3001) << endl;
+      // cout << DatabaseTool::getDirectionID(3001, "NORTH") << endl;
+      // cout << DatabaseTool::getDirectionDesc(3001, "NORTH") << endl; 
+      // cout << DatabaseTool::getDirectionID(3001, "SOUTH") << endl;
+      // cout << DatabaseTool::getDirectionDesc(3001, "SOUTH") << endl;
+      // cout << DatabaseTool::getDirectionID(3001, "EAST") << endl;
+      // cout << DatabaseTool::getDirectionDesc(3001, "EAST") << endl;
+      // cout << DatabaseTool::getDirectionID(3001, "WEST") << endl;
+      // cout << DatabaseTool::getDirectionDesc(3001, "WEST") << endl;
+      // vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
+      // for(int i = 0; i < charsinzone.size(); i++) {
+      //    cout << charsinzone[i] << endl;
+      // }
+
 
    }
    catch(runtime_error e){

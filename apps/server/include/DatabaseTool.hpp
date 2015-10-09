@@ -12,7 +12,6 @@
 #include "Query.h"
 
 using namespace std;
-enum Direction {NORTH, EAST, SOUTH, WEST, UP, DOWN};
 
 
 
@@ -79,14 +78,11 @@ class DatabaseTool{
 
 		 static string getZoneDesc(int zoneID);
 
-		 static string getzoneExtendedDesc(int zoneID);
+		 static string getZoneExtendedDesc(int zoneID);
 
-		 static int getDirectionID(int zoneID, Direction d);
+		 static int getDirectionID(int zoneID, string direction);
 
-		 static string getDirectionDesc(int zoneID, Direction d);
-
-		 static string getDirectionKWs(int zoneID, Direction d);
-
+		 static string getDirectionDesc(int zoneID, string direction);
 
 
 	private:
