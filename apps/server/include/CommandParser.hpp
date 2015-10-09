@@ -5,6 +5,7 @@ typedef struct {
 
 	std::string type;
 	std::string data;
+	std::string playerID;
 
 }Command;
 
@@ -16,7 +17,8 @@ public:
 
 
 	Command getCommandFromString(std::string commandString);
-	std::string[COMMAND_SIZE] parseFromString(std::string userCommand);
+	void checkCommandIsValid(Command commandToValidate);
+
 
 
 };

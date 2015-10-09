@@ -2,9 +2,7 @@
 #include "CommandParser.hpp"
 #include <string>
 
-std::string parseFromString(std::string userCommand){//takes user input and creates a string to parse
 
-}
-Command getCommandFromString(std::string commandString){//takes 
+Command getCommandFromString(std::string commandString){//takes user command in string form and parses it into a Command struct
 
 }
