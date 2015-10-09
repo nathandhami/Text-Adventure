@@ -64,16 +64,32 @@ string DatabaseTool::getPassword(int userID) {
 void DatabaseTool::addCharacter(string name, int userID){
 	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + "," + to_string(PLAYER_OFFLINE) + ");";
 	executeSQLInsert(sqlStatment);
-
-
 }
 
-void DatabaseTool::setCharOnline(int userID){
-	//!!!!!!!!!!!!!!!!
+bool DatabaseTool::isCharOnline(int charID){
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select isOnline from characters where userID=" + to_string(charID) +";";
+	int onlineStatus = (int) q.get_count(sqlStatment.c_str());
+	if(onlineStatus == PLAYER_ONLINE) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
-void DatabaseTool::setCharOffline(int userID){
-	//!!!!!!!!!!!!!!!
+void DatabaseTool::setCharOnline(int charID){
+	string sqlStatment = "UPDATE characters SET isOnline = " + to_string(PLAYER_ONLINE) + " WHERE charID = " + to_string(charID) + ";";
+	executeSQLInsert(sqlStatment);
+}
+
+void DatabaseTool::setCharOffline(int charID){
+	string sqlStatment = "UPDATE characters SET isOnline = " + to_string(PLAYER_OFFLINE) + " WHERE charID = " + to_string(charID) + ";";
+	executeSQLInsert(sqlStatment);
 }
 
 int DatabaseTool::getCharID(int userID){
@@ -86,11 +102,10 @@ int DatabaseTool::getCharID(int userID){
 	string sqlStatment = "select charID from characters where userID=" + to_string(userID) +";";
 	int charID = (int) q.get_count(sqlStatment.c_str());
 	return charID;
-
 }
 
 void DatabaseTool::putCharInZone(int charID, int zoneID){
-	string sqlStatment = "UPDATE characters SET lastLocation = " + to_string(zoneID) + " WHERE charID = " + to_string(charID) + ";";
+	string sqlStatment = "UPDATE characters SET location = " + to_string(zoneID) + " WHERE charID = " + to_string(charID) + ";";
 	executeSQLInsert(sqlStatment);
 
 }
@@ -102,10 +117,9 @@ int DatabaseTool::getCharsLocation(int charID){
 		throw runtime_error("could not open database");
 	}
 	Query q(db);
-	string sqlStatment = "select lastLocation from characters where charID=" + to_string(charID) + ";";
+	string sqlStatment = "select location from characters where charID=" + to_string(charID) + ";";
 	int zoneID = (int) q.get_count(sqlStatment.c_str());
 	return zoneID;
-
 }
 
 

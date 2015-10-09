@@ -26,13 +26,14 @@ class DatabaseTool{
 
 		 static void addCharacter(string name, int userID);
 
-		 static void setCharOnline(int userID);
-
-		 static void setCharOffline(int userID);
-
 		 static int getCharID(int userID);
 
-		 //sets charecters last know location
+		 static bool isCharOnline(int charID);
+
+		 static void setCharOnline(int charID);
+
+		 static void setCharOffline(int charID);
+
 		 static void putCharInZone(int charID, int zoneID);
 
 		 static int getCharsLocation(int charID);

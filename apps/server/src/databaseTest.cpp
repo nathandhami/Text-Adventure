@@ -14,8 +14,11 @@ int main(int argc, char* argv[])
    	// cout << DatabaseTool::getUserID("devon2", "tesaeft") << endl;
    	// cout << DatabaseTool::getUserID("devon", "wrong password") << endl;
 
-   	cout << DatabaseTool::getPassword(1) << endl;
-   	cout << DatabaseTool::getPassword(2) << endl;
+   	// cout << DatabaseTool::getPassword(1) << endl;
+   	// cout << DatabaseTool::getPassword(2) << endl;
+
+   	DatabaseTool::addCharacter("leeeroooy jeeenkins", 1);
+   	cout << "adding leroy" << endl;
 
     //  DatabaseTool::addCharacter("leeroy jenkins", 1);
    	// cout << DatabaseTool::getCharsLocation(1) << endl;
