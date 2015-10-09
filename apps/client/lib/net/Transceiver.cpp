@@ -5,11 +5,11 @@
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
 
-/*
-* Async lines are left for temporary reference
-*/
+
 using boost::asio::ip::tcp;
 
+
+// ------------------- PUBLIC -------------------
 
 Transceiver::Transceiver() {
 	tcp::resolver resolver( ioService );
@@ -21,9 +21,26 @@ Transceiver::Transceiver() {
 }
 
 
-
 Transceiver::~Transceiver() {}
 
+
+void Transceiver::run() {
+	this->ioService.run();
+}
+
+void Transceiver::write( std::string message ) {
+	this->writeToHost( message );
+}
+
+std::string Transceiver::read() {
+	std::istream responseStream( &(this->response) );
+	std::string message;
+	std::getline( responseStream, message );
+	
+	return message;
+}
+
+// ------------------- PRIVATE ------------------
 
 void Transceiver::connectToHost() {
 	try {
@@ -38,11 +55,6 @@ void Transceiver::connectToHost() {
 		std::cerr << exception.what() << std::endl;
 		exit( EXIT_FAILURE );
 	}
-//	boost::asio::async_connect(
-//		this->connection->getSocket(),
-//		this->endpointIterator,
-//		std::bind( &Transceiver::handleConnect, this, boost::system::error_code )
-//	);
 }
 
 
@@ -57,32 +69,16 @@ void Transceiver::readFromHost() {
 		error
 	);
 	
-	if ( error ) { throw boost::system::system_error(error); }
-	
-	std::istream response_stream(&response);
-	std::string status_message;
-	std::getline(response_stream, status_message);
-	std::cout << status_message << std::endl;
-	
-	//temp to test, will be replaced
-//	boost::asio::async_read_until(
-//		this->connection->getSocket(), 
-//		this->response,
-//		'\n',
-//		[this](boost::system::error_code ec, std::size_t /*length*/){
-//			std::istream response_stream(&response);
-//			std::string status_message;
-//			std::getline(response_stream, status_message);
-//			std::cout << status_message << std::endl;
-//		}
-//	);
+	if ( error ) { throw boost::system::system_error( error ); }
 }
 
-void Transceiver::writeToHost() {
+void Transceiver::writeToHost( std::string message ) {
+	boost::system::error_code error;
+	boost::asio::write(
+		this->connection->getSocket(),
+		boost::asio::buffer( message ),
+		error
+	);
 	
-}
-
-
-void Transceiver::run() {
-	this->ioService.run();
+	if ( error ) { throw boost::system::system_error( error ); }
 }

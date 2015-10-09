@@ -12,6 +12,9 @@ int main() {
 	Transceiver* connector = new Transceiver();
 	connector->run();
 	
+	connector->write( "hello world\n" );
+	std::cout << connector->read() << std::endl;
+	
 	
 	delete connector;
 	return 0;

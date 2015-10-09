@@ -18,8 +18,10 @@ public:
 	Transceiver();
 	~Transceiver();
 	
-	static Transceiver createTransceiver();
 	void run();
+	
+	void write( std::string message );
+	std::string read();
 	
 	
 private: 
@@ -30,10 +32,9 @@ private:
 //	tcp:: socket;
 
 	void connectToHost();
-	void handleConnect( boost::system::error_code error );
 	
 	void readFromHost();
-	void writeToHost();
+	void writeToHost(  std::string message  );
 	
 };
 
