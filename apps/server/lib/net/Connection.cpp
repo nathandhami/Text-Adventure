@@ -4,11 +4,6 @@
 using boost::asio::ip::tcp;
 
 
-Connection::pointer Connection::createPointer( boost::asio::io_service& ioService ) {
-	return pointer( new Connection( ioService ) );
-}
-
-
 tcp::socket& Connection::getSocket() {
 	return this->socket;
 }
@@ -22,7 +17,7 @@ void Connection::start() {
 		boost::asio::buffer( message ),
 		boost::bind( 
 			&Connection::handleWrite, 
-			shared_from_this(),
+			this,
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred
 		)

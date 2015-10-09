@@ -6,15 +6,16 @@ using boost::asio::ip::tcp;
 
 
 Watcher::Watcher() {
-	this->connectionAcceptor = 
-		new tcp::acceptor( this->ioService, tcp::endpoint( tcp::v4(), HOST_PORT ) );
+	this->connectionAcceptor =
+		std::make_shared< tcp::acceptor >( 
+			this->ioService, 
+			tcp::endpoint( tcp::v4(), HOST_PORT ) 
+		);
 	this->startAccept();
 }
 
 
-Watcher::~Watcher() {
-	delete this->connectionAcceptor;
-}
+Watcher::~Watcher() {}
 
 void Watcher::run() {
 	try {
@@ -25,8 +26,9 @@ void Watcher::run() {
 }
 
 void Watcher::startAccept() {
-	Connection::pointer newConnection = 
-		Connection::createPointer( this->connectionAcceptor->get_io_service() );
+	std::shared_ptr< Connection > newConnection = 
+		std::make_shared< Connection >( this->connectionAcceptor->get_io_service() );
+	this->connections.push_back( newConnection );
 	
 	this->connectionAcceptor->async_accept( 
 		newConnection->getSocket(),
@@ -39,7 +41,7 @@ void Watcher::startAccept() {
 }
 
 void Watcher::handleAccept( 
-	Connection::pointer newConnection, 
+	std::shared_ptr< Connection > newConnection, 
 	const boost::system::error_code& error 
 ) {
 	if ( !error ) {

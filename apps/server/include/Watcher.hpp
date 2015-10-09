@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <thread>
-#include <mutex>
+#include <memory>
 
 #include "Connection.hpp"
 
@@ -19,11 +19,12 @@ public:
 	
 private:
 	boost::asio::io_service ioService;
-	tcp::acceptor* connectionAcceptor;
+	std::shared_ptr< tcp::acceptor > connectionAcceptor;
+	std::vector< std::shared_ptr< Connection > > connections;
 	
 	void startAccept();
 	void handleAccept( 
-		Connection::pointer newConnection, 
+		std::shared_ptr< Connection > newConnection, 
 		const boost::system::error_code& error 
 	);
 };

@@ -29,12 +29,11 @@ private:
 	tcp::resolver::iterator endpointIterator;
 	std::shared_ptr< ServerConnection > connection;
 	boost::asio::streambuf response;
-//	tcp:: socket;
 
 	void connectToHost();
 	
 	void readFromHost();
-	void writeToHost(  std::string message  );
+	void writeToHost( std::string message );
 	
 };
 
