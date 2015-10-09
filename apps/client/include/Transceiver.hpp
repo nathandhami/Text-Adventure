@@ -30,9 +30,10 @@ private:
 //	tcp:: socket;
 
 	void connectToHost();
-	void handleConnect();
+	void handleConnect( boost::system::error_code error );
 	
 	void readFromHost();
+	void writeToHost();
 	
 };
 
