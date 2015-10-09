@@ -8,12 +8,20 @@ public:
     NetMessage(){}
     ~NetMessage(){}
 	
+	std::string getHeader() {
+		return this->headerLine;
+	}
+	
 	std::string getBody() {
 		return this->bodyLine;
 	}
     
-    void copyToBuffer( char* buffer, std::size_t length ) {
-		this->bodyLine = std::string( buffer, length );
+    void saveHeaderBuffer( char* buffer ) {
+		this->headerLine = std::string( buffer, length );
+	}
+	
+	void saveBodyBuffer( char* buffer, std::size_t length ) {
+		this->BodyLbne = std::string( buffer, length );
 	}
     
     void setBodyLength( std::size_t length ) {
@@ -25,9 +33,7 @@ public:
     }
     
 private:
-    char bodyBuffer[512];
-    char headerBuffer[4];
-	
+	std::string headerLine;
 	std::string bodyLine;
     
     size_t bodyLength;

@@ -31,7 +31,6 @@ private:
 	tcp::resolver::iterator endpointIterator;
 	std::shared_ptr< ServerConnection > connection;
 	NetMessage response;
-	std::size_t bufLength = 0;
 
 	void connectToHost();
 	

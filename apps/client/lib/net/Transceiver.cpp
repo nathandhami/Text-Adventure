@@ -49,7 +49,7 @@ void Transceiver::connectToHost() {
 		);
 		
 		std::cout << "Connected to server." << std::endl;
-		this->readFromHost();
+//		this->readFromHost();
 		
 	} catch ( std::exception& exception ) {
 		std::cerr << exception.what() << std::endl;
@@ -68,7 +68,7 @@ void Transceiver::readFromHost() {
 	);
 	if ( error ) { throw boost::system::system_error( error ); }
     
-	this->response.copyToBuffer( buffer, length );
+	this->response.saveBodyBuffer( buffer, length );
 	
 //    this->response.setBodyLength( length );
 	std::cout << "- read once" << std::endl;

@@ -28,10 +28,13 @@ private:
 	std::string clientIP_v4;
 	NetMessage request;
 	
+	int userId = 0;
+	
 //	void handleWrite( const boost::system::error_code& /*error*/, size_t /*bytes*/ ) {}
 	std::string getIP( IPType type );
 	
 	void read();
+	void readHeader();
 };
 
 

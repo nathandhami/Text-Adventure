@@ -12,14 +12,14 @@ int main() {
 	Transceiver* connector = new Transceiver();
 	connector->run();
 	
-	std::cout << connector->read() << std::endl;
-
-	connector->write( "hello woooolsta\n" );
-	std::cout << connector->read() << std::endl;
-	connector->write( "hello woooolstar\n" );
-	std::cout << connector->read() << std::endl;
-	connector->write( "hello woooorlsta\n" );
-	std::cout << connector->read() << std::endl;
+//	std::cout << connector->read() << std::endl;
+//
+//	connector->write( "hello woooolsta\n" );
+//	std::cout << connector->read() << std::endl;
+//	connector->write( "hello woooolstar\n" );
+//	std::cout << connector->read() << std::endl;
+//	connector->write( "hello woooorlsta\n" );
+//	std::cout << connector->read() << std::endl;
 	
 	
 	delete connector;

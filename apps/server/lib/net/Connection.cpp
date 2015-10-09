@@ -22,65 +22,29 @@ void Connection::write( std::string message ) {
 	if ( !error ) { 
 		this->read();
 	}
-	
-//	boost::system::error_code error;
-//	while ( true ) {
-//		boost::asio::read_until(
-//			this->socket,
-//			this->request,
-//			'\n',
-//			error
-//		);
-//		if ( error ) { throw boost::system::system_error( error ); }
-//		std::cout << "PING" << std::endl;
-//
-//		std::istream responseStream( &(this->request) );
-//		std::string message;
-//		std::getline( responseStream, message );
-//		std::cout << message << std::endl;
-//		
-//		boost::asio::write(
-//			this->socket,
-//			boost::asio::buffer( message ),
-//			error
-//		);
-//		if ( error ) { throw boost::system::system_error( error ); }
-//	}
-//	boost::system::error_code error;
-//	boost::asio::write(
-//		this->socket,
-//		boost::asio::buffer( message )
-//		
-//	);
-//	if ( error ) { throw boost::system::system_error( error ); }
-//	
-//	this->read();
-//	boost::asio::async_write(
-//		this->socket, 
-//		boost::asio::buffer( message ),
-//		[ this ]( boost::system::error_code error, std::size_t /*length*/ ){
-//			if ( !error ) {
-//				this->read();
-//			}
-//		}
-//	);
 }
 
 
 // ------------------- PRIVATE ------------------
 
 void Connection::start() {
-	
+	// Initial connection established
 	std::string address( this->getIP( Connection::IPType::v4 ) );
-	std::cout << "Client Connected with ipv4: " << address << std::endl;
-	std::string message = "Size: 4\n";
-	this->write( message );
+	std::cout << "User Connected." << std::endl;
+	// Start listening to the client
+	this->read();
 }
 
 
 std::string Connection::getIP( IPType type ) {
 	return this->socket.remote_endpoint().address().to_string();
 }
+
+
+void Connection::readHeader() {
+//	char buffer[]
+}
+
 
 void Connection::read() {
 	char buffer[512];
@@ -91,28 +55,11 @@ void Connection::read() {
 		error
 	);
 	if ( !error ) { 
-		this->request.copyToBuffer( buffer, length );
+		this->request.saveBodyBuffer( buffer, length );
+//		std::cout
 		this->write( this->request.getBody() );
+	} else {
+		//TO-DO inform database the user is offline
+		std::cout << "User Disconnected." << std::endl;
 	}
-//	if ( error ) { throw boost::system::system_error( error ); }
-//	std::cout << "PING" << std::endl;
-//	
-//	std::istream responseStream( &(this->request) );
-//	std::string message;
-//	std::getline( responseStream, message );
-//	std::cout << message << std::endl;
-//	
-//	this->write( "Ping" );
-	
-//	boost::asio::async_read_until(
-//		this->socket,
-//		this->request,
-//		'\n',
-//		[ this ]( boost::system::error_code error, std::size_t /*length*/ ){
-//			if ( !error ){
-//				std::cout << "PING" << std::endl;
-//				this->write( "Ping" );
-//			}
-//		}
-//	);
 }
