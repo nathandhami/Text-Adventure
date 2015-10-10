@@ -73,13 +73,14 @@ void Session::handleRequest() {
 	if ( this->request.getHeader() == HEADER_LOGIN ) {
 		int userId = Authenticator::login( this->request.getBody() );
 		if ( userId ) {
+			//TO-DO inform database that the user is online
 			this->writeToClient( HEADER_OK, "Log in successful." );
 		} else {
 			this->writeToClient( HEADER_ERROR, "Incorrect username or password." );
 		}
 		
 	} else {
-		this->writeToClient( HEADER_ERROR, "Incorrect command." );
+		this->writeToClient( HEADER_ERROR, "Incorrect request." );
 	}
 }
 

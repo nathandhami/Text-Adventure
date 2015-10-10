@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 
 #include "Transceiver.hpp"
+#include "NetConfig.hpp"
 
 //attempt at a client with sockets
 
@@ -14,6 +15,12 @@ int main() {
 	
 	transceiver->write( "lg", "email@doge.do;password" );
 	std::tuple< std::string, std::string > tuple = transceiver->read();
+	std::cout << "Response received: " << std::endl;
+	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+	
+	transceiver->write( HEADER_LOGIN, "email@doge.do;password" );
+	tuple = transceiver->read();
 	std::cout << "Response received: " << std::endl;
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
 	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
