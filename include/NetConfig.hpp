@@ -8,6 +8,9 @@
 #define HEADER_LOGOUT	"lgo"
 #define HEADER_COMMAND	"cmd"
 
+#define HEADER_OK		"okk"
+#define HEADER_ERROR	"err"
+
 enum ResponseCode { OK = 200 };
 
 #endif

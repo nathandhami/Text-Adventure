@@ -29,19 +29,18 @@ void Transceiver::run() {
 	this->ioService.run();
 }
 
-void Transceiver::write( std::string message ) {
-	this->writeToHost( message );
+void Transceiver::write( std::string header, std::string body ) {
+	this->writeToHost( header );
+	this->writeToHost( body );
+	this->readHeaderFromHost();
+	this->readBodyFromHost();
 }
 
-void Transceiver::writeWait( std::string message ) {
-	this->writeToHost( message );
-	this->readFromHost();
-}
-
-std::string Transceiver::read() {
-//    std::cout << this->response.getBodyLength() << std::endl;
-//	return this->response.getBodyString();
-    return this->response.getBody();
+std::tuple< std::string, std::string > Transceiver::read() {
+	return std::make_tuple( 
+		this->response.getHeader(), 
+		this->response.getBody() 
+	);
 }
 
 // ------------------- PRIVATE ------------------
@@ -63,8 +62,22 @@ void Transceiver::connectToHost() {
 }
 
 
-void Transceiver::readFromHost() {
-    char buffer[512];
+void Transceiver::readHeaderFromHost() {
+	char buffer[ NetMessage::MaxLength::HEADER ];
+	boost::system::error_code error;
+	
+	this->connection->getSocket().read_some(
+		boost::asio::buffer( buffer ),
+		error
+	);
+	if ( error ) { throw boost::system::system_error( error ); }
+	
+	this->response.saveHeaderBuffer( buffer );
+}
+
+
+void Transceiver::readBodyFromHost() {
+	char buffer[ NetMessage::MaxLength::BODY ];
     
 	boost::system::error_code error;
 	std::size_t length = this->connection->getSocket().read_some(
@@ -74,12 +87,8 @@ void Transceiver::readFromHost() {
 	if ( error ) { throw boost::system::system_error( error ); }
     
 	this->response.saveBodyBuffer( buffer, length );
-	
-//    this->response.setBodyLength( length );
-	std::cout << "- read once" << std::endl;
-//    std::cout << this->response.getBody() << std::endl;
-//    std::cout << "Data received: " << this->response.getBodyString() << std::endl;
 }
+
 
 void Transceiver::writeToHost( std::string message ) {
 	boost::system::error_code error;
@@ -89,9 +98,7 @@ void Transceiver::writeToHost( std::string message ) {
 		error
 	);
 	
-	if ( !error ) { 
-		std::cout << "- write once" << std::endl;
-//		this->readFromHost();
+	if ( error ) {
+		std::cerr << "Failed to write to server" << std::endl;
 	}
-//	this->readFromHost();
 }

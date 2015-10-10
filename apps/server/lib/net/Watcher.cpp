@@ -32,14 +32,15 @@ void Watcher::run() {
 // ------------------- PRIVATE ------------------
 
 void Watcher::startAccept() {
-	std::shared_ptr< Connection > newConnection = 
-		std::make_shared< Connection >( this->connectionAcceptor->get_io_service() );
-	this->connections.push_back( newConnection );
+	std::shared_ptr< Session > newSession = 
+		std::make_shared< Session >( this->connectionAcceptor->get_io_service() );
+	this->sessions.push_back( newSession );
 	
 	this->connectionAcceptor->async_accept( 
-		newConnection->getSocket(),
-		boost::bind( &Watcher::handleAccept,
-			this, newConnection,
+		newSession->getSocket(),
+		boost::bind( 
+			&Watcher::handleAccept,
+			this, newSession,
 			boost::asio::placeholders::error
 		)
 	);
@@ -48,11 +49,11 @@ void Watcher::startAccept() {
 
 
 void Watcher::handleAccept( 
-	std::shared_ptr< Connection > newConnection, 
+	std::shared_ptr< Session > newSession, 
 	const boost::system::error_code& error 
 ) {
 	if ( !error ) {
-		newConnection->start();
+		newSession->start();
 	}
 	startAccept();
 }

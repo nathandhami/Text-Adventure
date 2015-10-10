@@ -11,17 +11,15 @@
 
 using boost::asio::ip::tcp;
 
-class Connection {
+class Session {
 	
 public:
 	enum IPType { v4, v6 };
 	
-	Connection( boost::asio::io_service& ioService ): socket( ioService ) {}
+	Session( boost::asio::io_service& ioService ): socket( ioService ) {}
 	
 	tcp::socket& getSocket();
 	void start();
-	
-	void write( std::string message );
 	
 private:
 	tcp::socket socket;
@@ -38,6 +36,9 @@ private:
 	void readBody();
 	
 	void handleRequest();
+	
+	void write( std::string message );
+	void writeToClient( std::string header, std::string body );
 };
 
 

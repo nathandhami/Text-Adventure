@@ -9,17 +9,19 @@
 using boost::asio::ip::tcp;
 
 int main() {
-	Transceiver* connector = new Transceiver();
-	connector->run();
+	std::shared_ptr< Transceiver > transceiver = std::make_shared< Transceiver >();
+	transceiver->run();
 	
-	connector->write( "lg" );
-	connector->writeWait( "email@email.doge" );
-	std::cout << connector->read() << std::endl;
-	
-	connector->write( "lgn" );
-	connector->writeWait( "email@email.doge" );
-	std::cout << connector->read() << std::endl;
-	
+	transceiver->write( "lg", "email@doge.do;password" );
+	std::tuple< std::string, std::string > tuple = transceiver->read();
+	std::cout << "Response received: " << std::endl;
+	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+//	transceiver->write( "lgn", "email@doge.do;password" );
+//	std::cout << transceiver->read() << std::endl;
+	/*while (true) {
+		transceiver->write( "lgn", "email@doge.do;password" );
+	}*/
 	
 //	std::cout << connector->read() << std::endl;
 //
@@ -31,6 +33,6 @@ int main() {
 //	std::cout << connector->read() << std::endl;
 	
 	
-	delete connector;
+	
 	return 0;
 }

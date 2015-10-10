@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <memory>
+#include <tuple>
 
 #include "ServerConnection.hpp"
 #include "NetMessage.hpp"
@@ -21,9 +22,8 @@ public:
 	
 	void run();
 	
-	void write( std::string message );
-	void writeWait( std::string message );
-	std::string read();
+	void write( std::string header, std::string body );
+	std::tuple< std::string, std::string > read();
 	
 	
 private:
@@ -35,7 +35,9 @@ private:
 
 	void connectToHost();
 	
-	void readFromHost();
+	void readHeaderFromHost();
+	void readBodyFromHost();
+	
 	void writeToHost( std::string message );
 	
 };

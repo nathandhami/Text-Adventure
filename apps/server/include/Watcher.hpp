@@ -6,7 +6,7 @@
 #include <thread>
 #include <memory>
 
-#include "Connection.hpp"
+#include "Session.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -20,11 +20,11 @@ public:
 private:
 	boost::asio::io_service ioService;
 	std::shared_ptr< tcp::acceptor > connectionAcceptor;
-	std::vector< std::shared_ptr< Connection > > connections;
+	std::vector< std::shared_ptr< Session > > sessions;
 	
 	void startAccept();
 	void handleAccept( 
-		std::shared_ptr< Connection > newConnection, 
+		std::shared_ptr< Session > newSession, 
 		const boost::system::error_code& error 
 	);
 };

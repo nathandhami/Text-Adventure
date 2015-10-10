@@ -24,19 +24,9 @@ public:
 		this->bodyLine = std::string( buffer, length );
 	}
     
-    void setBodyLength( std::size_t length ) {
-        this->bodyLength = length;
-    }
-    
-    std::size_t getBodyLength() {
-        return this->bodyLength;
-    }
-    
 private:
 	std::string headerLine;
 	std::string bodyLine;
-    
-    size_t bodyLength;
 };
 
 
