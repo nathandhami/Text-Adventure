@@ -11,6 +11,7 @@ int Authenticator::login( std::string data ) {
 	std::cout << "User's credentials: " << std::endl;
 	std::cout << "\tUsername: " << credentials[0] << std::endl;
 	std::cout << "\tPassword: " << credentials[1] << std::endl;
+	// int userId = DatabaseTool::getUserID( credentials[ 0 ], credentials[ 1 ] );
 	//END TO-DO
 	return 1;
 }

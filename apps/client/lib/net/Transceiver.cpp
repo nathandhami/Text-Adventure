@@ -70,7 +70,10 @@ void Transceiver::readHeaderFromHost() {
 		boost::asio::buffer( buffer ),
 		error
 	);
-	if ( error ) { throw boost::system::system_error( error ); }
+	if ( error ) { 
+		std::cerr << "Lost connection to server." << std::endl;
+		exit( EXIT_FAILURE );
+	}
 	
 	this->response.saveHeaderBuffer( buffer );
 }
@@ -84,7 +87,11 @@ void Transceiver::readBodyFromHost() {
 		boost::asio::buffer( buffer ),
 		error
 	);
-	if ( error ) { throw boost::system::system_error( error ); }
+	if ( error ) {
+		std::cerr << "Lost connection to server." << std::endl;
+		exit( EXIT_FAILURE );
+//		throw boost::system::system_error( error ); 
+	}
     
 	this->response.saveBodyBuffer( buffer, length );
 }
@@ -100,5 +107,6 @@ void Transceiver::writeToHost( std::string message ) {
 	
 	if ( error ) {
 		std::cerr << "Failed to write to server" << std::endl;
+		exit( EXIT_FAILURE );
 	}
 }

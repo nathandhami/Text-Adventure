@@ -26,8 +26,11 @@ private:
 	std::string clientIP_v4;
 	NetMessage request;
 	
+	//Autherization variables
 	int userId = 0;
 	bool authorized = false;
+	//for later
+	std::size_t userHash;
 	
 //	void handleWrite( const boost::system::error_code& /*error*/, size_t /*bytes*/ ) {}
 	std::string getIP( IPType type );
@@ -37,7 +40,7 @@ private:
 	
 	void handleRequest();
 	
-	void write( std::string message );
+	bool write( std::string message );
 	void writeToClient( std::string header, std::string body );
 };
 
