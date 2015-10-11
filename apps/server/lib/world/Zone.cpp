@@ -46,7 +46,7 @@ string getDescription(string keyword) {
 	if (keyword == "") {
 		description = getZoneDesc(zoneID);
 		if (description == "") {
-			return "You seem to be floating in a void. You question your own existence, realize the irony of this, and decide to cry.\n";
+			return "You seem to be floating in a void. You question your own existence.\n";
 		}
 		return description;
 	}

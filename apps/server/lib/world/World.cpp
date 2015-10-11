@@ -3,36 +3,36 @@
 
 // --------Private functions--------
 
-bool movePlayer(int playerID, string destination) {
+bool World::movePlayer(int playerID, string destination) {
 	boost::to_upper(destination);
 	if (!isDirection(destination)) {
 		return false;
 	}
-	int currentZoneID = getCharsLocation(playerID);
-	currentZone.setID(currentZoneID);
-	int destinationZoneID = currentZone.getNeighbourZone(destination);
-	currentZone.setID(destinationZoneID);
-	if (!currentZone.roomForMorePlayers()) {
+	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
+	World::currentZone->setID(currentZoneID);
+	int destinationZoneID = World::currentZone->getNeighbourZone(destination);
+	World::currentZone->setID(destinationZoneID);
+	if (!World::currentZone->roomForMorePlayers()) {
 		return false;
 	}
 	//currentZone.playerEnteringZone(playerInfo.name);
-	putCharInZone(playerID, destinationZoneID);
+	DatabaseTool::putCharInZone(playerID, destinationZoneID);
 	return true;
 }
 
-string playerLook(int playerID, string keyword) {
+string World::playerLook(int playerID, string keyword) {
 	boost::to_upper(keyword);
-	int currentZoneID = getCharsLocation(playerID);
-	currentZone.setID(currentZoneID);
-	return currentZone.getDescription(keyword);
+	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
+	World::currentZone->setID(currentZoneID);
+	return World::currentZone->getDescription(keyword);
 }
 
 // --------Public functions--------
 
-string executeCommand(Command givenCommand) {
-	int playerID = givenCommand.playerID;
-	string command = givenCommand.type;
-	string arguments = givenCommand.data;
+string World::executeCommand(Command givenCommand) {
+	int playerID = givenCommand->playerID;
+	string command = givenCommand->type;
+	string arguments = givenCommand->data;
 
 	if (command == "move") {
 		bool success = movePlayer(playerID, arguments);
@@ -47,10 +47,10 @@ string executeCommand(Command givenCommand) {
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
 }
 
-World() {
-	currentZone = new Zone(0);
+World::World() {
+	World::currentZone = new Zone(0);
 }
 
-~World() {
-	free(currentZone);
+World::~World() {
+	delete World::currentZone;
 }

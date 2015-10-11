@@ -1,8 +1,9 @@
 #ifndef ZONE_HPP
 #define ZONE_HPP
 
+#include <vector>
 #include "WorldConstants.hpp"
-#include "DatabaseTool.hpp"
+//#include "DatabaseTool.hpp"
 
 using namespace std;
 
