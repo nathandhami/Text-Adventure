@@ -29,7 +29,7 @@ string World::playerLook(int playerID, string keyword) {
 
 // --------Public functions--------
 
-string World::executeCommand(Command givenCommand) {
+string World::executeCommand(Command* givenCommand) {
 	int playerID = givenCommand->playerID;
 	string command = givenCommand->type;
 	string arguments = givenCommand->data;

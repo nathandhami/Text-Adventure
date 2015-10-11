@@ -3,6 +3,7 @@
 
 #include "WorldConstants.hpp"
 #include "DatabaseTool.hpp"
+#include "CommandParser.hpp"
 #include "Zone.hpp"
 #include <boost/algorithm/string.hpp>
 
@@ -16,7 +17,7 @@ class World {
 
 public:
 
-	bool executeCommand(string);
+	string executeCommand(Command*);
 
 	World();
 	~World();
