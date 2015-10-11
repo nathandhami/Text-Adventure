@@ -11,7 +11,7 @@ using namespace std;
 class World {
 	Zone *currentZone;
 
-	bool movePlayer(int, Direction);
+	bool movePlayer(int, string);
 	bool playerLook(int, string);
 
 public:

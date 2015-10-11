@@ -26,8 +26,8 @@ public:
 	void setDescription();
 	string getDescription(string);
 
-	void setNeighbourZone(Direction, int);
-	int getNeighbourZone(Direction);
+	void setNeighbourZone(string, int);
+	int getNeighbourZone(string);
 
 	bool roomForMorePlayers();
 
