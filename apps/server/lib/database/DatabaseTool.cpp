@@ -11,7 +11,7 @@
 
 using namespace std;
 
-const string DB_LOCATION = "../../apps/server/databases/adventureDB";
+const string DB_LOCATION = "apps/server/databases/adventureDB";
 const string INITIAL_ZONE = "9999";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
@@ -32,8 +32,8 @@ void DatabaseTool::executeSQLInsert(string statment){
 
 }
 
-void DatabaseTool::addUser(string userID, string password) {
-	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userID) + "," + quotesql(password) + ");";
+void DatabaseTool::addUser(string userName, string password) {
+	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ");";
 	executeSQLInsert(sqlStatment);
 }
 
@@ -131,7 +131,7 @@ vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
 		throw runtime_error("could not open database");
 	}
 	Query q(db);
-	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + ";";
+	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + " and isOnline =" + to_string(PLAYER_ONLINE) + ";";
 	q.get_result(sqlStatment.c_str());
 	while(q.fetch_row()) {
 		int character = (int) q.getval();

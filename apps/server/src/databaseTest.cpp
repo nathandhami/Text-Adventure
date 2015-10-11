@@ -8,6 +8,7 @@
 int main(int argc, char* argv[])
 {
    try {
+      cout << "running database tests" << endl;
    	//DatabaseTool::addUser("devon2", "tesaeft");
 
    	// cout << DatabaseTool::getUserID("devon", "test") << endl;
@@ -42,10 +43,10 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getDirectionDesc(3001, "EAST") << endl;
       // cout << DatabaseTool::getDirectionID(3001, "WEST") << endl;
       // cout << DatabaseTool::getDirectionDesc(3001, "WEST") << endl;
-      // vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
-      // for(int i = 0; i < charsinzone.size(); i++) {
-      //    cout << charsinzone[i] << endl;
-      // }
+      vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
+      for(int i = 0; i < charsinzone.size(); i++) {
+         cout << charsinzone[i] << endl;
+      }
 
 
    }
