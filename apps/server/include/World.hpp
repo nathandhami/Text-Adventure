@@ -2,7 +2,7 @@
 #define WORLD_HPP
 
 #include "WorldConstants.hpp"
-//#include "DatabaseTool.hpp"
+#include "DatabaseTool.hpp"
 #include "Zone.hpp"
 #include <boost/algorithm/string.hpp>
 
