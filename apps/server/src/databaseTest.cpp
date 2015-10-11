@@ -43,10 +43,16 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getDirectionDesc(3001, "EAST") << endl;
       // cout << DatabaseTool::getDirectionID(3001, "WEST") << endl;
       // cout << DatabaseTool::getDirectionDesc(3001, "WEST") << endl;
-      vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
-      for(int i = 0; i < charsinzone.size(); i++) {
-         cout << charsinzone[i] << endl;
-      }
+
+      // vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
+      // for(int i = 0; i < charsinzone.size(); i++) {
+      //    cout << charsinzone[i] << endl;
+      // }
+
+      // DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
+      // cout << DatabaseTool::getZoneName(1234) << endl;
+      // cout << DatabaseTool::getZoneDesc(1234) << endl;
+      // cout << DatabaseTool::getDirectionID(1234, "UP") << endl;
 
 
    }

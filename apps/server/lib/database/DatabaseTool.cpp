@@ -18,7 +18,11 @@ const int PLAYER_ONLINE = 1;
 
 
 string DatabaseTool::quotesql( const string& s ) {
-    return string("'") + s + string("'");
+	if(s.empty()) {
+		return string("NULL");
+	} else {
+    	return string("'") + s + string("'");
+	}
 }
 
 void DatabaseTool::executeSQLInsert(string statment){
@@ -186,7 +190,24 @@ void DatabaseTool::addZone(
 		 	int downID,
 		 	string downDesc
 		 	){
-//TODO:implement
+	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
+			+ "," + quotesql(zoneName) 
+			+ "," + quotesql(description) 
+			+ "," + quotesql(extendedDesc)
+			+ "," + to_string(northID)
+			+ "," + quotesql(northDesc)
+			+ "," + to_string(southID)
+			+ "," + quotesql(southDesc)
+			+ "," + to_string(eastID)
+			+ "," + quotesql(eastDesc)
+			+ "," + to_string(westID)
+			+ "," + quotesql(westDesc)
+			+ "," + to_string(upID)
+			+ "," + quotesql(upDesc)
+			+ "," + to_string(downID)
+			+ "," + quotesql(downDesc)
+			+ ");";
+	executeSQLInsert(sqlStatment);
 }
 
 string DatabaseTool::getZoneName(int zoneID){
@@ -222,6 +243,9 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID){
 	Query q(db);
 	string sqlStatment = "select extendedDesc from zones where zoneID=" + to_string(zoneID) +";";
 	string extendedDesc = q.get_string(sqlStatment.c_str());
+	
+	vector<string>strs;
+
 	return extendedDesc;
 
 }
