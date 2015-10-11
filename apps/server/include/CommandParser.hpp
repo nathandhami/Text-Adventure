@@ -1,11 +1,11 @@
 #include <iostream>
+// TODO #include "World.h"
 #define COMMAND_SIZE 2
 
 typedef struct {
 
 	std::string type;
 	std::string data;
-	std::string playerID;
 
 }Command;
 
@@ -17,12 +17,11 @@ public:
 
 	std::string splitString;
 
-	Command getCommandFromString(std::string commandString);
-	void checkCommandIsValid(Command commandToValidate);
-	std::string getSplitString(std::string commandString);
+	std::string handleIDandCommand(int playerID, std::string command);
+    Command getCommandFromString(std::string commandString);
+
 
 private:
-	char stringDelimiter = ';';
-	char commandDelimiter = ':';
-	char loginDelimiter = ',';
+	//TODO World* worldID;
+	int worldID;
 };
