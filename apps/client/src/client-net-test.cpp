@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <unistd.h>
 
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
@@ -30,6 +31,17 @@ int main() {
 	std::cout << "Response received: " << std::endl;
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
 	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+	
+	
+	while ( true ) {
+		transceiver->write( HEADER_COMMAND, "wat" );
+		tuple = transceiver->read();
+		std::cout << "Response received: " << std::endl;
+		std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+		std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+		usleep( 1000000 );
+	}
+	
 	
 	transceiver->write( HEADER_LOGOUT, "might be hash in the future" );
 	tuple = transceiver->read();
