@@ -69,7 +69,7 @@ std::string ui_command::readUserCommand (){
 
 	//read in command
 	std::string command;
-	std::cout << "Type 'help' for help and 'quit' for quit \n Enter Command: ";
+	std::cout << "Type 'h' for help and 'q' for quit \n Enter Command: ";
 	std::getline(std::cin, command);
 
 	std::string commandString[1024];

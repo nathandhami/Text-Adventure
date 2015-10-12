@@ -11,7 +11,8 @@
 //attempt at a client with sockets
 
 using boost::asio::ip::tcp;
-int hi();
+int hi(std::string token, ui_command ui);
+std::string readCommand(ui_command ui);
 int main() {
 
 	int menuOption;
@@ -20,9 +21,9 @@ int main() {
 
 	ui_command ui;
 
-	ui.login();
+	std::string token = ui.login();
 
-	hi();
+	hi(token, ui);
 	
 	//std::cout << "Please enter a menu item" << std::endl;
 
@@ -47,13 +48,19 @@ int main() {
 		}
 	}while(!isValid);*/	
 	
-	std::cout << "Type 'h' for help and 'q' for quit" << std::endl;
-	while(1){
-		userCommand = ui.readUserCommand();
-		std::cout << userCommand << std::endl;
-	}
+	//std::cout << "Type 'h' for help and 'q' for quit" << std::endl;
+	//while(1){
+	//	userCommand = ui.readUserCommand();
+	//	std::cout << userCommand << std::endl;
+	//}
 
 	return 0;
+}
+
+std::string readCommand(ui_command ui)
+{
+	std::string userCommand = ui.readUserCommand();
+	return userCommand;
 }
 /*
 #include <iostream>
@@ -67,22 +74,34 @@ int main() {
 
 using boost::asio::ip::tcp;
 */
-int hi() {
+int hi(std::string token, ui_command ui) {
 	std::shared_ptr< Transceiver > transceiver = std::make_shared< Transceiver >();
 	transceiver->run();
 	
-	transceiver->write( "lg", "email@doge.do;password" );
+	transceiver->write( "lg", token );
 	std::tuple< std::string, std::string > tuple = transceiver->read();
 	std::cout << "Response received: " << std::endl;
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
 	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
-	
-	transceiver->write( HEADER_LOGIN, "email@doge.do;password" );
+	//write( header_login, id;pw)
+	transceiver->write( HEADER_LOGIN, token );
 	tuple = transceiver->read();
 	std::cout << "Response received: " << std::endl;
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
 	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
 	
+	std::string command = readCommand(ui);
+	//write(HEADER_COMMAND, "wat;)
+	while( command != "quit")
+	{
+		transceiver->write( HEADER_COMMAND, command );
+		tuple = transceiver->read();
+		std::cout << "Response received: " << std::endl;
+		std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+		std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+		command = readCommand(ui);
+	}
+
 	transceiver->write( HEADER_LOGOUT, "might be hash in the future" );
 	tuple = transceiver->read();
 	std::cout << "Response received: " << std::endl;
