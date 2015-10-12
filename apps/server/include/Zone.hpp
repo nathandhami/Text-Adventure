@@ -19,7 +19,7 @@ public:
 	static void setName(int, string);
 	static string getName(int);
 
-	static void setDescription(int);
+	static void setDescription(int, string);
 	static string getDescription(int, string);
 
 	static void setNeighbourZone(int, string, int);

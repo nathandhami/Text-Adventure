@@ -13,13 +13,11 @@
 std::string CommandParser::handleIDandCommand(int playerID, std::string command){
 
 	Command parsedCommand = getCommandFromString(command);//Parse user command
+	if ( parsedCommand.type == HEADER_ERROR ) return HEADER_ERROR;
 	std::string stringToReturn;
 	//if (DictionaryCmds::checkCommandValid(parsedCommand)){//check command is valid
-	if (parsedCommand.type == "move" || parsedCommand.type == "look") {
-		stringToReturn = World::executeCommand(playerID, parsedCommand);//gets response from world class to send to controller
-	}else {//if(!DictionaryCmds::checkCommandValid(parsedCommand)){//handles invalid command
-		stringToReturn = HEADER_ERROR;
-	}
+	stringToReturn = World::executeCommand(playerID, parsedCommand);//gets response from world class to send to controller
+	std::cout << parsedCommand.type << std::endl;
 	return stringToReturn;//returns the reply from the world to the controller
 }
 
@@ -27,16 +25,37 @@ std::string CommandParser::handleIDandCommand(int playerID, std::string command)
 
 Command CommandParser::getCommandFromString(std::string commandString){//takes user command in string form and parses it into a Command struct
 
-	std::string splitString[2];//holds the command type in [0] and the data in [1]
+//	std::vector< std::string > tokens;
+//	boost::split( tokens, commandString, boost::is_any_of(";") );
+//	std::cout << tokens[0] << std::endl;
+//	std::cout << tokens[1] << std::endl;
+	Command parsedCommand;
+	
+	
+	//PSEUDO DICTIONARY 
+	if ( commandString == "north" ) {
+		parsedCommand.type = "move";
+		parsedCommand.data = "north";
+	} else if ( commandString == "up" ) { 
+		parsedCommand.type = "look";
+		parsedCommand.data = "north";
+	} else {
+		parsedCommand.type = HEADER_ERROR;
+	}
+	
+	/*std::string splitString[2];//holds the command type in [0] and the data in [1]
 	std::string tempStr;
 	char delim = '0';
 	int stringIndex = 0;
 	int arrayIndex = 0;
 
+	
+	
 	while (stringIndex < commandString.size()){ //splits the command string into the type and data
 		delim = commandString.at(stringIndex);
 		if (delim != ';'){
-			tempStr.at(stringIndex) = delim;//builds the parsed string
+//			tempStr.at(stringIndex) = delim;//builds the parsed string
+			tempStr.append(&delim);
 		}else if (delim == ';' && arrayIndex < 2){
 			splitString[arrayIndex] = tempStr;
 			arrayIndex++;
@@ -54,12 +73,14 @@ Command CommandParser::getCommandFromString(std::string commandString){//takes u
 	std::string commandData = splitString[1];
 
 	while (stringIndex < commandType.size()){//takes the part of the string left after the ":" for the command type
+//		std::cout << commandString.at(stringIndex) << std::endl;
 		delim = commandType.at(stringIndex);
 		if(delim == ':'){
 			delimFound = true;
 		}
 		if(delim != ':' && delimFound == true){
-			tempStr.at(stringIndex) = delim;
+//			tempStr.at(stringIndex) = delim;
+			tempStr.append(&delim);
 		}
 		stringIndex++;
 	}
@@ -75,12 +96,14 @@ Command CommandParser::getCommandFromString(std::string commandString){//takes u
 			delimFound = true;
 		}
 		if(delim != ':' && delimFound == true){
-			tempStr.at(stringIndex) = delim;
+//			tempStr.at(stringIndex) = delim;
+			tempStr.append(&delim);
 		}
 		stringIndex++;
 	}
 	parsedCommand.data = tempStr;
-
+*/
+	
 	return parsedCommand;//returns the type and data fields 
 	
 }

@@ -1,5 +1,5 @@
 #include "World.hpp"
-
+#include "WorldConstants.hpp"
 
 // --------Private functions--------
 
@@ -11,6 +11,10 @@ bool World::movePlayer(int playerID, string destination) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	int destinationZoneID = Zone::getNeighbourZone(currentZoneID, destination);
 	if (!Zone::roomForMorePlayers(destinationZoneID)) {
+		return false;
+	}
+	std::cout << "Zone: " << destinationZoneID << std::endl;
+	if ( destinationZoneID == 0 ) {
 		return false;
 	}
 	DatabaseTool::putCharInZone(playerID, destinationZoneID);
