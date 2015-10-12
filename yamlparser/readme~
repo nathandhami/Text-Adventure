@@ -1,0 +1,9 @@
+to test this file:
+
+1) Run in terminal:
+ g++ -Wall -I. -g yamlparser.cpp -lyaml-cpp -L. -o yamlparsed
+
+then
+./yamlparsed
+
+
