@@ -1,3 +1,5 @@
+#ifndef COMMAND_PARSER_H
+#define COMMAND_PARSER_H
 #include <iostream>
 #include "World.hpp"
 #include "DictionaryCmds.hpp"
@@ -23,3 +25,4 @@ public:
 private:
 
 };
+#endif
