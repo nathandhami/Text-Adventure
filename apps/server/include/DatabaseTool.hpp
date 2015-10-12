@@ -78,7 +78,7 @@ class DatabaseTool{
 
 		 static string getZoneDesc(int zoneID);
 
-		 static string getZoneExtendedDesc(int zoneID);
+		 static vector<vector<string>> getZoneExtendedDesc(int zoneID);
 
 		 static int getDirectionID(int zoneID, string direction);
 
@@ -89,6 +89,7 @@ class DatabaseTool{
 		
 		static string quotesql( const string& s );
 		static void executeSQLInsert(string statment);
+		static vector<vector<string>> parseExtendedDesc(string extendedDesc);
 };
 
 #endif

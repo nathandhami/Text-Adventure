@@ -4,10 +4,12 @@
 #include <sqlite3.h>
 #include <string>
 #include <vector>
+#include <sstream>
 #include "DatabaseTool.hpp"
 #include "Database.h"
 #include "Query.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 
 using namespace std;
 
@@ -234,7 +236,7 @@ string DatabaseTool::getZoneDesc(int zoneID){
 	return description;
 }
 
-string DatabaseTool::getZoneExtendedDesc(int zoneID){
+vector<vector<string>> DatabaseTool::getZoneExtendedDesc(int zoneID){
 	Database db( DB_LOCATION );
 	if (!db.Connected())
 	{
@@ -244,9 +246,8 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID){
 	string sqlStatment = "select extendedDesc from zones where zoneID=" + to_string(zoneID) +";";
 	string extendedDesc = q.get_string(sqlStatment.c_str());
 	
-	vector<string>strs;
-
-	return extendedDesc;
+	vector<vector<string>> parsedDesc = parseExtendedDesc(extendedDesc);
+	return parsedDesc;
 
 }
 
@@ -278,5 +279,45 @@ string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	string directionDesc = q.get_string(sqlStatment.c_str());
 	return directionDesc;
 }
+
+vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
+	string findThis = "- desc:\n";
+	vector<vector<string>> parsedDesc;
+
+	vector<string> singleChunk;
+	size_t found = extendedDesc.find(findThis);
+	while(found != string::npos) {
+		size_t secondFound = extendedDesc.find(findThis, found + 1);
+		string singleExtendedDesc = extendedDesc.substr(found, secondFound);
+		boost::erase_all(singleExtendedDesc, findThis);
+		singleChunk.push_back(singleExtendedDesc);
+		found = secondFound;
+	}
+
+	for(int i = 0; i < singleChunk.size(); i++) {
+		vector<string> singleExtendedDesc;
+		string line;
+		string description = "";
+		bool keywordFlag = false;
+		istringstream iss(singleChunk[1]);
+		while(getline(iss, line)) {
+			boost::erase_all(line, "- ");
+			boost::algorithm::trim( line );
+			if((line.find("keywords:") == string::npos) && (keywordFlag == false)){
+				description = description + line;
+			} else if((line.find("keywords:") != string::npos) && (keywordFlag == false)) {
+				singleExtendedDesc.push_back(description);
+				keywordFlag = true;
+			} else {
+				singleExtendedDesc.push_back(line);
+			}
+		}
+		parsedDesc.push_back(singleExtendedDesc);
+	}
+	return parsedDesc;
+
+
+}
+
 
 
