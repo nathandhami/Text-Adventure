@@ -1,2 +1,2 @@
-add_executable (userInterface user_interface.cpp)
+add_executable (userInterface main.cpp)
 target_link_libraries ( userInterface ${Boost_LIBRARIES} Connector )

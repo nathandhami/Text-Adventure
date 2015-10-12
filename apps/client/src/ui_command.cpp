@@ -8,6 +8,7 @@ using namespace boost;
 class ui_command
 {
 public:
+	void login();	
 
 	std::string readUserCommand ();
 
@@ -18,22 +19,50 @@ public:
 	void askForValidCommand();
 };
 
-/*
-int main(){
+void ui_command::login(){
+	std::string userName;
+	std::string userPassword;
+	std::string sendUserInfo;
+	bool isUserEmpty = true;
+	bool isPassEmpty = true;
 
-	std::string input;
-	input = readUserCommand();
-	if(checkInputValidity(input))
+	std::cout << "\nText Gale Online " << std::endl << std::endl;
+
+	while(isUserEmpty)
 	{
-		sendInput(input);
+		std::cout << "Enter Username: ";
+		std::getline(std::cin, userName);
+		isUserEmpty = false;
+
+		if(userName.length() < 1)
+		{
+			isUserEmpty = true;
+			std::cout << "Username cannot be empty, please try again" << std::endl;
+			continue;
+		}
 	}
-	else
+
+	while(isPassEmpty)
 	{
-		askForValidCommand();
+		std::cout << "Enter Password: ";
+		std::getline(std::cin, userPassword);
+		isPassEmpty = false;
+
+		if(userPassword.length() < 1)
+		{
+			isPassEmpty = true;
+			std::cout << "Password cannot be empty, please try again" << std::endl;
+			continue;
+		}
 	}
-	return 0;
+	
+	sendUserInfo = "command:login;data:" + userName + "," + userPassword + "\n";
+
+	//Sends this string to server here
+	std::cout << sendUserInfo << std::endl;
+	//Wait for server response here
+	sleep(1);
 }
-*/
 
 std::string ui_command::readUserCommand (){
 
