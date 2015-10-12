@@ -3,7 +3,7 @@
 
 #include "WorldConstants.hpp"
 #include "DatabaseTool.hpp"
-#include "CommandParser.hpp"
+#include "Command.hpp"
 #include "Zone.hpp"
 #include <boost/algorithm/string.hpp>
 
