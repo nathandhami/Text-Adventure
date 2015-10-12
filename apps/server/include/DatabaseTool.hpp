@@ -17,7 +17,7 @@ using namespace std;
 
 class DatabaseTool{
 	public:
-		 static void addUser(string userID, string password);
+		 static bool addUser(string userName, string password);
 
 		 static int getUserID(string userName, string password);
 
@@ -88,7 +88,7 @@ class DatabaseTool{
 	private:
 		
 		static string quotesql( const string& s );
-		static void executeSQLInsert(string statment);
+		static bool executeSQLInsert(string statment);
 		static string parseExtendedDesc(string extendedDesc, string keyword);
 };
 

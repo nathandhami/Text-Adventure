@@ -9,7 +9,26 @@ int main(int argc, char* argv[])
 {
    try {
       cout << "running database tests" << endl;
-   	//DatabaseTool::addUser("devon2", "tesaeft");
+      if(DatabaseTool::addUser("devon", "testing")){
+         cout << "true" << endl;
+      } else {
+         cout << "false" << endl;
+      }
+
+      // DatabaseTool::addNPC(3000, 
+      //    " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
+      //    "wizard",
+      //    "A wizard walks around behind the counter, talking to himself.",
+      //    "the wizard");
+      // cout << DatabaseTool::getNPCDesc(3000) << endl;
+
+      // DatabaseTool::placeNpcInZone(3000, 3054);
+      // vector<int> npcsinzone = DatabaseTool::getAllNpcsInZone(3054);
+      // for(int i = 0; i < npcsinzone.size(); i++) {
+      //    cout << npcsinzone[i] << endl;
+      // }
+      //DatabaseTool::removeNpcFromZone(3000, 3054);
+
 
    	// cout << DatabaseTool::getUserID("devon", "test") << endl;
    	// cout << DatabaseTool::getUserID("devon2", "tesaeft") << endl;
@@ -49,9 +68,6 @@ int main(int argc, char* argv[])
       //    cout << charsinzone[i] << endl;
       // }
 
-      // vector<vector<string>> extendedDescs = DatabaseTool::getZoneExtendedDesc(3054);
-      // cout << extendedDescs.size() << endl;
-
       // for(int i = 0; i < extendedDescs.size(); i++) {
       //    cout << extendedDescs[i].size() << endl;
       //    for(int x = 0; x < extendedDescs[i].size();  x++) {
@@ -59,15 +75,31 @@ int main(int argc, char* argv[])
       //    }
       // }
 
-      cout<< DatabaseTool::getZoneExtendedDesc(3054, "odin") << endl;
+      //cout<< DatabaseTool::getZoneExtendedDesc(3054, "odin") << endl;
 
       //cout << DatabaseTool::getZoneExtendedDesc(3054) << endl;
 
-      // DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
+      //DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
       // cout << DatabaseTool::getZoneName(1234) << endl;
       // cout << DatabaseTool::getZoneDesc(1234) << endl;
       // cout << DatabaseTool::getDirectionID(1234, "UP") << endl;
 
+      // DatabaseTool::addZone(3105,
+      //    "Park Entrance",
+      //    " You are standing just inside the small park of Midgaard.  To the north is the promenade and a small path leads south into the park. To your east is the famous Park Cafe.",
+      //    "  - desc:\nThe fresh young leaves of the elm tree wave gently in the wind.\nkeywords:\n- elm\n- tree",
+      //    0,
+      //    "",
+      //    0,
+      //    "",
+      //    0,
+      //    "",
+      //    0,
+      //    "",
+      //    0,
+      //    "",
+      //    0,
+      //    "");
 
    }
    catch(runtime_error e){

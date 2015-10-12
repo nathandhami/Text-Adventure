@@ -27,20 +27,20 @@ string DatabaseTool::quotesql( const string& s ) {
 	}
 }
 
-void DatabaseTool::executeSQLInsert(string statment){
+bool DatabaseTool::executeSQLInsert(string statment){
 	Database db( DB_LOCATION );
 	if (!db.Connected())
 	{
 		throw runtime_error("could not open database");
 	}
 	Query q(db);
-	q.execute(statment.c_str());
+	return q.execute(statment.c_str());
 
 }
 
-void DatabaseTool::addUser(string userName, string password) {
+bool DatabaseTool::addUser(string userName, string password) {
 	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ");";
-	executeSQLInsert(sqlStatment);
+	return executeSQLInsert(sqlStatment);
 }
 
 int DatabaseTool::getUserID(string userName, string password){
@@ -149,19 +149,43 @@ vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
 }
 
 void DatabaseTool::placeNpcInZone(int npcID, int zoneID){
-//TODO:implement
+	string sqlStatment = "INSERT INTO populated_by VALUES (" + to_string(npcID) + "," + to_string(zoneID) + ");";
+	executeSQLInsert(sqlStatment);
 }
 
 vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
-//TODO:implement
+	vector<int> npcsInZone;
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select npcID from populated_by where zoneID=" + to_string(zoneID) + ";";
+	q.get_result(sqlStatment.c_str());
+	while(q.fetch_row()) {
+		int npc = (int) q.getval();
+		npcsInZone.push_back(npc);
+	}
+	q.free_result();
+	return npcsInZone;
 }
 
-void DatabaseTool::removeNpcFromZone(int npcID, int zone){
-//TODO:implement
+void DatabaseTool::removeNpcFromZone(int npcID, int zoneID){
+	string sqlStatment = "delete from populated_by where npcID=" + to_string(npcID) + " and " + "zoneID =" + to_string(zoneID) + ";";
+	executeSQLInsert(sqlStatment);
 }
 
 string DatabaseTool::getNPCDesc(int npcID){
-//TODO:implement
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query q(db);
+	string sqlStatment = "select description from npcs where npcID=" + to_string(npcID) +";";
+	string description = q.get_string(sqlStatment.c_str());
+	return description;
 }
 
 void DatabaseTool::addNPC(
@@ -171,7 +195,15 @@ void DatabaseTool::addNPC(
 		 	string longdesc,
 		 	string shortdesc
 		 	){
-//TODO:implement
+	string sqlStatment = "INSERT INTO npcs VALUES (" 
+		+ to_string(npcID) 
+		+ ", " + quotesql(description)
+		+ ", " + quotesql(keywords)
+		+ ", " + quotesql(longdesc)
+		+ ", " + quotesql(shortdesc) 
+		+ ");";
+	executeSQLInsert(sqlStatment);
+
 }
 
 void DatabaseTool::addZone(
@@ -193,21 +225,21 @@ void DatabaseTool::addZone(
 		 	string downDesc
 		 	){
 	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
-			+ "," + quotesql(zoneName) 
-			+ "," + quotesql(description) 
-			+ "," + quotesql(extendedDesc)
-			+ "," + to_string(northID)
-			+ "," + quotesql(northDesc)
-			+ "," + to_string(southID)
-			+ "," + quotesql(southDesc)
-			+ "," + to_string(eastID)
-			+ "," + quotesql(eastDesc)
-			+ "," + to_string(westID)
-			+ "," + quotesql(westDesc)
-			+ "," + to_string(upID)
-			+ "," + quotesql(upDesc)
-			+ "," + to_string(downID)
-			+ "," + quotesql(downDesc)
+			+ ", " + quotesql(zoneName) 
+			+ ", " + quotesql(description) 
+			+ ", " + quotesql(extendedDesc)
+			+ ", " + to_string(northID)
+			+ ", " + quotesql(northDesc)
+			+ ", " + to_string(southID)
+			+ ", " + quotesql(southDesc)
+			+ ", " + to_string(eastID)
+			+ ", " + quotesql(eastDesc)
+			+ ", " + to_string(westID)
+			+ ", " + quotesql(westDesc)
+			+ ", " + to_string(upID)
+			+ ", " + quotesql(upDesc)
+			+ ", " + to_string(downID)
+			+ ", " + quotesql(downDesc)
 			+ ");";
 	executeSQLInsert(sqlStatment);
 }
