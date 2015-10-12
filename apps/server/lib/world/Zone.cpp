@@ -8,11 +8,11 @@ vector<int> getNeighbourZones(int zoneID) {
 }
 
 vector<int> getPlayerIDs(int zoneID) {
-	return getAllCharsInZone(zoneID);
+	return DatabaseTool::getAllCharsInZone(zoneID);
 }
 
 vector<int> getNpcIDs(int zoneID) {
-	return getAllNpcsInZone(zoneID);
+	return DatabaseTool::getAllNpcsInZone(zoneID);
 }
 
 vector<int> getObjectIDs(int zoneID) {
@@ -26,7 +26,7 @@ void setName(int zoneID, string givenName) {
 }
 
 string getName(int zoneID) {
-	return getZoneName(zoneID);
+	return DatabaseTool::getZoneName(zoneID);
 }
 
 void setDescription(int zoneID, string givenDescription) {
@@ -36,7 +36,7 @@ void setDescription(int zoneID, string givenDescription) {
 string getDescription(int zoneID, string keyword) {
 	string description = "";
 	if (keyword == "") {
-		description = getZoneDesc(zoneID);
+		description = DatabaseTool::getZoneDesc(zoneID);
 		if (description == "") {
 			return "You seem to be floating in a void. You question your own existence.\n";
 		}
@@ -49,10 +49,9 @@ string getDescription(int zoneID, string keyword) {
 		}
 	}
 	else {
-		description = DatabaseTool::getZoneExtendedDescription(zoneID, keyword) {
-			if (description == "") {
-				return "You can't describe the " + keyword + "\n";
-			}
+		description = DatabaseTool::getZoneExtendedDesc(zoneID, keyword);
+		if (description == "") {
+			return "You can't describe the " + keyword + "\n";
 		}
 	}
 	return description;
