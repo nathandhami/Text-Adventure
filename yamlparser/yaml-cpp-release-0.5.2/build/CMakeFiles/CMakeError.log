@@ -1,0 +1,53 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3045468749/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3045468749.dir/build.make CMakeFiles/cmTryCompileExec3045468749.dir/build
+make[1]: Entering directory `/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3045468749.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec3045468749.dir/CheckSymbolExists.c.o   -c /home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec3045468749
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3045468749.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec3045468749.dir/CheckSymbolExists.c.o  -o cmTryCompileExec3045468749 -rdynamic 
+CMakeFiles/cmTryCompileExec3045468749.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+make[1]: *** [cmTryCompileExec3045468749] Error 1
+make[1]: Leaving directory `/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec3045468749/fast] Error 2
+
+File /home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec110625817/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec110625817.dir/build.make CMakeFiles/cmTryCompileExec110625817.dir/build
+make[1]: Entering directory `/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec110625817.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec110625817.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-2.8/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec110625817
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec110625817.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec110625817.dir/CheckFunctionExists.c.o  -o cmTryCompileExec110625817 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+make[1]: Leaving directory `/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/CMakeTmp'
+make[1]: *** [cmTryCompileExec110625817] Error 1
+make: *** [cmTryCompileExec110625817/fast] Error 2
+
+

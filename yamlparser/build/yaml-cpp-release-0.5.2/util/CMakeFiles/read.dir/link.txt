@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11 -O2    CMakeFiles/read.dir/read.cpp.o  -o ../../bin/read -rdynamic ../../lib/libyaml-cpp.a 

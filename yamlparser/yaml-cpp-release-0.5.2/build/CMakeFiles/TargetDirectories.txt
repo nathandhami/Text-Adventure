@@ -1,0 +1,12 @@
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/debuggable.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/format.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/test/gmock-1.7.0/CMakeFiles/gmock.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/test/gmock-1.7.0/CMakeFiles/gmock_main.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/test/gmock-1.7.0/gtest/CMakeFiles/gtest.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/test/gmock-1.7.0/gtest/CMakeFiles/gtest_main.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/util/CMakeFiles/parse.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/util/CMakeFiles/read.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/releasable.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/test/CMakeFiles/run-tests.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/util/CMakeFiles/sandbox.dir
+/home/nate/workspace/yamlparser/yaml-cpp-release-0.5.2/build/CMakeFiles/yaml-cpp.dir
