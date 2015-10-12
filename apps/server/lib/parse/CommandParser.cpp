@@ -14,9 +14,10 @@ std::string CommandParser::handleIDandCommand(int playerID, std::string command)
 
 	Command parsedCommand = getCommandFromString(command);//Parse user command
 	std::string stringToReturn;
-	if (DictionaryCmds::checkCommandValid(parsedCommand)){//check command is valid
-		stringToReturn = World::executeCommand(playerID, &parsedCommand);//gets response from world class to send to controller
-	}else if(!DictionaryCmds::checkCommandValid(parsedCommand)){//handles invalid command
+	//if (DictionaryCmds::checkCommandValid(parsedCommand)){//check command is valid
+	if (parsedCommand.type == "move" || parsedCommand.type == "look") {
+		stringToReturn = World::executeCommand(playerID, parsedCommand);//gets response from world class to send to controller
+	}else {//if(!DictionaryCmds::checkCommandValid(parsedCommand)){//handles invalid command
 		stringToReturn = HEADER_ERROR;
 	}
 	return stringToReturn;//returns the reply from the world to the controller

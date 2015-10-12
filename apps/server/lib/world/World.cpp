@@ -5,7 +5,7 @@
 
 bool World::movePlayer(int playerID, string destination) {
 	boost::to_upper(destination);
-	if (!isDirection(destination)) {
+	if (!WorldConstants::isDirection(destination)) {
 		return false;
 	}
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);

@@ -42,7 +42,7 @@ string getDescription(int zoneID, string keyword) {
 		}
 		return description;
 	}
-	else if (isDirection(keyword)) {
+	else if (WorldConstants::isDirection(keyword)) {
 		description = DatabaseTool::getDirectionDesc(zoneID, keyword);
 		if (description == "") {
 			return "There is nothing in that direction\n";
