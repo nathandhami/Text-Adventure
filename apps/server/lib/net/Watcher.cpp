@@ -5,60 +5,55 @@
 using boost::asio::ip::tcp;
 
 
+// ------------------- PUBLIC -------------------
+
 Watcher::Watcher() {
-	this->acceptor = new tcp::acceptor( this->ioService, tcp::endpoint( tcp::v4(), boost::lexical_cast<int>( HOST_PORT ) ) );
-	running = false;
+	this->connectionAcceptor =
+		std::make_shared< tcp::acceptor >( 
+			this->ioService, 
+			tcp::endpoint( tcp::v4(), HOST_PORT ) 
+		);
+	this->startAccept();
 }
 
 
-Watcher::~Watcher() {
-	delete this->acceptor;
-}
+Watcher::~Watcher() {}
 
 
-void Watcher::asyncRun(  ) {
+void Watcher::run() {
 	try {
-		while ( true ) {
-			tcp::socket socket = tcp::socket( this->ioService );
-			acceptor->accept( socket );
-			std::cout << "Connection Accepted." << std::endl;
-			
-			//TO-DO: request information from the engine
-			std::string message = "PING";
-			//END-TO-DO
-
-			boost::system::error_code ignoredError;
-			boost::asio::write( socket, boost::asio::buffer( message ), ignoredError );
-			std::cout << "Sent message: " << message << std::endl;
-		}
+		this->ioService.run();
 	} catch ( std::exception& exception ) {
 		std::cerr << exception.what() << std::endl;
 	}
 }
 
 
-void Watcher::run() {
-	this->runnerThread = std::thread( &Watcher::asyncRun, this );
-	this->runnerThread.join();
+// ------------------- PRIVATE ------------------
+
+void Watcher::startAccept() {
+	std::shared_ptr< Session > newSession = 
+		std::make_shared< Session >( this->connectionAcceptor->get_io_service() );
+	this->sessions.push_back( newSession );
+	
+	this->connectionAcceptor->async_accept( 
+		newSession->getSocket(),
+		boost::bind( 
+			&Watcher::handleAccept,
+			this, newSession,
+			boost::asio::placeholders::error
+		)
+	);
+	
 }
 
 
-bool Watcher::getRunningState() {
-	bool stateHolder;
-	this->stateMutex.lock();
-
-	stateHolder = this->running;
-
-	this->stateMutex.unlock();
-
-	return stateHolder;
-}
-
-
-void Watcher::setRunningState( bool state ) {
-	this->stateMutex.lock();
-	
-	this->running = state;
-	
-	this->stateMutex.unlock();
+void Watcher::handleAccept( 
+	std::shared_ptr< Session > newSession, 
+	const boost::system::error_code& error 
+) {
+	if ( !error ) {
+		newSession->start();
+	}
+	startAccept();
 }
