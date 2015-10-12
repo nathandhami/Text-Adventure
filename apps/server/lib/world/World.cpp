@@ -3,7 +3,7 @@
 
 // --------Private functions--------
 
-static bool World::movePlayer(int playerID, string destination) {
+bool World::movePlayer(int playerID, string destination) {
 	boost::to_upper(destination);
 	if (!isDirection(destination)) {
 		return false;
@@ -17,7 +17,7 @@ static bool World::movePlayer(int playerID, string destination) {
 	return true;
 }
 
-static string World::playerLook(int playerID, string keyword) {
+string World::playerLook(int playerID, string keyword) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::to_upper(keyword);
 	return Zone::getDescription(currentZoneID, keyword);
@@ -25,10 +25,10 @@ static string World::playerLook(int playerID, string keyword) {
 
 // --------Public functions--------
 
-static string World::executeCommand(int playerID, Command* givenCommand) {
+string World::executeCommand(int playerID, Command* givenCommand) {
 	string command = givenCommand->type;
 	string arguments = givenCommand->data;
-	cout << 
+	cout << command << " " << playerID << " " << arguments << endl;
 	if (command == "move") {
 		bool success = movePlayer(playerID, arguments);
 		if (!success) {

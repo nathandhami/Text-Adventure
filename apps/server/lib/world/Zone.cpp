@@ -3,37 +3,37 @@
 
 // --------Private functions--------
 
-static vector<int> getNeighbourZones(int zoneID) {
+vector<int> getNeighbourZones(int zoneID) {
 	// Query database for this zone's neighbours
 }
 
-static vector<int> getPlayerIDs(int zoneID) {
+vector<int> getPlayerIDs(int zoneID) {
 	return getAllCharsInZone(zoneID);
 }
 
-static vector<int> getNpcIDs(int zoneID) {
+vector<int> getNpcIDs(int zoneID) {
 	return getAllNpcsInZone(zoneID);
 }
 
-static vector<int> getObjectIDs(int zoneID) {
+vector<int> getObjectIDs(int zoneID) {
 	// Query database for all items who's currentZone is this zone's zoneID
 }
 
 // --------Public functions--------
 
-static void setName(int zoneID, string givenName) {
+void setName(int zoneID, string givenName) {
 	// Change this zone's name in database
 }
 
-static string getName(int zoneID) {
+string getName(int zoneID) {
 	return getZoneName(zoneID);
 }
 
-static void setDescription(int zoneID, string givenDescription) {
+void setDescription(int zoneID, string givenDescription) {
 	// Change this zone's description in database
 }
 
-static string getDescription(int zoneID, string keyword) {
+string getDescription(int zoneID, string keyword) {
 	string description = "";
 	if (keyword == "") {
 		description = getZoneDesc(zoneID);
@@ -58,15 +58,15 @@ static string getDescription(int zoneID, string keyword) {
 	return description;
 }
 
-static void setNeighbourZone(int zoneID, string direction, int neighbourID) {
+void setNeighbourZone(int zoneID, string direction, int neighbourID) {
 	// Change this zone's neighbouring zone (for direction) to new neighbourID
 }
 
-static int getNeighbourZone(int zoneID, string direction) {
+int getNeighbourZone(int zoneID, string direction) {
 	return DatabaseTool::getDirectionID(zoneID, direction);
 }
 
-static bool roomForMorePlayers(int zoneID) {
+bool roomForMorePlayers(int zoneID) {
 	if ((DatabaseTool::getAllCharsInZone(zoneID).size() >= MAX_PLAYERS) {
 		return false;
 	}
