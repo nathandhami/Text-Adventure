@@ -1,6 +1,6 @@
 #include <iostream>
-// TODO #include "World.h"
-#define COMMAND_SIZE 2
+#include "World.hpp"
+#include "DictionaryCmds.hpp"
 
 typedef struct {
 
@@ -15,13 +15,11 @@ public:
 	CommandParser();
 	~CommandParser();
 
-	std::string splitString;
 
-	std::string handleIDandCommand(int playerID, std::string command);
-    Command getCommandFromString(std::string commandString);
+	static std::string  handleIDandCommand(int playerID, std::string command);
+    static Command getCommandFromString(std::string commandString);
 
 
 private:
-	//TODO World* worldID;
-	int worldID;
+
 };
