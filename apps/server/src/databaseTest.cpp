@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
       cout << extendedDescs.size() << endl;
 
       for(int i = 0; i < extendedDescs.size(); i++) {
+         cout << extendedDescs[i].size() << endl;
          for(int x = 0; x < extendedDescs[i].size();  x++) {
             cout << extendedDescs[i][x] << endl << endl;
          }

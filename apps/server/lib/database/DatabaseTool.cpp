@@ -299,7 +299,7 @@ vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
 		string line;
 		string description = "";
 		bool keywordFlag = false;
-		istringstream iss(singleChunk[1]);
+		istringstream iss(singleChunk[i]);
 		while(getline(iss, line)) {
 			boost::erase_all(line, "- ");
 			boost::algorithm::trim( line );
@@ -308,7 +308,7 @@ vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
 			} else if((line.find("keywords:") != string::npos) && (keywordFlag == false)) {
 				singleExtendedDesc.push_back(description);
 				keywordFlag = true;
-			} else {
+			} else if(!line.empty()){
 				singleExtendedDesc.push_back(line);
 			}
 		}
