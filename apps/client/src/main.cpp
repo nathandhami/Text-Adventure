@@ -3,14 +3,15 @@
 #include <boost/asio.hpp>
 #include <unistd.h>
 
-#include "Connector.hpp"
+#include "Transceiver.hpp"
 #include "ui_command.cpp"
 #include "ui_world.cpp"
+#include "NetConfig.hpp"
 
 //attempt at a client with sockets
 
 using boost::asio::ip::tcp;
-
+int hi();
 int main() {
 
 	int menuOption;
@@ -20,8 +21,10 @@ int main() {
 	ui_command ui;
 
 	ui.login();
+
+	hi();
 	
-	std::cout << "Please enter a menu item" << std::endl;
+	//std::cout << "Please enter a menu item" << std::endl;
 
 	/*do{
 		std::cout << "1.Create character" << std::endl;
@@ -52,3 +55,56 @@ int main() {
 
 	return 0;
 }
+/*
+#include <iostream>
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
+
+#include "Transceiver.hpp"
+#include "NetConfig.hpp"
+
+//attempt at a client with sockets
+
+using boost::asio::ip::tcp;
+*/
+int hi() {
+	std::shared_ptr< Transceiver > transceiver = std::make_shared< Transceiver >();
+	transceiver->run();
+	
+	transceiver->write( "lg", "email@doge.do;password" );
+	std::tuple< std::string, std::string > tuple = transceiver->read();
+	std::cout << "Response received: " << std::endl;
+	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+	
+	transceiver->write( HEADER_LOGIN, "email@doge.do;password" );
+	tuple = transceiver->read();
+	std::cout << "Response received: " << std::endl;
+	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+	
+	transceiver->write( HEADER_LOGOUT, "might be hash in the future" );
+	tuple = transceiver->read();
+	std::cout << "Response received: " << std::endl;
+	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
+	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+//	transceiver->write( "lgn", "email@doge.do;password" );
+//	std::cout << transceiver->read() << std::endl;
+	/*while (true) {
+		transceiver->write( "lgn", "email@doge.do;password" );
+	}
+	*/
+//	std::cout << connector->read() << std::endl;
+//
+//	connector->write( "hello woooolsta\n" );
+//	std::cout << connector->read() << std::endl;
+//	connector->write( "hello woooolstar\n" );
+//	std::cout << connector->read() << std::endl;
+//	connector->write( "hello woooorlsta\n" );
+//	std::cout << connector->read() << std::endl;
+	
+	
+	
+	return 0;
+}
+

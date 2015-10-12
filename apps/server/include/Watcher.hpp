@@ -3,8 +3,12 @@
 
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/thread.hpp>
 #include <thread>
-#include <mutex>
+#include <memory>
+
+#include "Session.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -14,19 +18,19 @@ public:
 	~Watcher();
 
 	void run();
-	bool getRunningState();
+	void wait();
 	
 private:
 	boost::asio::io_service ioService;
-	tcp::acceptor* acceptor;
-	std::thread runnerThread;
-	bool running;
-	std::mutex stateMutex;
+	std::shared_ptr< tcp::acceptor > connectionAcceptor;
+	boost::scoped_ptr<boost::thread> runnerThread;
+	std::vector< std::shared_ptr< Session > > sessions;
 	
-	
-	void asyncRun();
-	void setRunningState( bool state );
-	
+	void startAccept();
+	void handleAccept( 
+		std::shared_ptr< Session > newSession, 
+		const boost::system::error_code& error 
+	);
 };
 
 
