@@ -2,14 +2,9 @@
 #define COMMAND_PARSER_H
 #include <iostream>
 #include "World.hpp"
-#include "DictionaryCmds.hpp"
+#include "Command.hpp"
 
-typedef struct {
 
-	std::string type;
-	std::string data;
-
-}Command;
 
 class CommandParser {
 	

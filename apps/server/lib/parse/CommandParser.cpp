@@ -7,6 +7,8 @@
 #include <iostream>
 #include "CommandParser.hpp"
 #include <string>
+#include "NetConfig.hpp"
+#include "DictionaryCmds.hpp"
 
 std::string CommandParser::handleIDandCommand(int playerID, std::string command){
 
@@ -15,7 +17,7 @@ std::string CommandParser::handleIDandCommand(int playerID, std::string command)
 	if (DictionaryCmds::checkCommandValid(parsedCommand)){//check command is valid
 		stringToReturn = World::executeCommand(playerID, &parsedCommand);//gets response from world class to send to controller
 	}else if(!DictionaryCmds::checkCommandValid(parsedCommand)){//handles invalid command
-		stringToReturn = "Invalid Command";
+		stringToReturn = HEADER_ERROR;
 	}
 	return stringToReturn;//returns the reply from the world to the controller
 }
