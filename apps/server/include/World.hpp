@@ -16,7 +16,7 @@ class World {
 
 public:
 
-	static string executeCommand(int, Command*);
+	static string executeCommand(int, Command);
 };
 
 #endif

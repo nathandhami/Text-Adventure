@@ -25,9 +25,9 @@ string World::playerLook(int playerID, string keyword) {
 
 // --------Public functions--------
 
-string World::executeCommand(int playerID, Command* givenCommand) {
-	string command = givenCommand->type;
-	string arguments = givenCommand->data;
+string World::executeCommand(int playerID, Command givenCommand) {
+	string command = givenCommand.type;
+	string arguments = givenCommand.data;
 	cout << command << " " << playerID << " " << arguments << endl;
 	if (command == "move") {
 		bool success = movePlayer(playerID, arguments);
