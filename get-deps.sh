@@ -8,4 +8,8 @@ apt-get install aptitude
 aptitude search boost
 echo "Boost: done."
 
+echo "Installing SQLite..."
+apt-get install sqlite3 libsqlite3-dev
+echo "SQLite: done."
+
 # Other libs...
