@@ -91,6 +91,15 @@ void Session::handleRequest() {
 		} else {
 			this->writeToClient( HEADER_ERROR, "Not logged in." );
 		}
+	} else if ( this->request.getHeader() == HEADER_COMMAND ) {
+		//TO-DO: send command to the parse which will do its thing and talk to the world and return stuff
+		std::string parserResponse = HEADER_ERROR;
+		//END TO-DO
+		if ( parserResponse == HEADER_ERROR ) {
+			this->writeToClient( HEADER_ERROR, "Invalid Command." );
+		} else {
+			this->writeToClient( HEADER_OK, parserResponse );
+		}
 	} else {
 		this->writeToClient( HEADER_ERROR, "Incorrect request." );
 	}
