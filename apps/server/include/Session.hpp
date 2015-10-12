@@ -44,5 +44,4 @@ private:
 	void writeToClient( std::string header, std::string body );
 };
 
-
 #endif
