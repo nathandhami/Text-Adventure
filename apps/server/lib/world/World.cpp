@@ -3,37 +3,32 @@
 
 // --------Private functions--------
 
-bool World::movePlayer(int playerID, string destination) {
+static bool World::movePlayer(int playerID, string destination) {
 	boost::to_upper(destination);
 	if (!isDirection(destination)) {
 		return false;
 	}
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
-	World::currentZone->setID(currentZoneID);
-	int destinationZoneID = World::currentZone->getNeighbourZone(destination);
-	World::currentZone->setID(destinationZoneID);
-	if (!World::currentZone->roomForMorePlayers()) {
+	int destinationZoneID = Zone::getNeighbourZone(currentZoneID, destination);
+	if (!Zone::roomForMorePlayers(destinationZoneID)) {
 		return false;
 	}
-	//currentZone.playerEnteringZone(playerInfo.name);
 	DatabaseTool::putCharInZone(playerID, destinationZoneID);
 	return true;
 }
 
-string World::playerLook(int playerID, string keyword) {
-	boost::to_upper(keyword);
+static string World::playerLook(int playerID, string keyword) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
-	World::currentZone->setID(currentZoneID);
-	return World::currentZone->getDescription(keyword);
+	boost::to_upper(keyword);
+	return Zone::getDescription(currentZoneID, keyword);
 }
 
 // --------Public functions--------
 
-string World::executeCommand(Command* givenCommand) {
-	int playerID = givenCommand->playerID;
+static string World::executeCommand(int playerID, Command* givenCommand) {
 	string command = givenCommand->type;
 	string arguments = givenCommand->data;
-
+	cout << 
 	if (command == "move") {
 		bool success = movePlayer(playerID, arguments);
 		if (!success) {
@@ -45,12 +40,4 @@ string World::executeCommand(Command* givenCommand) {
 		return playerLook(playerID, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
-}
-
-World::World() {
-	World::currentZone = new Zone(0);
-}
-
-World::~World() {
-	delete World::currentZone;
 }

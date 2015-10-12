@@ -10,17 +10,13 @@
 using namespace std;
 
 class World {
-	static Zone* currentZone;
-
-	bool movePlayer(int, string);
-	string playerLook(int, string);
+	
+	static bool movePlayer(int, string);
+	static string playerLook(int, string);
 
 public:
 
-	string executeCommand(Command*);
-
-	World();
-	~World();
+	static string executeCommand(int, Command*);
 };
 
 #endif

@@ -8,34 +8,27 @@
 using namespace std;
 
 class Zone {
-	const int MAX_PLAYERS = 5;   // A number to be determined, maybe even dynamic
-	int zoneID;
+	static const int MAX_PLAYERS = 5;   // A number to be determined, maybe even dynamic
 
-	vector<int> getNeighbourZones();
-	vector<int> getPlayerIDs();
-	vector<int> getNpcIDs();
-	vector<int> getObjectIDs();
+	static vector<int> getNeighbourZones(int);
+	static vector<int> getPlayerIDs(int);
+	static vector<int> getNpcIDs(int);
+	static vector<int> getObjectIDs(int);
 
 public:
 
-	void setID(int);
-	int getID();
+	static void setName(int, string);
+	static string getName(int);
 
-	void setName();
-	string getName();
+	static void setDescription(int);
+	static string getDescription(int, string);
 
-	void setDescription();
-	string getDescription(string);
+	static void setNeighbourZone(int, string, int);
+	static int getNeighbourZone(int, string);
 
-	void setNeighbourZone(string, int);
-	int getNeighbourZone(string);
-
-	bool roomForMorePlayers();
+	static bool roomForMorePlayers(int);
 
 	//void playerEnteringZone(int);
-
-	Zone(int);
-	~Zone();
 };
 
 #endif
