@@ -1,6 +1,8 @@
 #include "Watcher.hpp"
 #include "NetConfig.hpp"
 
+#include <boost/thread.hpp>
+
 
 using boost::asio::ip::tcp;
 
@@ -22,10 +24,19 @@ Watcher::~Watcher() {}
 
 void Watcher::run() {
 	try {
-		this->ioService.run();
+//		std::thread runner( this->ioService.run() );
+		this->runnerThread.reset( new boost::thread(
+			(boost::bind( &boost::asio::io_service::run, &(this->ioService) ))
+//			tr.join();
+		));
 	} catch ( std::exception& exception ) {
 		std::cerr << exception.what() << std::endl;
 	}
+}
+
+
+void Watcher::wait() {
+	runnerThread->join();
 }
 
 
@@ -33,7 +44,7 @@ void Watcher::run() {
 
 void Watcher::startAccept() {
 	std::shared_ptr< Session > newSession = 
-		std::make_shared< Session >( this->connectionAcceptor->get_io_service() );
+		std::make_shared< Session >( this->ioService );
 	this->sessions.push_back( newSession );
 	
 	this->connectionAcceptor->async_accept( 
