@@ -1,5 +1,5 @@
 #include "Authenticator.hpp"
-#include "DatabaseTools.hpp"
+#include "DatabaseTool.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <vector>
@@ -14,9 +14,9 @@ int Authenticator::login( std::string data ) {
 	std::cout << "\tPassword: " << credentials[1] << std::endl;
 	int userId = DatabaseTool::getUserID( credentials[ 0 ], credentials[ 1 ] );
 	//END TO-DO
-	return 1;
+	return userId;
 }
 
 void Authenticator::logout( int userId ) {
-	//TO-DO inform Database user is offline
+	//TO-DO inform Database user is offline ...or not, to be decided
 }
