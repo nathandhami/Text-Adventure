@@ -8,7 +8,6 @@
 using namespace std;
 
 class Zone {
-	static const int MAX_PLAYERS = 5;   // A number to be determined, maybe even dynamic
 
 	static vector<int> getNeighbourZones(int);
 	static vector<int> getPlayerIDs(int);

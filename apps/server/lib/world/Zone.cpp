@@ -66,9 +66,9 @@ int getNeighbourZone(int zoneID, string direction) {
 }
 
 bool roomForMorePlayers(int zoneID) {
-	if ((DatabaseTool::getAllCharsInZone(zoneID).size() >= MAX_PLAYERS) {
-		return false;
-	}
+	//if ((DatabaseTool::getAllCharsInZone(zoneID).size() >= MAX_PLAYERS) {
+	//	return false;
+	//}
 	return true;
 }
 
