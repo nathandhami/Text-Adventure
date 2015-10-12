@@ -9,7 +9,7 @@
 int main() {
 	Watcher watcher;
 	watcher.run();
-	watcher.wait();
+
 	
 	return 0;
 }
