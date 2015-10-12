@@ -236,7 +236,7 @@ string DatabaseTool::getZoneDesc(int zoneID){
 	return description;
 }
 
-vector<vector<string>> DatabaseTool::getZoneExtendedDesc(int zoneID){
+string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 	Database db( DB_LOCATION );
 	if (!db.Connected())
 	{
@@ -246,7 +246,7 @@ vector<vector<string>> DatabaseTool::getZoneExtendedDesc(int zoneID){
 	string sqlStatment = "select extendedDesc from zones where zoneID=" + to_string(zoneID) +";";
 	string extendedDesc = q.get_string(sqlStatment.c_str());
 	
-	vector<vector<string>> parsedDesc = parseExtendedDesc(extendedDesc);
+	string parsedDesc = parseExtendedDesc(extendedDesc, keyword);
 	return parsedDesc;
 
 }
@@ -280,7 +280,7 @@ string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	return directionDesc;
 }
 
-vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
+string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
 	string findThis = "- desc:\n";
 	vector<vector<string>> parsedDesc;
 
@@ -293,6 +293,7 @@ vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
 		singleChunk.push_back(singleExtendedDesc);
 		found = secondFound;
 	}
+	int descIndex = -1;
 
 	for(int i = 0; i < singleChunk.size(); i++) {
 		vector<string> singleExtendedDesc;
@@ -308,13 +309,17 @@ vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
 			} else if((line.find("keywords:") != string::npos) && (keywordFlag == false)) {
 				singleExtendedDesc.push_back(description);
 				keywordFlag = true;
-			} else if(!line.empty()){
-				singleExtendedDesc.push_back(line);
+			} else if(!line.empty() && line.find(keyword)){
+				descIndex = i;
 			}
 		}
 		parsedDesc.push_back(singleExtendedDesc);
 	}
-	return parsedDesc;
+	if(descIndex == -1) {
+		return "";
+	} else {
+		return parsedDesc[descIndex][0];
+	}
 
 
 }

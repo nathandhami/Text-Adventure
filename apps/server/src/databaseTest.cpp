@@ -49,15 +49,18 @@ int main(int argc, char* argv[])
       //    cout << charsinzone[i] << endl;
       // }
 
-      vector<vector<string>> extendedDescs = DatabaseTool::getZoneExtendedDesc(3054);
-      cout << extendedDescs.size() << endl;
+      // vector<vector<string>> extendedDescs = DatabaseTool::getZoneExtendedDesc(3054);
+      // cout << extendedDescs.size() << endl;
 
-      for(int i = 0; i < extendedDescs.size(); i++) {
-         cout << extendedDescs[i].size() << endl;
-         for(int x = 0; x < extendedDescs[i].size();  x++) {
-            cout << extendedDescs[i][x] << endl << endl;
-         }
-      }
+      // for(int i = 0; i < extendedDescs.size(); i++) {
+      //    cout << extendedDescs[i].size() << endl;
+      //    for(int x = 0; x < extendedDescs[i].size();  x++) {
+      //       cout << extendedDescs[i][x] << endl << endl;
+      //    }
+      // }
+
+      cout<< DatabaseTool::getZoneExtendedDesc(3054, "odin") << endl;
+
       //cout << DatabaseTool::getZoneExtendedDesc(3054) << endl;
 
       // DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
