@@ -3,6 +3,7 @@
 // Author      : 
 // Version     :
 //============================================================================
+// RUN EXECUTABLE FROM PROJECT FOLDER TO TEST
 
 #include <iostream>
 #include<assert.h>
@@ -29,6 +30,7 @@ struct ParseRoom {
 	std::string description;
 	std::string extendedDesc;
 	int northID;
+	std::string northDesc;
 	int southID;
 	std::string southDesc;
 	int eastID;
@@ -44,6 +46,7 @@ struct ParseRoom {
 void parseRooms(const YAML::Node& config) {
 
 	if (config["ROOMS"]) {
+
 
 		YAML::Node roomNodes = config["ROOMS"];
 		int numOfRooms = 0;
@@ -103,9 +106,15 @@ void parseRooms(const YAML::Node& config) {
 	}
 }
 
+// int zoneID, string zoneName, string description,
+//string extendedDesc, int northID, string northDesc, int southID,
+//string southDesc, int eastID, string eastDesc, int westID, string westDesc,
+//int upID, string upDesc, int downID, string downDesc
 void addRoomsToDatabase() {
-
 	 DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
+}
+
+void checkDatabaseContent(){
 }
 
 std::string trimString(std::string string) {
@@ -167,11 +176,14 @@ void parseNPC(const YAML::Node& config) {
 
 int main() {
 
-	YAML::Node config = YAML::LoadFile("../../apps/server/databases/loadableWorlds/midgaard.yml");
+	YAML::Node config = YAML::LoadFile("apps/server/databases/loadableWorlds/midgaard.yml");
 
 //	parseArea(config);
 //	parseNPC(config);
-	parseRooms(config);
+//	parseRooms(config);
+
+
+	checkDatabaseContent();
 
 	return 0;
 }
