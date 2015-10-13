@@ -1,0 +1,1 @@
+install(FILES midgaard.yml DESTINATION bin)
