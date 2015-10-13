@@ -1,1 +1,2 @@
-./build/bin/servertest
+echo "Starting the server..."
+./build/bin/runServer
