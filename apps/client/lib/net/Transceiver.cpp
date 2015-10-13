@@ -52,7 +52,7 @@ void Transceiver::connectToHost() {
 			this->endpointIterator
 		);
 		
-		std::cout << "Connected to server." << std::endl;
+//		std::cout << "Connected to server." << std::endl;
 //		this->readFromHost();
 		
 	} catch ( std::exception& exception ) {

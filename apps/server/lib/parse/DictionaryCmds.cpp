@@ -26,11 +26,15 @@ const std::string DictionaryCmds::INVALID_COMMAND = "invstr";
 
 std::map< std::string, std::string > DictionaryCmds::COMMAND_DICTIONARY = {
 	//Movement commands
-	{ "move"	, "move;any" },
-	{ "north"	, "move;north" },
-	{ "south"	, "move;south" },
-	{ "east"	, "move;east" },
-	{ "west"	, "move;west" },
+	{ "move"		, "move;any" },
+	{ "north"		, "move;north" },
+	{ "south"		, "move;south" },
+	{ "east"		, "move;east" },
+	{ "west"		, "move;west" },
+	{ "move north"	, "move;north" },
+	{ "move south"	, "move;south" },
+	{ "move east"	, "move;east" },
+	{ "move west"	, "move;west" },
 
 	//Observatory commands
 	{ "look north"	, "look;north" },
