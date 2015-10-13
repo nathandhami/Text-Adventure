@@ -37,6 +37,7 @@ std::map< std::string, std::string > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "move west"	, "move;west" },
 
 	//Observatory commands
+	{ "look"		, "look;" },
 	{ "look north"	, "look;north" },
 	{ "look south"	, "look;south" },
 	{ "look east"	, "look;east" },
