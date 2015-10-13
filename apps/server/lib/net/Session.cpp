@@ -98,7 +98,7 @@ void Session::handleRequest() {
 	} else if ( this->request.getHeader() == HEADER_COMMAND ) {
 		//TO-DO: check if user is on, and if they are using a character, maybe Auth will do
 		//END TO-DO
-		std::string parserResponse = CommandParser::handleIDandCommand( this->userId, "north" );
+		std::string parserResponse = CommandParser::handleIDandCommand( this->userId, this->request.getBody() );
 		if ( parserResponse == HEADER_ERROR ) {
 			this->writeToClient( HEADER_ERROR, "Invalid Command." );
 		} else {

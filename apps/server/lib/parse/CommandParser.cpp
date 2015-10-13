@@ -12,28 +12,35 @@
 
 std::string CommandParser::handleIDandCommand(int playerID, std::string command){
 
-	Command parsedCommand = getCommandFromString(command);//Parse user command
+	Command parsedCommand = getCommandFromString( command );//Parse user command
 	if ( parsedCommand.type == HEADER_ERROR ) return HEADER_ERROR;
 	std::string stringToReturn;
 	//if (DictionaryCmds::checkCommandValid(parsedCommand)){//check command is valid
-	stringToReturn = World::executeCommand(playerID, parsedCommand);//gets response from world class to send to controller
+	stringToReturn = World::executeCommand( playerID, parsedCommand );//gets response from world class to send to controller
 	std::cout << parsedCommand.type << std::endl;
-	return stringToReturn;//returns the reply from the world to the controller
+	//returns the reply from the world to the controller
+	return stringToReturn;
 }
 
 
-
-Command CommandParser::getCommandFromString(std::string commandString){//takes user command in string form and parses it into a Command struct
-
-//	std::vector< std::string > tokens;
-//	boost::split( tokens, commandString, boost::is_any_of(";") );
-//	std::cout << tokens[0] << std::endl;
-//	std::cout << tokens[1] << std::endl;
+//takes user command in string form and parses it into a Command struct
+Command CommandParser::getCommandFromString( std::string commandString ) {
 	Command parsedCommand;
+	std::string parsableString = DictionaryCmds::getParsableFromInput( commandString );
+	if ( parsableString == DictionaryCmds::INVALID_COMMAND ) {
+		parsedCommand.type = HEADER_ERROR;
+		return parsedCommand;
+	}
 	
+	std::vector< std::string > tokens;
+	boost::split( tokens, parsableString, boost::is_any_of( ";" ) );
 	
+	parsedCommand.type = tokens[ 0 ];
+	parsedCommand.data = tokens[ 1 ];
+	
+	return parsedCommand;
 	//PSEUDO DICTIONARY 
-	if ( commandString == "north" ) {
+	/*if ( commandString == "north" ) {
 		parsedCommand.type = "move";
 		parsedCommand.data = "north";
 	} else if ( commandString == "up" ) { 
@@ -41,7 +48,7 @@ Command CommandParser::getCommandFromString(std::string commandString){//takes u
 		parsedCommand.data = "north";
 	} else {
 		parsedCommand.type = HEADER_ERROR;
-	}
+	}*/
 	
 	/*std::string splitString[2];//holds the command type in [0] and the data in [1]
 	std::string tempStr;
@@ -104,6 +111,6 @@ Command CommandParser::getCommandFromString(std::string commandString){//takes u
 	parsedCommand.data = tempStr;
 */
 	
-	return parsedCommand;//returns the type and data fields 
+	//returns the type and data fields 
 	
 }
