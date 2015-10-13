@@ -8,5 +8,4 @@ namespace Authenticator {
 	void logout( int userId );
 }
 
-
 #endif
