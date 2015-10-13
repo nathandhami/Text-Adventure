@@ -9,9 +9,9 @@ INSERT INTO zones VALUES (
   keywords:
   - plaque',
   3054,
-  '- At the northern end of the temple hall is a statue and a huge altar.',
+  ' At the northern end of the temple hall is a statue and a huge altar.',
   3005,
-  '- You see the temple square.',
+  ' You see the temple square.',
   0,
   NULL,
   0,
