@@ -5,8 +5,18 @@
 
 #include <boost/asio/socket_base.hpp>
 
+// Server-side messages
 #define MESSAGE_CONNECT 	"A user has connected."
 #define MESSAGE_DISCONNECT 	"A user has disconnected."
+
+// Error messages (to client)
+#define MESSAGE_ERROR_NOT_LOGGED_IN		"You are not logged in."
+#define MESSAGE_ERROR_LOGGED_IN			"You have already logged in."
+#define MESSAGE_ERROR_WRONG_CREDENTIALS	"Incorrect username or password."
+
+// OK messages (to client)
+//#define MESSAGE_OK_LOGGED_IN
+#define MESSAGE_OK_LOGGED_OUT	"Log out successful."
 
 
 using boost::asio::ip::tcp;
@@ -76,6 +86,10 @@ void Session::readBody() {
 
 void Session::handleRequest() {
 	if ( this->request.getHeader() == HEADER_LOGIN ) {
+		if ( this-> authorized ) {
+			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_LOGGED_IN );
+		}
+		
 		int userId = Authenticator::login( this->request.getBody() );
 		if ( userId ) {
 			this->authorized = true;
@@ -85,19 +99,20 @@ void Session::handleRequest() {
 			this->writeToClient( HEADER_ERROR, "Incorrect username or password." );
 		}
 		
-	} else if ( this->request.getHeader() == HEADER_LOGOUT ) { 
-		if ( this-> authorized ) {
-			Authenticator::logout( this->userId );
-			this->authorized = false;
-			this->userId = 0;
-			std::cout << "User logged out." << std::endl;
-			this->writeToClient( HEADER_OK, "Log out successful." );
-		} else {
-			this->writeToClient( HEADER_ERROR, "Not logged in." );
+	} else if ( this->request.getHeader() == HEADER_LOGOUT ) {
+		if ( !( this->authorized ) ) {
+			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
 		}
+		
+		Authenticator::logout( this->userId );
+		this->authorized = false;
+		this->userId = 0;
+		this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
 	} else if ( this->request.getHeader() == HEADER_COMMAND ) {
-		//TO-DO: check if user is on, and if they are using a character, maybe Auth will do
-		//END TO-DO
+		if ( !( this->authorized ) ) {
+			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
+		}
+		
 		std::string parserResponse = CommandParser::handleIDandCommand( this->userId, this->request.getBody() );
 		if ( parserResponse == HEADER_ERROR ) {
 			this->writeToClient( HEADER_ERROR, "Invalid Command." );
