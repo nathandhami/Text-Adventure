@@ -32,7 +32,6 @@ private:
 	//for later
 	std::size_t userHash;
 	
-//	void handleWrite( const boost::system::error_code& /*error*/, size_t /*bytes*/ ) {}
 	std::string getIP( IPType type );
 	
 	void readHeader();
