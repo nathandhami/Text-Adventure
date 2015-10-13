@@ -9,6 +9,7 @@
 #include <string>
 #include<vector>
 #include <yaml-cpp/yaml.h>
+#include "DatabaseTool.hpp"
 
 
 
@@ -104,7 +105,7 @@ void parseRooms(const YAML::Node& config) {
 
 void addRoomsToDatabase() {
 
-//	 DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
+	 DatabaseTool::addZone(1234, "testZone", "", "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "");
 }
 
 std::string trimString(std::string string) {
