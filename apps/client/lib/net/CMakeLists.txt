@@ -1,2 +1,2 @@
-add_library(Connector Connector.cpp)
-target_link_libraries ( Connector ${Boost_LIBRARIES} )
+add_library( Transceiver Transceiver.cpp )
+target_link_libraries ( Transceiver ${Boost_LIBRARIES} )

@@ -8,7 +8,7 @@ using namespace boost;
 class ui_command
 {
 public:
-	void login();	
+	std::string login();	
 
 	std::string readUserCommand ();
 
@@ -19,7 +19,7 @@ public:
 	void askForValidCommand();
 };
 
-void ui_command::login(){
+std::string ui_command::login(){
 	std::string userName;
 	std::string userPassword;
 	std::string sendUserInfo;
@@ -56,19 +56,20 @@ void ui_command::login(){
 		}
 	}
 	
-	sendUserInfo = "command:login;data:" + userName + "," + userPassword + "\n";
+	sendUserInfo =  userName + ";" + userPassword;
 
 	//Sends this string to server here
 	std::cout << sendUserInfo << std::endl;
 	//Wait for server response here
 	sleep(1);
+	return sendUserInfo;
 }
 
 std::string ui_command::readUserCommand (){
 
 	//read in command
 	std::string command;
-	std::cout << "Enter Command: ";
+	std::cout << "Type 'help' for help and 'quit' for quit \n Enter Command: ";
 	std::getline(std::cin, command);
 
 	std::string commandString[1024];
@@ -81,8 +82,8 @@ std::string ui_command::readUserCommand (){
    	}
 
 	to_lower(commandString[0]);
-	command = "command:" + commandString[0] + ";" + "data:" + commandString[1];
-	
+	//command = "command:" + commandString[0] + ";" + "data:" + commandString[1];
+	command = commandString[0] + commandString[1];
 	return command;
 }
 
