@@ -33,8 +33,8 @@ bool DatabaseTool::executeSQLInsert(string statment){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
-	return q.execute(statment.c_str());
+	Query query(db);
+	return query.execute(statment.c_str());
 
 }
 
@@ -49,9 +49,9 @@ int DatabaseTool::getUserID(string userName, string password){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select userID from users where userName=" + quotesql(userName) + " AND password=" + quotesql(password) + ";";
-	int charID = (int) q.get_count(sqlStatment.c_str());
+	int charID = (int) query.get_count(sqlStatment.c_str());
 	return charID;
 }
 
@@ -61,16 +61,16 @@ string DatabaseTool::getPassword(int userID) {
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select password from users where userID=" + to_string(userID) +";";
-	string password = q.get_string(sqlStatment.c_str());
+	string password = query.get_string(sqlStatment.c_str());
 	return password;
 
 }
 
-void DatabaseTool::addCharacter(string name, int userID){
+bool DatabaseTool::addCharacter(string name, int userID){
 	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + "," + to_string(PLAYER_OFFLINE) + ");";
-	executeSQLInsert(sqlStatment);
+	return executeSQLInsert(sqlStatment);
 }
 
 bool DatabaseTool::isCharOnline(int charID){
@@ -79,9 +79,9 @@ bool DatabaseTool::isCharOnline(int charID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select isOnline from characters where userID=" + to_string(charID) +";";
-	int onlineStatus = (int) q.get_count(sqlStatment.c_str());
+	int onlineStatus = (int) query.get_count(sqlStatment.c_str());
 	if(onlineStatus == PLAYER_ONLINE) {
 		return true;
 	} else {
@@ -105,9 +105,9 @@ int DatabaseTool::getCharID(int userID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select charID from characters where userID=" + to_string(userID) +";";
-	int charID = (int) q.get_count(sqlStatment.c_str());
+	int charID = (int) query.get_count(sqlStatment.c_str());
 	return charID;
 }
 
@@ -122,12 +122,11 @@ int DatabaseTool::getCharsLocation(int charID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select location from characters where charID=" + to_string(charID) + ";";
-	int zoneID = (int) q.get_count(sqlStatment.c_str());
+	int zoneID = (int) query.get_count(sqlStatment.c_str());
 	return zoneID;
 }
-
 
 vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
 	vector<int> charsInZone;
@@ -136,14 +135,14 @@ vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + " and isOnline =" + to_string(PLAYER_ONLINE) + ";";
-	q.get_result(sqlStatment.c_str());
-	while(q.fetch_row()) {
-		int character = (int) q.getval();
+	query.get_result(sqlStatment.c_str());
+	while(query.fetch_row()) {
+		int character = (int) query.getval();
 		charsInZone.push_back(character);
 	}
-	q.free_result();
+	query.free_result();
 	return charsInZone;
 
 }
@@ -160,14 +159,14 @@ vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select npcID from populated_by where zoneID=" + to_string(zoneID) + ";";
-	q.get_result(sqlStatment.c_str());
-	while(q.fetch_row()) {
-		int npc = (int) q.getval();
+	query.get_result(sqlStatment.c_str());
+	while(query.fetch_row()) {
+		int npc = (int) query.getval();
 		npcsInZone.push_back(npc);
 	}
-	q.free_result();
+	query.free_result();
 	return npcsInZone;
 }
 
@@ -182,9 +181,9 @@ string DatabaseTool::getNPCDesc(int npcID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select description from npcs where npcID=" + to_string(npcID) +";";
-	string description = q.get_string(sqlStatment.c_str());
+	string description = query.get_string(sqlStatment.c_str());
 	return description;
 }
 
@@ -250,9 +249,9 @@ string DatabaseTool::getZoneName(int zoneID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select zoneName from zones where zoneID=" + to_string(zoneID) +";";
-	string zoneName = q.get_string(sqlStatment.c_str());
+	string zoneName = query.get_string(sqlStatment.c_str());
 	return zoneName;
 }
 
@@ -262,9 +261,9 @@ string DatabaseTool::getZoneDesc(int zoneID){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select description from zones where zoneID=" + to_string(zoneID) +";";
-	string description = q.get_string(sqlStatment.c_str());
+	string description = query.get_string(sqlStatment.c_str());
 	return description;
 }
 
@@ -274,9 +273,9 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	string sqlStatment = "select extendedDesc from zones where zoneID=" + to_string(zoneID) +";";
-	string extendedDesc = q.get_string(sqlStatment.c_str());
+	string extendedDesc = query.get_string(sqlStatment.c_str());
 	
 	string parsedDesc = parseExtendedDesc(extendedDesc, keyword);
 	return parsedDesc;
@@ -289,11 +288,11 @@ int DatabaseTool::getDirectionID(int zoneID, string direction){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	boost::to_lower(direction);
 	string lowerCaseDirection = direction;
 	string sqlStatment = "select " + lowerCaseDirection + "ID from zones where zoneID=" + to_string(zoneID) + ";";
-	int directionID = (int) q.get_count(sqlStatment.c_str());
+	int directionID = (int) query.get_count(sqlStatment.c_str());
 	return directionID;
 
 }
@@ -304,11 +303,11 @@ string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	{
 		throw runtime_error("could not open database");
 	}
-	Query q(db);
+	Query query(db);
 	boost::to_lower(direction);
 	string lowerCaseDirection = direction;
 	string sqlStatment = "select " + lowerCaseDirection + "Desc from zones where zoneID=" + to_string(zoneID) + ";";
-	string directionDesc = q.get_string(sqlStatment.c_str());
+	string directionDesc = query.get_string(sqlStatment.c_str());
 	return directionDesc;
 }
 
@@ -331,16 +330,16 @@ string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
 		vector<string> singleExtendedDesc;
 		string line;
 		string description = "";
-		bool keywordFlag = false;
+		bool foundKeyword = false;
 		istringstream iss(singleChunk[i]);
 		while(getline(iss, line)) {
 			boost::erase_all(line, "- ");
 			boost::algorithm::trim( line );
-			if((line.find("keywords:") == string::npos) && (keywordFlag == false)){
+			if((line.find("keywords:") == string::npos) && (foundKeyword == false)){
 				description = description + line;
-			} else if((line.find("keywords:") != string::npos) && (keywordFlag == false)) {
+			} else if((line.find("keywords:") != string::npos) && (foundKeyword == false)) {
 				singleExtendedDesc.push_back(description);
-				keywordFlag = true;
+				foundKeyword = true;
 			} else if(!line.empty() && line.find(keyword)){
 				descIndex = i;
 			}
@@ -352,8 +351,6 @@ string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
 	} else {
 		return parsedDesc[descIndex][0];
 	}
-
-
 }
 
 

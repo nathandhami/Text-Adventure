@@ -23,7 +23,7 @@ class DatabaseTool{
 
 		 static string getPassword(int userID);
 
-		 static void addCharacter(string name, int userID);
+		 static bool addCharacter(string name, int userID);
 
 		 static int getCharID(int userID);
 
