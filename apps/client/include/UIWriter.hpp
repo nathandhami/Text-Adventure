@@ -1,5 +1,5 @@
-#ifndef UIWRITER_H
-#define UIWRITER_H
+#ifndef UIWRITER_HPP
+#define UIWRITER_HPP
 
 #include <iostream>
 

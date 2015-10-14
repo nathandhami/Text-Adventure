@@ -1,5 +1,5 @@
-#ifndef UIREADER_H
-#define UIREADER_H
+#ifndef UIREADER_HPP
+#define UIREADER_HPP
 
 #include <iostream>
 

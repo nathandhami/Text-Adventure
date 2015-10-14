@@ -16,13 +16,14 @@ public:
 		return this->bodyLine;
 	}
     
-    void saveHeaderBuffer( char* buffer ) {
+    void saveHeaderBuffer( const char* buffer ) {
 		this->headerLine = std::string( buffer, MaxLength::HEADER );
 	}
 	
-	void saveBodyBuffer( char* buffer, std::size_t length ) {
+	void saveBodyBuffer( const char* buffer, std::size_t length ) {
 		this->bodyLine = std::string( buffer, length );
 	}
+	
     
 private:
 	std::string headerLine;

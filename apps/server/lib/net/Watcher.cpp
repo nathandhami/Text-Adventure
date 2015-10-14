@@ -44,9 +44,9 @@ void Watcher::wait() {
 
 void Watcher::startAccept() {
 	std::shared_ptr< Session > newSession = 
-		std::make_shared< Session >( this->ioService );
+		std::make_shared< Session >( this->connectionAcceptor->get_io_service() );
 	this->sessions.push_back( newSession );
-	
+	std::cout << "New session made." << std::endl;
 	this->connectionAcceptor->async_accept( 
 		newSession->getSocket(),
 		boost::bind( 
