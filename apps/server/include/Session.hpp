@@ -1,6 +1,16 @@
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 
+//********************************************************************** 
+// SESSION
+// 
+// This module holds information about a single connection accepted
+// by the server, as well as allows asynchronous interaction between 
+// the client and the world.
+//
+// Author: Pavel Kozlovsky (pkozlovs@sfu.ca)
+//**********************************************************************
+
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/bind.hpp>
@@ -25,6 +35,8 @@ private:
 	tcp::socket socket;
 	std::string clientIP_v4;
 	NetMessage request;
+	char bufferBody[ NetMessage::MaxLength::BODY ];
+	char bufferHeader[ NetMessage::MaxLength::HEADER ];
 	
 	//Autherization variables
 	int userId = 0;

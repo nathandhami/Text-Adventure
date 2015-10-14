@@ -46,41 +46,36 @@ std::string Session::getIP( IPType type ) {
 
 
 void Session::readHeader() {
-	char buffer[ NetMessage::MaxLength::HEADER ];
-	boost::system::error_code error;
-	
-	std::size_t length = this->socket.read_some(
-		boost::asio::buffer( buffer ),
-		error
+	this->socket.async_read_some(
+		boost::asio::buffer( this->bufferHeader, NetMessage::MaxLength::HEADER ),
+		[ this ]( boost::system::error_code ec, std::size_t /*length*/ ) {
+			if ( !ec ) {
+				this->request.saveHeaderBuffer( this->bufferHeader );
+				std::cout << "Received header: " << this->request.getHeader() << std::endl;
+				this->readBody();
+			} else {
+				Authenticator::logout( this->userId );
+				std::cout << MESSAGE_DISCONNECT << std::endl;
+			}
+		}
 	);
-	if ( !error ) { 
-		this->request.saveHeaderBuffer( buffer );
-		std::cout << "Received header: " << this->request.getHeader() << std::endl;
-		this->readBody();
-	} else {
-		Authenticator::logout( this->userId );
-		std::cout << MESSAGE_DISCONNECT << std::endl;
-	}
-	
 }
 
 
 void Session::readBody() {
-	char buffer[ NetMessage::MaxLength::BODY ];
-	boost::system::error_code error;
-	
-	size_t length = this->socket.read_some(
-		boost::asio::buffer( buffer ),
-		error
+	this->socket.async_read_some(
+		boost::asio::buffer( this->bufferBody, NetMessage::MaxLength::BODY ),
+		[ this ]( boost::system::error_code ec, std::size_t length ) {
+			if ( !ec ) {
+				this->request.saveBodyBuffer( this->bufferBody, length );
+				std::cout << "Received body: " << this->request.getBody() << std::endl;
+				this->handleRequest();
+			} else {
+				Authenticator::logout( this->userId );
+				std::cout << MESSAGE_DISCONNECT << std::endl;
+			}
+		}
 	);
-	if ( !error ) { 
-		this->request.saveBodyBuffer( buffer, length );
-		std::cout << "Received body: " << this->request.getBody() << std::endl;
-		this->handleRequest();
-	} else {
-		Authenticator::logout( this->userId );
-		std::cout << MESSAGE_DISCONNECT << std::endl;
-	}
 }
 
 
