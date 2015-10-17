@@ -25,13 +25,18 @@ void Server::waitUntilDone() {
 
 
 void Server::registerNewSession( Server::SessionPtr newSession ) {
-	boost::uuids::random_generator uuidGenerator;
-	boost::uuids::uuid newSessionIdentifier = uuidGenerator();
-	std::string identifierString = boost::lexical_cast< std::string >( newSessionIdentifier );
+	std::string identifierString;
+	bool inserted = false;
 	
-	Server::
+	do {
+		boost::uuids::random_generator uuidGenerator;
+		boost::uuids::uuid newSessionIdentifier = uuidGenerator();
+		
+		identifierString = boost::lexical_cast< std::string >( newSessionIdentifier );
+		inserted = Server::sessions.emplace( identifierString, newSession ).second;
+	} while ( !inserted );
 	
-	std::cout << "Session ID: " << identifierString << std::endl;
+	std::cout << "Registered a session with ID: " << identifierString << std::endl;
 }
 
 // ------------------- PRIVATE ------------------

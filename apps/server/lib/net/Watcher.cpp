@@ -46,9 +46,8 @@ void Watcher::wait() {
 void Watcher::startAccept() {
 	Server::SessionPtr newSession = 
 		std::make_shared< Session >( this->connectionAcceptor->get_io_service() );
-	this->sessions.push_back( newSession );
-	Server::registerNewSession( newSession );
 	std::cout << "New session made." << std::endl;
+	
 	this->connectionAcceptor->async_accept( 
 		newSession->getSocket(),
 		boost::bind( 
@@ -57,7 +56,6 @@ void Watcher::startAccept() {
 			boost::asio::placeholders::error
 		)
 	);
-//	
 	
 }
 
@@ -76,7 +74,9 @@ void Watcher::handleAccept(
 				newSession->start();
 			}
 		);
-		startAccept();
+		
+		Server::registerNewSession( newSession );
+		this->startAccept();
 	}
 	
 }
