@@ -36,6 +36,8 @@ private:
 	boost::scoped_ptr<boost::thread> runnerThread;
 	std::vector< std::shared_ptr< Session > > sessions;
 	
+	bool running;
+	
 	void startAccept();
 	void handleAccept( 
 		std::shared_ptr< Session > newSession, 

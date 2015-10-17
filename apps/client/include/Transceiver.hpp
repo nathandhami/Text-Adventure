@@ -27,7 +27,7 @@ class Transceiver {
 
 public:
 	Transceiver();
-	~Transceiver();
+	~Transceiver() {}
 	
 	void run();
 	

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "Watcher.hpp"
+#include "Server.hpp"
 
 
 #define MESSAGE_WELCOME		"Text Gale Online server has started."
@@ -10,13 +11,17 @@
 int main( int argc, const char* argv[] ) {
 	std::cout << MESSAGE_WELCOME << std::endl;
 	
-	Watcher connectionWatcher;
-	connectionWatcher.run();
+	Server::initialize();
+	Server::start();
+	Server::waitUntilDone();
+	
+//	Watcher connectionWatcher;
+//	connectionWatcher.run();
 	
 	std::cout << MESSAGE_LISTEN << std::endl;
 	//TO-DO: Add controlling module to manipulate sessions and the Watcher
 	
-	connectionWatcher.wait();
+//	connectionWatcher.wait();
 	
 	std::cout << MESSAGE_GOODBYE << std::endl;
 	

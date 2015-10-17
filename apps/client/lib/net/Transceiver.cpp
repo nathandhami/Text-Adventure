@@ -22,9 +22,6 @@ Transceiver::Transceiver() {
 }
 
 
-Transceiver::~Transceiver() {}
-
-
 void Transceiver::run() {
 	this->ioService.run();
 }

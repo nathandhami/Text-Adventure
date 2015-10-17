@@ -46,6 +46,7 @@ std::string Session::getIP( IPType type ) {
 
 
 void Session::readHeader() {
+	std::cout << "Waiting for head" << std::endl;
 	this->socket.async_read_some(
 		boost::asio::buffer( this->bufferHeader, NetMessage::MaxLength::HEADER ),
 		[ this ]( boost::system::error_code ec, std::size_t /*length*/ ) {
