@@ -17,7 +17,7 @@ Watcher::Watcher() {
 			this->ioService, 
 			tcp::endpoint( tcp::v4(), HOST_PORT ) 
 		);
-	this->running = true;
+//	this->running = true;
 	this->startAccept();
 }
 
@@ -46,7 +46,7 @@ void Watcher::wait() {
 void Watcher::startAccept() {
 	Server::SessionPtr newSession = 
 		std::make_shared< Session >( this->connectionAcceptor->get_io_service() );
-	std::cout << "New session made." << std::endl;
+	std::cout << "Waiting for connections..." << std::endl;
 	
 	this->connectionAcceptor->async_accept( 
 		newSession->getSocket(),
@@ -70,7 +70,7 @@ void Watcher::handleAccept(
 		std::async(
 			std::launch::async,
 			[ this, newSession ]() {
-				std::cout << "stuff happen." << std::endl;
+				std::cout << "Session launched." << std::endl;
 				newSession->start();
 			}
 		);
@@ -78,5 +78,4 @@ void Watcher::handleAccept(
 		Server::registerNewSession( newSession );
 		this->startAccept();
 	}
-	
 }

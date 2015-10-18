@@ -11,6 +11,8 @@
 // Author: Pavel Kozlovsky (pkozlovs@sfu.ca)
 //**********************************************************************
 
+
+#include <queue>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/bind.hpp>
@@ -32,17 +34,22 @@ public:
 	void start();
 	
 private:
+	
 	tcp::socket socket;
 	std::string clientIP_v4;
 	NetMessage request;
 	char bufferBody[ NetMessage::MaxLength::BODY ];
 	char bufferHeader[ NetMessage::MaxLength::HEADER ];
 	
+	std::queue< NetMessage > responseMessageQueue;
+	bool writeInProgress = false;
+	
 	//Autherization variables
 	int userId = 0;
 	bool authorized = false;
 	//for later
 	std::size_t userHash;
+	
 	
 	std::string getIP( IPType type );
 	
@@ -51,6 +58,7 @@ private:
 	
 	void handleRequest();
 	
+	void asyncWrite();
 	bool write( std::string message );
 	void writeToClient( std::string header, std::string body );
 };

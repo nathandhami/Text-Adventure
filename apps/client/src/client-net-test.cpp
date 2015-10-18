@@ -26,7 +26,7 @@ int main() {
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
 	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
 	
-	transceiver->write( HEADER_COMMAND, "look north" );
+	/*transceiver->write( HEADER_COMMAND, "look north" );
 	tuple = transceiver->read();
 	std::cout << "Response received: " << std::endl;
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
@@ -39,7 +39,7 @@ int main() {
 	tuple = transceiver->read();
 	std::cout << "Response received: " << std::endl;
 	std::cout << "\tHeader: " << std::get< 0 >( tuple ) << std::endl;
-	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;
+	std::cout << "\tBody: " << std::get< 1 >( tuple ) << std::endl;*/
 //	transceiver->write( "lgn", "email@doge.do;password" );
 //	std::cout << transceiver->read() << std::endl;
 	/*while (true) {

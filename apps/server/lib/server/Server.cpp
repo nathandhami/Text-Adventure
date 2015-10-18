@@ -28,11 +28,13 @@ void Server::registerNewSession( Server::SessionPtr newSession ) {
 	std::string identifierString;
 	bool inserted = false;
 	
+	//Keep doing this until a unique UUID is generated (to avoid collisions)
 	do {
 		boost::uuids::random_generator uuidGenerator;
 		boost::uuids::uuid newSessionIdentifier = uuidGenerator();
-		
 		identifierString = boost::lexical_cast< std::string >( newSessionIdentifier );
+		
+		//Attempt to insert the session and get the status boolean
 		inserted = Server::sessions.emplace( identifierString, newSession ).second;
 	} while ( !inserted );
 	

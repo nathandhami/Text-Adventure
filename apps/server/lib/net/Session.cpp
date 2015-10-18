@@ -3,6 +3,7 @@
 #include "NetConfig.hpp"
 #include "CommandParser.hpp"
 
+#include <future>
 #include <boost/asio/socket_base.hpp>
 
 // Server-side messages
@@ -81,7 +82,7 @@ void Session::readBody() {
 
 
 void Session::handleRequest() {
-	if ( this->request.getHeader() == HEADER_LOGIN ) {
+	if ( this->request.getHeader() == HEADER_LOGIN ) { //LOGIN
 		if ( this-> authorized ) {
 			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_LOGGED_IN );
 		}
@@ -95,7 +96,7 @@ void Session::handleRequest() {
 			this->writeToClient( HEADER_ERROR, "Incorrect username or password." );
 		}
 		
-	} else if ( this->request.getHeader() == HEADER_LOGOUT ) {
+	} else if ( this->request.getHeader() == HEADER_LOGOUT ) { //LOG OUT
 		if ( !( this->authorized ) ) {
 			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
 		}
@@ -104,7 +105,7 @@ void Session::handleRequest() {
 		this->authorized = false;
 		this->userId = 0;
 		this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
-	} else if ( this->request.getHeader() == HEADER_COMMAND ) {
+	} else if ( this->request.getHeader() == HEADER_COMMAND ) { //ACTION
 		if ( !( this->authorized ) ) {
 			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
 		}
@@ -118,10 +119,27 @@ void Session::handleRequest() {
 	} else {
 		this->writeToClient( HEADER_ERROR, "Incorrect request." );
 	}
+	this->readHeader();
 }
 
 
+
+//bool Session::write( std::string message ) {
+//	boost::asio::async_write(
+//		this->socket,
+//		boost::asio::buffer( message, message.length() ),
+//		[ this ]( boost::system::error_code ec, std::size_t /*length*/ ) {
+//			if ( !ec ) {
+//				std::cout << "Wrote stuff." << std::endl;
+//				this->write( "Login Succ." );
+//			}
+//		}
+//	);
+//}
+
+
 bool Session::write( std::string message ) {
+	std::cout << "Write called: " << message << std::endl;
 	boost::system::error_code error;
 	boost::asio::write(
 		this->socket,
@@ -137,7 +155,72 @@ bool Session::write( std::string message ) {
 }
 
 
-void Session::writeToClient( std::string header, std::string body ) {
-	if ( !( this->write( header ) && this->write( body ) ) ) return;
-	this->readHeader();
+/*void Session::writeToClient( std::string header, std::string body ) {
+//	if ( !( this->write( header ) && this->write( body ) ) ) return;
+	this->write( header );
+//	this->readHeader();
+}*/
+
+
+void Session::asyncWrite() {
+	std::async(
+		std::launch::async,
+		[ this ]() {
+			NetMessage message = this->responseMessageQueue.front();
+			this->responseMessageQueue.pop();
+			this->write( message.getHeader() );
+			this->write( message.getBody() );
+			if ( !(this->responseMessageQueue.empty()) ) {
+				this->asyncWrite();
+			} else {
+				writeInProgress = false;
+			}
+		}
+	);
 }
+
+
+void Session::writeToClient( std::string header, std::string body ) {
+	NetMessage responseMessage;
+	responseMessage.saveHeaderString( header );
+	responseMessage.saveBodyString( body );
+	this->responseMessageQueue.push( responseMessage );
+	if ( !writeInProgress ) {
+		writeInProgress = true;
+		this->asyncWrite();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

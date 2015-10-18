@@ -8,7 +8,7 @@
 #define MESSAGE_LISTEN		"ALl good. Awaiting the connections."
 #define MESSAGE_GOODBYE		"Server has finished working... Good bye."
 
-int main( int argc, const char* argv[] ) {
+int main( /*int argc, const char* argv[]*/ ) {
 	std::cout << MESSAGE_WELCOME << std::endl;
 	
 	Server::initialize();
