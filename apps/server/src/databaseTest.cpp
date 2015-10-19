@@ -9,11 +9,13 @@ int main(int argc, char* argv[])
 {
    try {
       cout << "running database tests" << endl;
-      if(DatabaseTool::addUser("devon", "testing")){
-         cout << "true" << endl;
-      } else {
-         cout << "false" << endl;
-      }
+      // if(DatabaseTool::addUser("devon", "testing")){
+      //    cout << "true" << endl;
+      // } else {
+      //    cout << "false" << endl;
+      // }
+
+
 
       // DatabaseTool::addNPC(3000, 
       //    " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
@@ -40,11 +42,12 @@ int main(int argc, char* argv[])
    	//DatabaseTool::addCharacter("leeeroooy jeeenkins", 1);
    	//cout << "adding leroy" << endl;
 
-      // cout << DatabaseTool::isCharOnline(1) << endl;
-      // DatabaseTool::setCharOnline(1);
-      // cout << DatabaseTool::isCharOnline(1) << endl;
-      // DatabaseTool::setCharOffline(1);
-      // cout << DatabaseTool::isCharOnline(1) << endl;
+      cout << DatabaseTool::isCharOnline(1) << endl;
+      DatabaseTool::setCharOnline(1, "sessionID");
+      cout << DatabaseTool::isCharOnline(1) << endl;
+      cout << "sessionID = " << DatabaseTool::getSessionID(1) << endl;
+      DatabaseTool::setCharOffline(1);
+      cout << DatabaseTool::isCharOnline(1) << endl;
   
 
    	// cout << DatabaseTool::getCharsLocation(99) << endl;

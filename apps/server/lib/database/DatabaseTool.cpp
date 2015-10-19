@@ -80,23 +80,36 @@ bool DatabaseTool::isCharOnline(int charID){
 		throw runtime_error("could not open database");
 	}
 	Query query(db);
-	string sqlStatment = "select isOnline from characters where userID=" + to_string(charID) +";";
+	string sqlStatment = "SELECT EXISTS(SELECT 1 FROM charactersOnline WHERE charID=" + to_string(charID) + " LIMIT 1);";
 	int onlineStatus = (int) query.get_count(sqlStatment.c_str());
-	if(onlineStatus == PLAYER_ONLINE) {
+	if(onlineStatus == 1) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-void DatabaseTool::setCharOnline(int charID){
-	string sqlStatment = "UPDATE characters SET isOnline = " + to_string(PLAYER_ONLINE) + " WHERE charID = " + to_string(charID) + ";";
+void DatabaseTool::setCharOnline(int charID, string sessionID){
+	string sqlStatment = "INSERT INTO charactersOnline VALUES ( " + to_string(charID) + " , " + quotesql(sessionID) + ");";
 	executeSQLInsert(sqlStatment);
 }
 
 void DatabaseTool::setCharOffline(int charID){
-	string sqlStatment = "UPDATE characters SET isOnline = " + to_string(PLAYER_OFFLINE) + " WHERE charID = " + to_string(charID) + ";";
+	string sqlStatment = "DELETE FROM charactersOnline WHERE charID = " + to_string(charID) + ";";
 	executeSQLInsert(sqlStatment);
+}
+
+string DatabaseTool::getSessionID(int charID) {
+	Database db( DB_LOCATION );
+	if (!db.Connected())
+	{
+		throw runtime_error("could not open database");
+	}
+	Query query(db);
+	string sqlStatment = "select sessionID from charactersOnline where charID=" + to_string(charID) +";";
+	string sessionID = query.get_string(sqlStatment.c_str());
+	return sessionID;
+
 }
 
 int DatabaseTool::getCharID(int userID){
@@ -136,7 +149,9 @@ vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
 		throw runtime_error("could not open database");
 	}
 	Query query(db);
-	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + " and isOnline =" + to_string(PLAYER_ONLINE) + ";";
+	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + ";";
+	//TODO: only return characters that are currently online
+	//" and isOnline =" + to_string(PLAYER_ONLINE) + ";";
 	query.get_result(sqlStatment.c_str());
 	while(query.fetch_row()) {
 		int character = (int) query.getval();

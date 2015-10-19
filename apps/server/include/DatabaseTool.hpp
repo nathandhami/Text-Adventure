@@ -29,9 +29,11 @@ class DatabaseTool{
 
 		 static bool isCharOnline(int charID);
 
-		 static void setCharOnline(int charID);
+		 static void setCharOnline(int charID, string sessionID);
 
 		 static void setCharOffline(int charID);
+
+		 static string getSessionID(int charID);
 
 		 static void putCharInZone(int charID, int zoneID);
 

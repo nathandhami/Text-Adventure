@@ -9,9 +9,14 @@ CREATE TABLE characters (
   name varchar(30) NOT NULL,
   userID int unique,
   location integer,
-  isOnline integer,
   FOREIGN KEY(userID) REFERENCES user(userID),
   FOREIGN KEY(location) REFERENCES zones(zoneID)
+);
+
+CREATE TABLE charactersOnline (
+  charID integer primary key,
+  sessionID text unique,
+  FOREIGN KEY(charID) REFERENCES characters(charID)
 );
 
 CREATE TABLE zones(
