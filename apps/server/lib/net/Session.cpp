@@ -173,7 +173,7 @@ void Session::asyncWrite() {
 			if ( !(this->responseMessageQueue.empty()) ) {
 				this->asyncWrite();
 			} else {
-				writeInProgress = false;
+				this->writeInProgress = false;
 			}
 		}
 	);
@@ -186,7 +186,7 @@ void Session::writeToClient( std::string header, std::string body ) {
 	responseMessage.saveBodyString( body );
 	this->responseMessageQueue.push( responseMessage );
 	if ( !writeInProgress ) {
-		writeInProgress = true;
+		this->writeInProgress = true;
 		this->asyncWrite();
 	}
 }
