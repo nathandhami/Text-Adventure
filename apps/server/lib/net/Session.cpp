@@ -6,6 +6,10 @@
 #include <future>
 #include <boost/asio/socket_base.hpp>
 
+// Error read/write string codes
+#define CODE_ERROR_READ		"rerr"
+#define CODE_ERROR_WRITE	"werr"
+
 // Server-side messages
 #define MESSAGE_CONNECT 	"A user has connected."
 #define MESSAGE_DISCONNECT 	"A user has disconnected."
@@ -34,6 +38,12 @@ void Session::start() {
 	// Initial connection established
 	std::string address( this->getIP( Session::IPType::v4 ) );
 	std::cout << MESSAGE_CONNECT << " IPv4: " << address << std::endl;
+	
+	// Initialize the user
+	this->currentUser.userId = 0;
+	this->currentUser.authorized = false;
+	this->currentUser.characterId = 0;
+	
 	// Start listening to the client
 	this->readHeader(); // v
 	// this->asyncReadUserRequest();
@@ -54,7 +64,13 @@ void Session::asyncReadUserRequest() {
 		[ this ]() {
 			// while user connected
 			// string = do read header;
+			std::string header = this->read( NetMessage::MaxLength::HEADER );
 			// string = do read body;
+			std::string body = this->read( NetMessage::MaxLength::BODY );
+			
+			if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
+				// handle user disconnect
+			}
 			// handleRequest( string, string )
 		}
 	);
@@ -62,25 +78,42 @@ void Session::asyncReadUserRequest() {
 
 
 // new read header function for improved async
-std::string Session::readHeader() {
-	std::cout << "Waiting for client header..." << std::endl;
-	// do blocking stuff
-}
-
-
-// new read body function for improved async
-std::string Session::readBody() {
-	std::cout << "Waiting for client body..." << std::endl;
-	// do blocking stuff
+std::string Session::read( const NetMessage::MaxLength maxBufferLength ) {
+	std::cout << "Waiting for client write..." << std::endl;
+	
+	char buffer[ maxBufferLength ];
+	boost::system::error_code error;
+	
+	size_t bufferLength = this->socket.read_some(
+		boost::asio::buffer( buffer ),
+		error
+	);
+	
+	if ( error ) {
+		return CODE_ERROR_READ;
+	}
+	
+	return std::string( buffer, bufferLength );
 }
 
 
 // new handle request function for improved async
 void Session::handleRequest( const std::string header, const std::string body ) {
 	std::cout << "Processing client's request..." << std::endl;
+	
+	
 	// do blocking stuff
 	// possible create a map with pointers to parsing functions
 }
+
+
+// De-headed functions
+NetMessage Session::login( std::string credentials ) {
+	this->currentUser.userId = Authenticator::login( credentials );
+	
+}
+
+
 
 
 /*void Session::readHeader() {
