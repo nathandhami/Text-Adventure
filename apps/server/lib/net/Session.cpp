@@ -35,7 +35,8 @@ void Session::start() {
 	std::string address( this->getIP( Session::IPType::v4 ) );
 	std::cout << MESSAGE_CONNECT << " IPv4: " << address << std::endl;
 	// Start listening to the client
-	this->readHeader();
+	this->readHeader(); // v
+	// this->asyncReadUserRequest();
 }
 
 
@@ -46,11 +47,47 @@ std::string Session::getIP( IPType type ) {
 }
 
 
-void Session::readHeader() {
+// new function for 'better' async reading
+void Session::asyncReadUserRequest() {
+	std::async(
+		std::launch::async,
+		[ this ]() {
+			// while user connected
+			// string = do read header;
+			// string = do read body;
+			// handleRequest( string, string )
+		}
+	);
+}
+
+
+// new read header function for improved async
+std::string Session::readHeader() {
+	std::cout << "Waiting for client header..." << std::endl;
+	// do blocking stuff
+}
+
+
+// new read body function for improved async
+std::string Session::readBody() {
+	std::cout << "Waiting for client body..." << std::endl;
+	// do blocking stuff
+}
+
+
+// new handle request function for improved async
+void Session::handleRequest( const std::string header, const std::string body ) {
+	std::cout << "Processing client's request..." << std::endl;
+	// do blocking stuff
+	// possible create a map with pointers to parsing functions
+}
+
+
+/*void Session::readHeader() {
 	std::cout << "Waiting for head" << std::endl;
 	this->socket.async_read_some(
 		boost::asio::buffer( this->bufferHeader, NetMessage::MaxLength::HEADER ),
-		[ this ]( boost::system::error_code ec, std::size_t /*length*/ ) {
+		[ this ]( boost::system::error_code ec, std::size_t length ) {
 			if ( !ec ) {
 				this->request.saveHeaderBuffer( this->bufferHeader );
 				std::cout << "Received header: " << this->request.getHeader() << std::endl;
@@ -61,10 +98,10 @@ void Session::readHeader() {
 			}
 		}
 	);
-}
+}*/
 
 
-void Session::readBody() {
+/*void Session::readBody() {
 	this->socket.async_read_some(
 		boost::asio::buffer( this->bufferBody, NetMessage::MaxLength::BODY ),
 		[ this ]( boost::system::error_code ec, std::size_t length ) {
@@ -78,10 +115,10 @@ void Session::readBody() {
 			}
 		}
 	);
-}
+}*/
 
 
-void Session::handleRequest() {
+/*void Session::handleRequest() {
 	if ( this->request.getHeader() == HEADER_LOGIN ) { //LOGIN
 		if ( this-> authorized ) {
 			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_LOGGED_IN );
@@ -120,7 +157,7 @@ void Session::handleRequest() {
 		this->writeToClient( HEADER_ERROR, "Incorrect request." );
 	}
 	this->readHeader();
-}
+}*/
 
 
 

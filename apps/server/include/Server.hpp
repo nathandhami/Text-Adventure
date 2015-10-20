@@ -23,9 +23,12 @@ public:
 	
 	static void registerNewSession( SessionPtr newSession );
 	
+	static void sendMessageToClient( std::string sessionId );
 	
 	
 private:
+	
+	Server(){}
 	
 	static std::shared_ptr< Watcher > watcher;
 	static SessionMap sessions;
