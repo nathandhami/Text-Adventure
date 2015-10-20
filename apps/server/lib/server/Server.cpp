@@ -30,9 +30,7 @@ void Server::registerNewSession( Server::SessionPtr newSession ) {
 	
 	//Keep doing this until a unique UUID is generated (to avoid collisions)
 	do {
-		boost::uuids::random_generator uuidGenerator;
-		boost::uuids::uuid newSessionIdentifier = uuidGenerator();
-		identifierString = boost::lexical_cast< std::string >( newSessionIdentifier );
+		identifierString = Server::generateUniqueIdentifierString();
 		
 		//Attempt to insert the session and get the status boolean
 		inserted = Server::sessions.emplace( identifierString, newSession ).second;
@@ -45,3 +43,12 @@ void Server::registerNewSession( Server::SessionPtr newSession ) {
 
 std::shared_ptr< Watcher > Server::watcher;
 Server::SessionMap Server::sessions;
+
+
+std::string Server::generateUniqueIdentifierString() {
+	boost::uuids::random_generator uuidGenerator;
+	boost::uuids::uuid newSessionIdentifier = uuidGenerator();
+	std::string identifierString = boost::lexical_cast< std::string >( newSessionIdentifier );
+	
+	return identifierString;
+}

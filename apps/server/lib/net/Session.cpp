@@ -166,10 +166,15 @@ void Session::asyncWrite() {
 	std::async(
 		std::launch::async,
 		[ this ]() {
+			
+			this->messageQueueLock.lock();
 			NetMessage message = this->responseMessageQueue.front();
 			this->responseMessageQueue.pop();
+			this->messageQueueLock.unlock();
+			
 			this->write( message.getHeader() );
 			this->write( message.getBody() );
+			
 			if ( !(this->responseMessageQueue.empty()) ) {
 				this->asyncWrite();
 			} else {
@@ -184,7 +189,11 @@ void Session::writeToClient( std::string header, std::string body ) {
 	NetMessage responseMessage;
 	responseMessage.saveHeaderString( header );
 	responseMessage.saveBodyString( body );
+	
+	this->messageQueueLock.lock();
 	this->responseMessageQueue.push( responseMessage );
+	this->messageQueueLock.unlock();
+	
 	if ( !writeInProgress ) {
 		this->writeInProgress = true;
 		this->asyncWrite();

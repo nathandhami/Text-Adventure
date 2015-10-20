@@ -13,6 +13,7 @@
 
 
 #include <queue>
+#include <mutex>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/bind.hpp>
@@ -42,6 +43,7 @@ private:
 	char bufferHeader[ NetMessage::MaxLength::HEADER ];
 	
 	std::queue< NetMessage > responseMessageQueue;
+	std::mutex messageQueueLock;
 	bool writeInProgress = false;
 	
 	//Autherization variables
