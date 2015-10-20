@@ -45,8 +45,8 @@ void Session::start() {
 	this->currentUser.characterId = 0;
 	
 	// Start listening to the client
-	this->readHeader(); // v
-	// this->asyncReadUserRequest();
+//	this->readHeader(); // v
+	this->asyncReadUserRequest();
 }
 
 
@@ -59,8 +59,7 @@ std::string Session::getIP( IPType type ) {
 
 // new function for 'better' async reading
 void Session::asyncReadUserRequest() {
-	std::async(
-		std::launch::async,
+	readerThread = std::thread(
 		[ this ]() {
 			// while user connected
 			// string = do read header;
@@ -71,17 +70,18 @@ void Session::asyncReadUserRequest() {
 			if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
 				// handle user disconnect
 			}
-			// handleRequest( string, string )
+			this->handleRequest( header, body );
 		}
 	);
 }
 
 
 // new read header function for improved async
-std::string Session::read( const NetMessage::MaxLength maxBufferLength ) {
+std::string Session::read( const int maxBufferLength ) {
 	std::cout << "Waiting for client write..." << std::endl;
 	
-	char buffer[ maxBufferLength ];
+//	char buffer[ (int)maxBufferLength ];
+	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;
 	
 	size_t bufferLength = this->socket.read_some(
@@ -93,7 +93,7 @@ std::string Session::read( const NetMessage::MaxLength maxBufferLength ) {
 		return CODE_ERROR_READ;
 	}
 	
-	return std::string( buffer, bufferLength );
+	return std::string( buffer.begin(), buffer.begin() + bufferLength );
 }
 
 
@@ -101,16 +101,30 @@ std::string Session::read( const NetMessage::MaxLength maxBufferLength ) {
 void Session::handleRequest( const std::string header, const std::string body ) {
 	std::cout << "Processing client's request..." << std::endl;
 	
-	
-	// do blocking stuff
-	// possible create a map with pointers to parsing functions
+	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
+	if ( iterator == funcMap.end() ) {
+		// not found
+	}
+	Session::ExecuteFunction func = iterator->second;
+	( this->*func )( body );
 }
 
 
 // De-headed functions
-NetMessage Session::login( std::string credentials ) {
-	this->currentUser.userId = Authenticator::login( credentials );
+void Session::login( const std::string& credentials ) {
+	std::cout << "Login happened." << std::endl;
+//	this->currentUser.userId = Authenticator::login( credentials );
 	
+}
+
+void Session::logout( const std::string& credentials ) {
+	this->currentUser.userId = Authenticator::login( credentials );
+
+}
+
+void Session::doGameCommand( const std::string& credentials ) {
+	this->currentUser.userId = Authenticator::login( credentials );
+
 }
 
 
@@ -217,7 +231,7 @@ bool Session::write( std::string message ) {
 		error
 	);
 	if ( error ) { 
-		Authenticator::logout( this->userId );
+//		Authenticator::logout( this->userId );
 		std::cout << MESSAGE_DISCONNECT << std::endl;
 		return false;
 	}
