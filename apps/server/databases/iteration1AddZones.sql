@@ -8,18 +8,21 @@ INSERT INTO zones VALUES (
   - 1992 December 17
   keywords:
   - plaque',
-  3054,
-  ' At the northern end of the temple hall is a statue and a huge altar.',
-  3005,
-  ' You see the temple square.',
-  0,
-  NULL,
-  0,
-  NULL,
-  0,
-  NULL,
-  0,
-  NULL
+  '  - desc:
+    - At the northern end of the temple hall is a statue and a huge altar.
+    dir: north
+    keywords: []
+    to: 3054
+  - desc:
+    - You see the temple square.
+    dir: south
+    keywords: []
+    to: 3005
+  - desc:
+    - You see the entrance to Mud School.
+    dir: up
+    keywords: []
+    to: 3700'
  );
 
 INSERT INTO zones VALUES (
@@ -41,18 +44,11 @@ INSERT INTO zones VALUES (
     - odin
     - king
     - god',
-    0,
-    NULL,
-    3001,
-    'You see the southern end of the temple',
-    0,
-    NULL,
-    0,
-    NULL,
-    0,
-    NULL,
-    0,
-    NULL
+    '  - desc:
+    - You see the southern end of the temple.
+    dir: south
+    keywords: []
+    to: 3001'
 );
 
 INSERT INTO zones VALUES (
@@ -60,16 +56,29 @@ INSERT INTO zones VALUES (
 	'The Temple Square',
 	'You are standing on the temple square.  Huge marble steps lead up to the temple gate.', 
 	NULL,
-	3001,
-	"You see the temple",
-	0,
-	NULL,
-	0,
-	NULL,
-	0,
-	NULL,
-  0,
-  NULL,
-  0,
-  NULL
+  ' - desc:
+    - You see the temple.
+    dir: north
+    keywords: []
+    to: 3001
+  - desc:
+    - You see the good old Grunting Boar Inn.
+    dir: east
+    keywords: []
+    to: 3006
+  - desc:
+    - You see the Market Square.
+    dir: south
+    keywords: []
+    to: 3014
+  - desc:
+    - You see the entrance to the Clerics Guild.
+    dir: west
+    keywords: []
+    to: 3004
+  - desc:
+    - You see the air.
+    dir: up
+    keywords: []
+    to: 3057'
 );

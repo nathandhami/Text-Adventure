@@ -24,18 +24,7 @@ CREATE TABLE zones(
   zoneName varchar(30),
   description text,
   extendedDesc text,
-  northID integer,
-  northDesc text,
-  southID integer,
-  southDesc text,
-  eastID integer,
-  eastDesc text,
-  westID integer,
-  westDesc text,
-  upID integer,
-  upDesc text,
-  downID integer,
-  downDesc text
+  doors text
 );
 
 CREATE TABLE npcs (
