@@ -8,4 +8,3 @@ target_link_libraries (dbtest DatabaseTool)
 add_executable(yamltest yamlparser.cpp)
 #target_link_libraries (yamltest DatabaseTool /usr/local/lib/libyaml-cpp.a)
 target_link_libraries (yamltest DatabaseTool ${Boost_LIBRARIES} ${CMAKE_SOURCE_DIR}/apps/server/lib/yaml-cpp/libyaml-cpp.a)
-
