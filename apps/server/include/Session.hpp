@@ -36,6 +36,9 @@ public:
 	tcp::socket& getSocket();
 	void start();
 	
+	void writeToClient( std::string header, std::string body );
+	
+	
 private:
 	
 	// Session state members
@@ -44,6 +47,7 @@ private:
 	
 	// theads
 	std::thread readerThread;
+	std::thread writerThread;
 	
 	// Session write queue members
 	std::queue< NetMessage > responseMessageQueue;
@@ -90,7 +94,6 @@ private:
 	
 	void asyncWrite();
 	bool write( std::string message );
-	void writeToClient( std::string header, std::string body );
 };
 
 #endif

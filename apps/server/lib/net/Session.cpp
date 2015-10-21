@@ -50,6 +50,22 @@ void Session::start() {
 }
 
 
+void Session::writeToClient( std::string header, std::string body ) {
+	NetMessage responseMessage;
+	responseMessage.saveHeaderString( header );
+	responseMessage.saveBodyString( body );
+
+	this->messageQueueLock.lock();
+	this->responseMessageQueue.push( responseMessage );
+	this->messageQueueLock.unlock();
+
+	if ( !writeInProgress ) {
+		this->writeInProgress = true;
+		this->asyncWrite();
+	}
+}
+
+
 // ------------------- PRIVATE ------------------
 
 std::string Session::getIP( IPType type ) {
@@ -59,7 +75,7 @@ std::string Session::getIP( IPType type ) {
 
 // new function for 'better' async reading
 void Session::asyncReadUserRequest() {
-	readerThread = std::thread(
+	this->readerThread = std::thread(
 		[ this ]() {
 			bool running = true;
 			while ( running ) {
@@ -81,11 +97,10 @@ void Session::asyncReadUserRequest() {
 }
 
 
-// new read header function for improved async
+// new read function for the improved async
 std::string Session::read( const int maxBufferLength ) {
 	std::cout << "Waiting for client write..." << std::endl;
 	
-//	char buffer[ (int)maxBufferLength ];
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;
 	
@@ -150,98 +165,27 @@ void Session::doGameCommand( const std::string& commandString ) {
 }
 
 
-
-
-/*void Session::readHeader() {
-	std::cout << "Waiting for head" << std::endl;
-	this->socket.async_read_some(
-		boost::asio::buffer( this->bufferHeader, NetMessage::MaxLength::HEADER ),
-		[ this ]( boost::system::error_code ec, std::size_t length ) {
-			if ( !ec ) {
-				this->request.saveHeaderBuffer( this->bufferHeader );
-				std::cout << "Received header: " << this->request.getHeader() << std::endl;
-				this->readBody();
-			} else {
-				Authenticator::logout( this->userId );
-				std::cout << MESSAGE_DISCONNECT << std::endl;
+void Session::asyncWrite() {
+	this->writerThread = std::thread(
+		[ this ]() {
+			while ( this->writeInProgress ) {
+				this->messageQueueLock.lock();
+				NetMessage message = this->responseMessageQueue.front();
+				this->responseMessageQueue.pop();
+				this->messageQueueLock.unlock();
+				
+				this->write( message.getHeader() );
+				this->write( message.getBody() );
+				
+				if ( this->responseMessageQueue.empty() ) {
+					this->writeInProgress = false;
+					this->writerThread.detach();
+				}
+				std::cout << "Done writing." << std::endl;
 			}
 		}
 	);
-}*/
-
-
-/*void Session::readBody() {
-	this->socket.async_read_some(
-		boost::asio::buffer( this->bufferBody, NetMessage::MaxLength::BODY ),
-		[ this ]( boost::system::error_code ec, std::size_t length ) {
-			if ( !ec ) {
-				this->request.saveBodyBuffer( this->bufferBody, length );
-				std::cout << "Received body: " << this->request.getBody() << std::endl;
-				this->handleRequest();
-			} else {
-				Authenticator::logout( this->userId );
-				std::cout << MESSAGE_DISCONNECT << std::endl;
-			}
-		}
-	);
-}*/
-
-
-/*void Session::handleRequest() {
-	if ( this->request.getHeader() == HEADER_LOGIN ) { //LOGIN
-		if ( this-> authorized ) {
-			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_LOGGED_IN );
-		}
-		
-		int userId = Authenticator::login( this->request.getBody() );
-		if ( userId ) {
-			this->authorized = true;
-			this->userId = userId;
-			this->writeToClient( HEADER_OK, "Log in successful." );
-		} else {
-			this->writeToClient( HEADER_ERROR, "Incorrect username or password." );
-		}
-		
-	} else if ( this->request.getHeader() == HEADER_LOGOUT ) { //LOG OUT
-		if ( !( this->authorized ) ) {
-			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
-		}
-		
-		Authenticator::logout( this->userId );
-		this->authorized = false;
-		this->userId = 0;
-		this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
-	} else if ( this->request.getHeader() == HEADER_COMMAND ) { //ACTION
-		if ( !( this->authorized ) ) {
-			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
-		}
-		
-		std::string parserResponse = CommandParser::handleIDandCommand( this->userId, this->request.getBody() );
-		if ( parserResponse == HEADER_ERROR ) {
-			this->writeToClient( HEADER_ERROR, "Invalid Command." );
-		} else {
-			this->writeToClient( HEADER_OK, parserResponse );
-		}
-	} else {
-		this->writeToClient( HEADER_ERROR, "Incorrect request." );
-	}
-	this->readHeader();
-}*/
-
-
-
-//bool Session::write( std::string message ) {
-//	boost::asio::async_write(
-//		this->socket,
-//		boost::asio::buffer( message, message.length() ),
-//		[ this ]( boost::system::error_code ec, std::size_t /*length*/ ) {
-//			if ( !ec ) {
-//				std::cout << "Wrote stuff." << std::endl;
-//				this->write( "Login Succ." );
-//			}
-//		}
-//	);
-//}
+}
 
 
 bool Session::write( std::string message ) {
@@ -253,57 +197,11 @@ bool Session::write( std::string message ) {
 		error
 	);
 	if ( error ) { 
-//		Authenticator::logout( this->userId );
+		//		Authenticator::logout( this->userId );
 		std::cout << MESSAGE_DISCONNECT << std::endl;
 		return false;
 	}
 	return true;
-}
-
-
-/*void Session::writeToClient( std::string header, std::string body ) {
-//	if ( !( this->write( header ) && this->write( body ) ) ) return;
-	this->write( header );
-//	this->readHeader();
-}*/
-
-
-void Session::asyncWrite() {
-	std::async(
-		std::launch::async,
-		[ this ]() {
-			
-			this->messageQueueLock.lock();
-			NetMessage message = this->responseMessageQueue.front();
-			this->responseMessageQueue.pop();
-			this->messageQueueLock.unlock();
-			
-			this->write( message.getHeader() );
-			this->write( message.getBody() );
-			
-			if ( !(this->responseMessageQueue.empty()) ) {
-				this->asyncWrite();
-			} else {
-				this->writeInProgress = false;
-			}
-		}
-	);
-}
-
-
-void Session::writeToClient( std::string header, std::string body ) {
-	NetMessage responseMessage;
-	responseMessage.saveHeaderString( header );
-	responseMessage.saveBodyString( body );
-	
-	this->messageQueueLock.lock();
-	this->responseMessageQueue.push( responseMessage );
-	this->messageQueueLock.unlock();
-	
-	if ( !writeInProgress ) {
-		this->writeInProgress = true;
-		this->asyncWrite();
-	}
 }
 
 
