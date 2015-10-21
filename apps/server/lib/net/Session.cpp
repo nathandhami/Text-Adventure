@@ -61,16 +61,21 @@ std::string Session::getIP( IPType type ) {
 void Session::asyncReadUserRequest() {
 	readerThread = std::thread(
 		[ this ]() {
-			// while user connected
-			// string = do read header;
-			std::string header = this->read( NetMessage::MaxLength::HEADER );
-			// string = do read body;
-			std::string body = this->read( NetMessage::MaxLength::BODY );
-			
-			if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
-				// handle user disconnect
+			bool running = true;
+			while ( running ) {
+				// while user connected
+				// string = do read header;
+				std::string header = this->read( NetMessage::MaxLength::HEADER );
+				// string = do read body;
+				std::string body = this->read( NetMessage::MaxLength::BODY );
+				
+				if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
+					// handle user disconnect
+					running = false;
+				} else {
+					this->handleRequest( header, body );
+				}
 			}
-			this->handleRequest( header, body );
 		}
 	);
 }
@@ -104,6 +109,7 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
 	if ( iterator == funcMap.end() ) {
 		// not found
+		this->writeToClient( HEADER_ERROR, "Server error: incorrect request." );
 	}
 	Session::ExecuteFunction func = iterator->second;
 	( this->*func )( body );
@@ -113,17 +119,29 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 // De-headed functions
 void Session::login( const std::string& credentials ) {
 	std::cout << "Login happened." << std::endl;
-//	this->currentUser.userId = Authenticator::login( credentials );
-	
+	this->currentUser.userId = Authenticator::login( credentials );
+	if ( !this->currentUser.userId ) {
+		this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_WRONG_CREDENTIALS );
+	} else {
+		std::cout << "Login success." << std::endl;
+		this->currentUser.authorized = true;
+		this->writeToClient( HEADER_OK, "a list\nof various\ncharacters" );
+	}
 }
 
 void Session::logout( const std::string& credentials ) {
-	this->currentUser.userId = Authenticator::login( credentials );
+	std::cout << "Logout happened." << std::endl;
+	Authenticator::logout( this->currentUser.userId );
+	this->currentUser.userId = 0;
+	this->currentUser.authorized = false;
+	this->currentUser.characterId = 0;
+	this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
 
 }
 
 void Session::doGameCommand( const std::string& credentials ) {
-	this->currentUser.userId = Authenticator::login( credentials );
+	std::cout << "Command happened." << std::endl;
+//	this->currentUser.userId = Authenticator::login( credentials );
 
 }
 
