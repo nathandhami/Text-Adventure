@@ -151,7 +151,7 @@ void parseRooms(const YAML::Node& config) {
 					std::cout << "DOOR ID: " << pr.westID << std::endl;
 				}
 
-				else if(roomNode["doors"][j]["dir"].as<std::string>().compare("east") == 0){
+                else if(roomNode["doors"][j]["dir"].as<std::string>().compare("east") == 0){
 					pr.eastID = roomNode["doors"][j]["to"].as<int>();
 					pr.eastDesc = tempStr;
 					std::cout << pr.eastDesc << std::endl;
