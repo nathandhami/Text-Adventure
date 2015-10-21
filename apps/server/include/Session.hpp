@@ -67,6 +67,9 @@ private:
 	std::string read( int bufferLength );
 	void handleRequest( std::string header, std::string body );
 	
+	void asyncWrite();
+	bool write( std::string message );
+	
 	// Deheader
 	typedef void ( Session::*ExecuteFunction )( const std::string& );
 	typedef std::map< std::string, ExecuteFunction > ExecFuncMap;
@@ -74,7 +77,8 @@ private:
 	ExecFuncMap funcMap = {
 		{ HEADER_LOGIN		, &Session::login },
 		{ HEADER_LOGOUT		, &Session::logout },
-		{ HEADER_COMMAND	, &Session::doGameCommand }
+		{ HEADER_COMMAND	, &Session::doGameCommand },
+		{ HEADER_MESSAGE	, &Session::sendMessageToCharacter }
 	};
 	
 //	NetMessage stripAndExecute( std::string header, std::string body );
@@ -88,12 +92,6 @@ private:
 	
 	
 	std::string getIP( IPType type );
-	
-//	void readHeader();
-//	void readBody();
-	
-	void asyncWrite();
-	bool write( std::string message );
 };
 
 #endif

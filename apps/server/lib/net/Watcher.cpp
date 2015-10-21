@@ -60,8 +60,6 @@ void Watcher::startAccept() {
 }
 
 
-
-
 void Watcher::handleAccept( 
 	std::shared_ptr< Session > newSession, 
 	const boost::system::error_code& error 

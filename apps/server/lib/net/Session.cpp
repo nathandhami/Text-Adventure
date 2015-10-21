@@ -2,6 +2,7 @@
 #include "Authenticator.hpp"
 #include "NetConfig.hpp"
 #include "CommandParser.hpp"
+#include "Server.hpp"
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -131,7 +132,8 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 }
 
 
-// De-headed functions
+// ------------- De-headed functions
+
 void Session::login( const std::string& credentials ) {
 	std::cout << "Login happened." << std::endl;
 	this->currentUser.userId = Authenticator::login( credentials );
@@ -164,6 +166,12 @@ void Session::doGameCommand( const std::string& commandString ) {
 	}
 }
 
+void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {
+	// split char id and message
+	Server::sendMessageToClient( "sdf-dsfsd-dsfs", charNameAndMessage );
+}
+
+// ------------ End 
 
 void Session::asyncWrite() {
 	this->writerThread = std::thread(

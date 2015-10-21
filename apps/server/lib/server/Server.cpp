@@ -39,6 +39,14 @@ void Server::registerNewSession( Server::SessionPtr newSession ) {
 	std::cout << "Registered a session with ID: " << identifierString << std::endl;
 }
 
+
+void Server::sendMessageToClient( std::string sessionId, std::string message ) {
+	std::cout << "Contatcted Server Service Locator." << std::endl;
+	std::string id = Server::sessions.begin()->first;
+	Server::sessions[ id ]->writeToClient( HEADER_OK, message );
+}
+
+
 // ------------------- PRIVATE ------------------
 
 std::shared_ptr< Watcher > Server::watcher;

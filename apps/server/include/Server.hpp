@@ -23,7 +23,7 @@ public:
 	
 	static void registerNewSession( SessionPtr newSession );
 	
-	static void sendMessageToClient( std::string sessionId );
+	static void sendMessageToClient( std::string sessionId, std::string message );
 	
 	
 private:

@@ -47,7 +47,8 @@ static void readCommands() {
 		transceiver->write( HEADER_LOGOUT, command );
 		UIWriter::sendSysStatus( std::get< 1 >( transceiver->read() ) );
 	} else {
-		transceiver->write( HEADER_COMMAND, command );
+//		transceiver->write( HEADER_COMMAND, command );
+		transceiver->write( HEADER_MESSAGE, command );
 		UIWriter::sendSysStatus( std::get< 1 >( transceiver->read() ) );
 		readCommands();	
 	}
