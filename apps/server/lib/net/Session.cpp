@@ -139,10 +139,14 @@ void Session::logout( const std::string& credentials ) {
 
 }
 
-void Session::doGameCommand( const std::string& credentials ) {
+void Session::doGameCommand( const std::string& commandString ) {
 	std::cout << "Command happened." << std::endl;
-//	this->currentUser.userId = Authenticator::login( credentials );
-
+	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.userId, commandString );
+	if ( parserResponse == HEADER_ERROR ) {
+		this->writeToClient( HEADER_ERROR, "Invalid Command." );
+	} else {
+		this->writeToClient( HEADER_OK, parserResponse );
+	}
 }
 
 
