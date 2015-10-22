@@ -76,6 +76,8 @@ void addRoomsToDatabase(ParseRoom pr) {
 void checkDatabaseContent() {
 }
 
+
+
 void parseRooms(const YAML::Node& config) {
 
 	if (config["ROOMS"]) {
@@ -171,27 +173,39 @@ void parseRooms(const YAML::Node& config) {
 //			}
 //
 //			// if room has more descriptions
+
 			for (unsigned int j = 0;
 					j < roomNode["extended_descriptions"].size();
 					++j) {
+				std::string extendedDescription = "edesc:\n";
+
+
 				for (unsigned int k = 0;
 						k < roomNode["extended_descriptions"][j]["desc"].size();
 						++k){
 
-					std::cout
-					<< roomNode["extended_descriptions"][j]["desc"][k]
-					<< std::endl;
+					extendedDescription += roomNode["extended_descriptions"][j]["desc"][k].as<std::string>() + " ";
+
+//					std::cout
+//					<< roomNode["extended_descriptions"][j]["desc"][k]
+//					<< std::endl;
 				}
+
+				extendedDescription += "\nkeywords:\n- ";
 
 				// if checks
 				for (unsigned int k = 0;
 						k < roomNode["extended_descriptions"][j]["keywords"].size();
 						++k) {
 
-						std::cout
-						<< roomNode["extended_descriptions"][j]["keywords"][k]
-						<< std::endl;
+//						std::cout
+//						<< roomNode["extended_descriptions"][j]["keywords"][k]
+//						<< std::endl;
+
+						extendedDescription += roomNode["extended_descriptions"][j]["keywords"][k].as<std::string>() + "\n- ";
 				}
+
+				std::cout << extendedDescription << std::endl;
 			}
 //			std::cout << "---------------" << std::endl;
 ////			std::cout << "room name: " << roomNode["name"] << std::endl;
