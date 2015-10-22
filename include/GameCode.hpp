@@ -3,32 +3,35 @@
 
 #include <string>
 
-enum GameCode {
-	DESC, ALERT, COMBAT, STATUS, PRIV_CHAT, GLBL_CHAT, DC, WRONG, CORRECT
-};
 
-class GameCode {
+namespace GameCode {	
+	// Request headers
+	const std::string LOGIN 		= "lgn";
+	const std::string LOGOUT 		= "lgo";
+	const std::string CHAR_CREATE 	= "ccr";
+	const std::string CHAR_DELETE 	= "cdl";
+	const std::string CHAR_SELECT 	= "csl";
+	const std::string CHAR_DELECT 	= "cds";
+	const std::string COMMAND 		= "cmd";
 	
 	// Confirmation headers
-	static const std::string CORRECT 		= "cor";
-	static const std::string WRONG 			= "wrg";
-	static const std::string INVALID 		= "inv";
+	const std::string CORRECT 		= "cor";
+	const std::string WRONG 		= "wrg";
+	const std::string INVALID 		= "inv";
 	
 	// Dynamics headers
-	static const std::string DESCRIPTION 	= "des";
-	static const std::string STATUS 		= "sts";
-	static const std::string ALERT 			= "alr";
-	static const std::string COMBAT 		= "cmb";
+	const std::string DESCRIPTION 	= "des";
+	const std::string STATUS 		= "sts";
+	const std::string ALERT 		= "alr";
+	const std::string COMBAT 		= "cmb";
 	
 	// Chat headers
-	static const std::string CHAT_ALL 		= "cha";
-	static const std::string CHAT_PRIVATE 	= "chp";
+	const std::string CHAT_ALL 		= "cha";
+	const std::string CHAT_PRIVATE 	= "chp";
 	
 	// System headers
-	static const std::string DISCONNECTED 	= "dsc";
-		
-private:
-	GameCode() {}
+	const std::string DISCONNECTED 	= "dsc";
+
 }
 
 

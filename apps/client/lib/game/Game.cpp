@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "NetConfig.hpp"
+#include "GameCode.hpp"
 #include "NetMessage.hpp"
 
 
@@ -26,24 +26,21 @@ void Game::stop() {
 }
 
 
-Game::Response Game::getFrontResponse() {
+NetMessage Game::getFrontResponse() {
 	while ( Game::transceiver->queueEmpty() ) {
 		std::cout << "Happened at least once." << std::endl;
 	}
-	NetMessage msg = Game::transceiver->readAndPopQueue();
-	
-	Game::Response response;
-	return response;
+//	NetMessage msg = Game::transceiver->readAndPopQueue();
+
+	return Game::transceiver->readAndPopQueue();
 }
 
 
 void Game::login( std::string userName, std::string password ) {
-	Game::Response response;
-	
 	std::vector< std::string > credentialTokens { userName, password };
 	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
 	
-	Game::transceiver->writeToServer( HEADER_LOGIN, joinedCredentials );
+	Game::transceiver->writeToServer( GameCode::LOGIN, joinedCredentials );
 //	std::tuple< bool, NetMessage > readResult = Game::transceiver->immediateReadServerResponse();
 //	
 //	if ( std::get< 0 >( readResult ) ) {

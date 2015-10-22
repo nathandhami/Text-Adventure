@@ -8,20 +8,16 @@
 
 #include "GameCode.hpp"
 #include "Transceiver.hpp"
+#include "NetMessage.hpp"
 
 
 class Game {
 public:
 	
-	struct Response {
-		GameCode type;
-		std::string data;
-	};
-	
 	static void initialize();
 	static void start();
 	static void stop();
-	static Response getFrontResponse();
+	static NetMessage getFrontResponse();
 	static void login( std::string userName, std::string password );
 	static void logout();
 	
