@@ -224,36 +224,16 @@ void DatabaseTool::addZone(
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
-		 	string extendedDesc,
-		 	int northID,
-		 	string northDesc,
-		 	int southID,
-		 	string southDesc,
-		 	int eastID,
-		 	string eastDesc,
-		 	int westID,
-		 	string westDesc,
-		 	int upID,
-		 	string upDesc,
-		 	int downID,
-		 	string downDesc
+		 	vector<ExtendedDescription> extendedDescriptions,
+		 	vector<Door> doors
 		 	){
+	// cout << concatDoors(doors) << endl;
+	// cout << concatExtendedDescriptions(extendedDescriptions) << endl;
 	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
 			+ ", " + quotesql(zoneName) 
 			+ ", " + quotesql(description) 
-			+ ", " + quotesql(extendedDesc)
-			+ ", " + to_string(northID)
-			+ ", " + quotesql(northDesc)
-			+ ", " + to_string(southID)
-			+ ", " + quotesql(southDesc)
-			+ ", " + to_string(eastID)
-			+ ", " + quotesql(eastDesc)
-			+ ", " + to_string(westID)
-			+ ", " + quotesql(westDesc)
-			+ ", " + to_string(upID)
-			+ ", " + quotesql(upDesc)
-			+ ", " + to_string(downID)
-			+ ", " + quotesql(downDesc)
+			+ ", " + quotesql(concatExtendedDescriptions(extendedDescriptions))
+			+ ", " + quotesql(concatDoors(doors))
 			+ ");";
 	executeSQLInsert(sqlStatment);
 }
@@ -305,11 +285,10 @@ int DatabaseTool::getDirectionID(int zoneID, string direction){
 	}
 	Query query(db);
 	boost::to_lower(direction);
-	string lowerCaseDirection = direction;
-	string sqlStatment = "select " + lowerCaseDirection + "ID from zones where zoneID=" + to_string(zoneID) + ";";
-	int directionID = (int) query.get_count(sqlStatment.c_str());
+	string sqlStatment = "select doors from zones where zoneID=" + to_string(zoneID) + ";";
+	string doors = query.get_string(sqlStatment.c_str());
+	int directionID = parseDirectionID(doors, direction);
 	return directionID;
-
 }
 
 string DatabaseTool::getDirectionDesc(int zoneID, string direction){
@@ -321,14 +300,13 @@ string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	Query query(db);
 	boost::to_lower(direction);
 	string lowerCaseDirection = direction;
-	string sqlStatment = "select " + lowerCaseDirection + "Desc from zones where zoneID=" + to_string(zoneID) + ";";
-	string directionDesc = query.get_string(sqlStatment.c_str());
-	return directionDesc;
+	string sqlStatment = "select doors from zones where zoneID=" + to_string(zoneID) + ";";
+	string doors = query.get_string(sqlStatment.c_str());
+	return parseDirectionDesc(doors, direction);
 }
 
 string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
-	string findThis = "- desc:\n";
-	vector<vector<string>> parsedDesc;
+	string findThis = "desc:";
 
 	vector<string> singleChunk;
 	size_t found = extendedDesc.find(findThis);
@@ -339,34 +317,100 @@ string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
 		singleChunk.push_back(singleExtendedDesc);
 		found = secondFound;
 	}
-	int descIndex = -1;
 
+	int descIndex = -1;
 	for(int i = 0; i < singleChunk.size(); i++) {
-		vector<string> singleExtendedDesc;
-		string line;
-		string description = "";
-		bool foundKeyword = false;
-		istringstream iss(singleChunk[i]);
-		while(getline(iss, line)) {
-			boost::erase_all(line, "- ");
-			boost::algorithm::trim( line );
-			if((line.find("keywords:") == string::npos) && (foundKeyword == false)){
-				description = description + line;
-			} else if((line.find("keywords:") != string::npos) && (foundKeyword == false)) {
-				singleExtendedDesc.push_back(description);
-				foundKeyword = true;
-			} else if(!line.empty() && line.find(keyword)){
-				descIndex = i;
-			}
+		if(singleChunk[i].find(keyword) != string::npos) {
+			descIndex = i;
 		}
-		parsedDesc.push_back(singleExtendedDesc);
 	}
 	if(descIndex == -1) {
 		return "";
 	} else {
-		return parsedDesc[descIndex][0];
+		return singleChunk[descIndex].substr(0, singleChunk[descIndex].find("keywords:"));
 	}
 }
 
+int DatabaseTool::parseDirectionID(string doors, string direction) {
+	string findThis = "desc:";
+
+	vector<string> singleDoor;
+	size_t found = doors.find(findThis);
+	while(found != string::npos) {
+		size_t secondFound = doors.find(findThis, found + 1);
+		string singleExtendedDesc = doors.substr(found, secondFound);
+		boost::erase_all(singleExtendedDesc, findThis);
+		singleDoor.push_back(singleExtendedDesc);
+		found = secondFound;
+	}
+
+	int doorIndex = -1;
+	for(int i = 0; i < singleDoor.size(); i++) {
+		if(singleDoor[i].find(direction) != string::npos){
+			doorIndex = i;
+		}
+	}
+	
+	if(doorIndex == -1) {
+		return 0;
+	} else {
+		string directionID = singleDoor[doorIndex].substr(singleDoor[doorIndex].find("to:"));
+		boost::erase_all(directionID, "to: ");
+		return atoi(directionID.c_str());
+	}
+}
+
+string DatabaseTool::parseDirectionDesc(string doors, string direction) {
+	string findThis = "desc:";
+
+	vector<string> singleDoor;
+	size_t found = doors.find(findThis);
+	while(found != string::npos) {
+		size_t secondFound = doors.find(findThis, found + 1);
+		string singleExtendedDesc = doors.substr(found, secondFound);
+		boost::erase_all(singleExtendedDesc, findThis);
+		singleDoor.push_back(singleExtendedDesc);
+		found = secondFound;
+	}
+
+	int doorIndex = -1;
+	for(int i = 0; i < singleDoor.size(); i++) {
+		if(singleDoor[i].find(direction) != string::npos){
+			doorIndex = i;
+		}
+	}
+	
+	if(doorIndex == -1) {
+		return "";
+	} else {
+		string directionDesc = singleDoor[doorIndex].substr(0, singleDoor[doorIndex].find("dir:"));
+		boost::erase_all(directionDesc, "- ");
+		boost::algorithm::trim( directionDesc );
+		return directionDesc;
+	}
+}
+
+string DatabaseTool::concatDoors(vector<Door> doors) {
+	string combinedDoors = "";
+	for(auto& door: doors) {
+		combinedDoors = combinedDoors + " desc: " + door.description + " dir: " + door.direction + " keywords: ";
+		for(auto& keyword: door.keywords) {
+			combinedDoors = combinedDoors + keyword + " ";
+		}
+		combinedDoors = combinedDoors + "to: " + to_string(door.goesTo);
+	}
+	return combinedDoors;
+}
+
+string DatabaseTool::concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions) {
+	string combinedDescriptions = "";
+	for(auto& extendedDescription: extendedDescriptions) {
+		combinedDescriptions = combinedDescriptions + " desc: " + extendedDescription.description + " keywords: ";
+		for(auto& keyword: extendedDescription.keywords) {
+			combinedDescriptions = combinedDescriptions + keyword + " ";
+		}
+	}
+	return combinedDescriptions;
+}
 
 

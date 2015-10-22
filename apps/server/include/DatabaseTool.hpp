@@ -13,6 +13,42 @@
 
 using namespace std;
 
+class Door{
+	public:
+		Door();
+		Door(string description, string direction, vector<string> keywords, int goesTo)
+		{
+			this->description = description;
+			this->direction = direction;
+			this->keywords = keywords;
+			this->goesTo = goesTo;
+		}
+		~Door()
+		{
+		}
+		string description;
+		string direction;
+		vector<string> keywords;
+		int goesTo;
+
+};
+
+class ExtendedDescription{
+	public:
+		ExtendedDescription();
+		ExtendedDescription(string description, vector<string> keywords)
+		{
+			this->description = description;
+			this->keywords = keywords;
+		}
+		~ExtendedDescription()
+		{
+		}
+		string description;
+		vector<string> keywords;
+
+};
+
 
 
 class DatabaseTool{
@@ -61,19 +97,8 @@ class DatabaseTool{
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
-		 	string extendedDesc,
-		 	int northID,
-		 	string northDesc,
-		 	int southID,
-		 	string southDesc,
-		 	int eastID,
-		 	string eastDesc,
-		 	int westID,
-		 	string westDesc,
-		 	int upID,
-		 	string upDesc,
-		 	int downID,
-		 	string downDesc
+		 	vector<ExtendedDescription> extendedDescriptions,
+		 	vector<Door> doors
 		 	);
 
 		 static string getZoneName(int zoneID);
@@ -92,6 +117,15 @@ class DatabaseTool{
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);
 		static string parseExtendedDesc(string extendedDesc, string keyword);
+		static int parseDirectionID(string doors, string direction);
+		static string parseDirectionDesc(string doors, string keyword);
+		static string concatDoors(vector<Door> doors);
+		static string concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions);
 };
+
+
+
+
+
 
 #endif

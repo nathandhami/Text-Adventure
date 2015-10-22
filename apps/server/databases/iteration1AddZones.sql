@@ -8,21 +8,7 @@ INSERT INTO zones VALUES (
   - 1992 December 17
   keywords:
   - plaque',
-  '  - desc:
-    - At the northern end of the temple hall is a statue and a huge altar.
-    dir: north
-    keywords: []
-    to: 3054
-  - desc:
-    - You see the temple square.
-    dir: south
-    keywords: []
-    to: 3005
-  - desc:
-    - You see the entrance to Mud School.
-    dir: up
-    keywords: []
-    to: 3700'
+  '  - desc:\n- At the northern end of the temple hall is a statue and a huge altar.\ndir: north\nkeywords: []\nto: 3054\n- desc:\n- You see the temple square.\ndir: south\nkeywords: []\nto: 3005\n- desc:\n- You see the entrance to Mud School.\ndir: up\nkeywords: []\nto: 3700'
  );
 
 INSERT INTO zones VALUES (
@@ -47,7 +33,8 @@ INSERT INTO zones VALUES (
     '  - desc:
     - You see the southern end of the temple.
     dir: south
-    keywords: []
+    keywords:
+    temple
     to: 3001'
 );
 
