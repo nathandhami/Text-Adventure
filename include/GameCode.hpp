@@ -31,6 +31,7 @@ namespace GameCode {
 	
 	// System headers
 	const std::string DISCONNECTED 	= "dsc";
+	const std::string NONE		 	= "non";
 
 }
 

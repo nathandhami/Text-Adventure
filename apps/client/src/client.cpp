@@ -75,8 +75,8 @@ int main( /*int argc, const char* argv[]*/ ) {
 	Game::initialize();
 	Game::start();
 	
-	Game::login( "devon", "test" );
-	Game::getFrontResponse();
+	std::cout << Game::login( "devon", "test" ).body << std::endl;
+//	Game::getFrontResponse();
 	
 	Game::stop();
 	

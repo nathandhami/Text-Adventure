@@ -34,6 +34,7 @@ void Transceiver::run() {
 
 void Transceiver::stop() {
 	this->reading = false;
+	this->ioService.stop();
 	this->readerThread.detach();
 }
 
@@ -119,15 +120,16 @@ void Transceiver::asyncReadServerResponses() {
 		[ this ]() {
 			std::cout << "Reader started." << std::endl;
 			this->reading = true;
-			while ( reading ) {
+			while ( this->reading ) {
 //				std::cout << "Waiting for server write..." << std::endl;
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
 				std::string body = this->read( NetMessage::MaxLength::BODY );
-				std::cout << body << std::endl;
+				if ( !this->reading ) break; // if thread sneaks to read the last time before program dies
 				if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
 					// handle server down/loss of connection
-					std::cout << header << std::endl;
+					std::cout << "Lost connection." << std::endl;
 					this->reading = false;
+					this->responseQueue.push( NetMessage( GameCode::DISCONNECT,  ) );
 				} else {
 					// write to gameresponses
 					NetMessage response( header, body );
