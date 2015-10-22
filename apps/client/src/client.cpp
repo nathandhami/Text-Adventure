@@ -2,6 +2,7 @@
 #include "UIReader.hpp"
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
+#include "Game.hpp"
 
 #include <cstdlib>
 #include <boost/algorithm/string/join.hpp>
@@ -14,7 +15,7 @@
 
 //NOTE: all the static classes will be placed in a wrapper with the Transceiver later on
 
-static std::shared_ptr< Transceiver > transceiver; 
+/*static std::shared_ptr< Transceiver > transceiver; 
 
 static std::string joinCredentials( std::string userName, std::string password ) {
 	std::vector<std::string> tokens;
@@ -52,22 +53,32 @@ static void readCommands() {
 		UIWriter::sendSysStatus( std::get< 1 >( transceiver->read() ) );
 		readCommands();	
 	}
-}
+}*/
 
 
 
-int main( int argc, const char* argv[] ) {
-	UIWriter::sendSysStatus( "Connecting to server..." );
+int main( /*int argc, const char* argv[]*/ ) {
+//	UIWriter::sendSysStatus( "Connecting to server..." );
+//	
+//	transceiver = std::make_shared< Transceiver >();
+//	transceiver->run();
+//	
+//	UIWriter::sendSysStatus( "Connected." );
+//	
+//	login();
+//	
+//	UIWriter::sendSysStatus( "What would you like to do?" );
+//	readCommands();
 	
-	transceiver = std::make_shared< Transceiver >();
-	transceiver->run();
 	
-	UIWriter::sendSysStatus( "Connected." );
 	
-	login();
+	Game::initialize();
+	Game::start();
 	
-	UIWriter::sendSysStatus( "What would you like to do?" );
-	readCommands();
+	Game::login( "devon", "test" );
+	Game::getFrontResponse();
+	
+	Game::stop();
 	
 	
 	return 0;

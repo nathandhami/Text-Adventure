@@ -1,6 +1,7 @@
 #ifndef NETMESSAGE_HPP
 #define NETMESSAGE_HPP
 
+/*
 class NetMessage {
 public:
     enum MaxLength { HEADER = 3, BODY = 512 };
@@ -41,6 +42,20 @@ public:
 private:
 	std::string headerLine;
 	std::string bodyLine;
+};
+*/
+
+struct NetMessage {
+	
+	enum MaxLength { HEADER = 3, BODY = 512 };
+//	static const 
+	
+	NetMessage() {}
+	NetMessage( std::string header, std::string body ): header( header ), body( body ) {}
+	
+	std::string header;
+	std::string body;
+	
 };
 
 

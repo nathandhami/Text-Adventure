@@ -52,9 +52,9 @@ void Session::start() {
 
 
 void Session::writeToClient( std::string header, std::string body ) {
-	NetMessage responseMessage;
-	responseMessage.saveHeaderString( header );
-	responseMessage.saveBodyString( body );
+	NetMessage responseMessage( header, body );
+//	responseMessage.saveHeaderString( header );
+//	responseMessage.saveBodyString( body );
 
 	this->messageQueueLock.lock();
 	this->responseMessageQueue.push( responseMessage );
@@ -182,8 +182,8 @@ void Session::asyncWrite() {
 				this->responseMessageQueue.pop();
 				this->messageQueueLock.unlock();
 				
-				this->write( message.getHeader() );
-				this->write( message.getBody() );
+				this->write( message.header );
+				this->write( message.body );
 				
 				if ( this->responseMessageQueue.empty() ) {
 					this->writeInProgress = false;
