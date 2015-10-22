@@ -62,7 +62,7 @@ struct ParseRoom {
 //string southDesc, int eastID, string eastDesc, int westID, string westDesc,
 //int upID, string upDesc, int downID, string downDesc
 void addRoomsToDatabase(ParseRoom pr) {
-	DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, "",
+	DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, pr.extendedDesc,
 			pr.northID, pr.northDesc, pr.southID, pr.southDesc, pr.eastID,
 			pr.eastDesc, pr.westID, pr.westDesc, pr.upID, pr.upDesc, pr.downID,
 			pr.downDesc);
@@ -177,21 +177,21 @@ void parseRooms(const YAML::Node& config) {
 			for (unsigned int j = 0;
 					j < roomNode["extended_descriptions"].size();
 					++j) {
-				std::string extendedDescription = "edesc:\n";
+				std::string extendedDescription = "edesc:\\n";
 
 
 				for (unsigned int k = 0;
 						k < roomNode["extended_descriptions"][j]["desc"].size();
 						++k){
 
-					extendedDescription += roomNode["extended_descriptions"][j]["desc"][k].as<std::string>() + " ";
+					extendedDescription += trimString(roomNode["extended_descriptions"][j]["desc"][k].as<std::string>()) + " ";
 
 //					std::cout
 //					<< roomNode["extended_descriptions"][j]["desc"][k]
 //					<< std::endl;
 				}
 
-				extendedDescription += "\nkeywords:\n- ";
+				extendedDescription += "\\nkeywords:\\n- ";
 
 				// if checks
 				for (unsigned int k = 0;
@@ -202,10 +202,11 @@ void parseRooms(const YAML::Node& config) {
 //						<< roomNode["extended_descriptions"][j]["keywords"][k]
 //						<< std::endl;
 
-						extendedDescription += roomNode["extended_descriptions"][j]["keywords"][k].as<std::string>() + "\n- ";
+						extendedDescription += trimString(roomNode["extended_descriptions"][j]["keywords"][k].as<std::string>()) + "\\n- ";
 				}
 
 				std::cout << extendedDescription << std::endl;
+				pr.extendedDesc = extendedDescription;
 			}
 //			std::cout << "---------------" << std::endl;
 ////			std::cout << "room name: " << roomNode["name"] << std::endl;
