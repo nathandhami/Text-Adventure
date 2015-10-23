@@ -6,6 +6,7 @@
 #include "DatabaseTool.hpp" 
 
 void addZoneTest();
+void addItemTest();
 
 int main(int argc, char* argv[])
 {
@@ -72,7 +73,9 @@ int main(int argc, char* argv[])
       //       cout << extendedDescs[i][x] << endl << endl;
       //    }
       // }
-      addZoneTest();
+      //addZoneTest();
+      addItemTest();
+
 
 
 
@@ -81,6 +84,20 @@ int main(int argc, char* argv[])
    catch(runtime_error e){
       cout << e.what() << endl;
    }
+}
+
+void addItemTest() {
+      string description = "You see a standard issue dagger here.";
+      vector<ExtendedDescription> extendedDescriptions;
+      
+      vector<string> keywords;
+      keywords.push_back("dagger");
+
+      ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
+      extendedDescriptions.push_back(extendedDesc);
+      cout << DatabaseTool::addItem(3351, description, extendedDescriptions, keywords) << endl;
+      cout << DatabaseTool::addItem(3351, description, extendedDescriptions, keywords) << endl;
+
 }
 
 void addZoneTest() {

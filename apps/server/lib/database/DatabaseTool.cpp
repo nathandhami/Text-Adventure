@@ -205,14 +205,14 @@ string DatabaseTool::getNPCDesc(int npcID){
 void DatabaseTool::addNPC(
 		 	int npcID, 
 		 	string description, 
-		 	string keywords,
+		 	vector<string> keywords,
 		 	string longdesc,
 		 	string shortdesc
 		 	){
 	string sqlStatment = "INSERT INTO npcs VALUES (" 
 		+ to_string(npcID) 
 		+ ", " + quotesql(description)
-		+ ", " + quotesql(keywords)
+		+ ", " + quotesql(concatKeywords(keywords))
 		+ ", " + quotesql(longdesc)
 		+ ", " + quotesql(shortdesc) 
 		+ ");";
@@ -227,8 +227,6 @@ void DatabaseTool::addZone(
 		 	vector<ExtendedDescription> extendedDescriptions,
 		 	vector<Door> doors
 		 	){
-	// cout << concatDoors(doors) << endl;
-	// cout << concatExtendedDescriptions(extendedDescriptions) << endl;
 	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
 			+ ", " + quotesql(zoneName) 
 			+ ", " + quotesql(description) 
@@ -393,11 +391,7 @@ string DatabaseTool::parseDirectionDesc(string doors, string direction) {
 string DatabaseTool::concatDoors(vector<Door> doors) {
 	string combinedDoors = "";
 	for(auto& door: doors) {
-		combinedDoors = combinedDoors + " desc: " + door.description + " dir: " + door.direction + " keywords: ";
-		for(auto& keyword: door.keywords) {
-			combinedDoors = combinedDoors + keyword + " ";
-		}
-		combinedDoors = combinedDoors + "to: " + to_string(door.goesTo);
+		combinedDoors = combinedDoors + " desc: " + door.description + " dir: " + door.direction + " keywords: " + concatKeywords(door.keywords) + "to: " + to_string(door.goesTo);
 	}
 	return combinedDoors;
 }
@@ -405,12 +399,23 @@ string DatabaseTool::concatDoors(vector<Door> doors) {
 string DatabaseTool::concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions) {
 	string combinedDescriptions = "";
 	for(auto& extendedDescription: extendedDescriptions) {
-		combinedDescriptions = combinedDescriptions + " desc: " + extendedDescription.description + " keywords: ";
-		for(auto& keyword: extendedDescription.keywords) {
-			combinedDescriptions = combinedDescriptions + keyword + " ";
-		}
+		combinedDescriptions = combinedDescriptions + " desc: " + extendedDescription.description + " keywords: " + concatKeywords(extendedDescription.keywords);
 	}
 	return combinedDescriptions;
+}
+
+string DatabaseTool::concatKeywords(vector<string> keywords) {
+	string combinedKeywords = "";
+	for(auto& keyword: keywords) {
+		combinedKeywords = combinedKeywords + keyword + " ";
+	}
+	return combinedKeywords;
+
+}
+
+bool DatabaseTool::addItem(int itemID, string description, vector<ExtendedDescription> extendedDesciptions, vector<string> keywords) {
+	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(itemID) + "," + quotesql(concatExtendedDescriptions(extendedDesciptions)) + "," + quotesql(concatKeywords(keywords)) + "," + quotesql(description) + ");";
+	return executeSQLInsert(sqlStatment);	
 }
 
 

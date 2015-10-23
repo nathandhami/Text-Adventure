@@ -19,6 +19,23 @@ CREATE TABLE charactersOnline (
   FOREIGN KEY(charID) REFERENCES characters(charID)
 );
 
+CREATE TABLE items (
+  itemID integer primary key,
+  extendedDesc text,
+  keywords text,
+  description text
+);
+
+CREATE TABLE instanceOfItem (
+  instanceID integer primary key,
+  itemID integer,
+  charID integer,
+  zoneID, integer,
+  FOREIGN KEY(itemID) REFERENCES items(itemID),
+  FOREIGN KEY(charID) REFERENCES characters(charID),
+  FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
+);
+
 CREATE TABLE zones(
   zoneID integer primary key,
   zoneName varchar(30),

@@ -88,7 +88,7 @@ class DatabaseTool{
 		 static void addNPC(
 		 	int npcID, 
 		 	string description, 
-		 	string keywords,
+		 	vector<string> keywords,
 		 	string longdesc,
 		 	string shortdesc
 		 	);
@@ -111,6 +111,7 @@ class DatabaseTool{
 
 		 static string getDirectionDesc(int zoneID, string direction);
 
+		 static bool addItem(int itemID, string description, vector<ExtendedDescription> extendedDesciptions, vector<string> keywords);
 
 	private:
 		
@@ -121,6 +122,7 @@ class DatabaseTool{
 		static string parseDirectionDesc(string doors, string keyword);
 		static string concatDoors(vector<Door> doors);
 		static string concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions);
+		static string concatKeywords(vector<string> keywords);
 };
 
 
