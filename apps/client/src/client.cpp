@@ -75,7 +75,14 @@ int main( /*int argc, const char* argv[]*/ ) {
 	Game::initialize();
 	Game::start();
 	
-	std::cout << Game::login( "devon", "test" ).body << std::endl;
+	NetMessage response = Game::login( "devon", "test" );
+	
+	std::cout << "Got response:" << std::endl;
+	std::cout << "\tHeader: " << response.header << std::endl;
+	std::cout << "\tBody:\n" << response.body << std::endl;
+	
+	Game::logout();
+	while( 1 );
 //	Game::getFrontResponse();
 	
 	Game::stop();

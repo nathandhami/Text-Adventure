@@ -38,12 +38,19 @@ NetMessage Game::getFrontResponse() {
 
 // BLOCKING
 NetMessage Game::login( std::string userName, std::string password ) {
-	std::vector< std::string > credentialTokens { userName, password };
+	std::vector< std::string > credentialTokens = { userName, password };
 	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
 	
 	Game::transceiver->writeToServer( GameCode::LOGIN, joinedCredentials );
+	
 	while ( Game::transceiver->queueEmpty() ) {}
 	return Game::transceiver->readAndPopQueue();
+}
+
+
+void Game::logout() {
+	Game::transceiver->writeToServer( GameCode::LOGOUT, "arbitrary string" );
+	std::cout << "- Tried to log out." << std::endl;
 }
 
 

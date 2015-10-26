@@ -1,6 +1,7 @@
 #include "Session.hpp"
 #include "Authenticator.hpp"
 #include "NetConfig.hpp"
+#include "GameCode.hpp"
 #include "CommandParser.hpp"
 #include "Server.hpp"
 
@@ -88,6 +89,7 @@ void Session::asyncReadUserRequest() {
 				
 				if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
 					// handle user disconnect
+					std::cout << "A user has disconnected." << std::endl;
 					running = false;
 				} else {
 					this->handleRequest( header, body );
@@ -126,6 +128,7 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 	if ( iterator == funcMap.end() ) {
 		// not found
 		this->writeToClient( HEADER_ERROR, "Server error: incorrect request." );
+		return;
 	}
 	Session::ExecuteFunction func = iterator->second;
 	( this->*func )( body );
@@ -138,11 +141,11 @@ void Session::login( const std::string& credentials ) {
 	std::cout << "Login happened." << std::endl;
 	this->currentUser.userId = Authenticator::login( credentials );
 	if ( !this->currentUser.userId ) {
-		this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_WRONG_CREDENTIALS );
+		this->writeToClient( GameCode::WRONG, MESSAGE_ERROR_WRONG_CREDENTIALS );
 	} else {
 		std::cout << "Login success." << std::endl;
 		this->currentUser.authorized = true;
-		this->writeToClient( HEADER_OK, "a list\nof various\ncharacters" );
+		this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
 	}
 }
 
@@ -156,6 +159,8 @@ void Session::logout( const std::string& credentials ) {
 
 }
 
+
+// Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
 	std::cout << "Command happened." << std::endl;
 	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.userId, commandString );

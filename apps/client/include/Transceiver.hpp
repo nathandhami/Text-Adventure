@@ -36,7 +36,7 @@ public:
 //	void write( std::string header, std::string body );
 //	std::tuple< std::string, std::string > read();
 	
-	bool writeToServer( std::string header, std::string body );
+	void writeToServer( std::string header, std::string body );
 	
 	bool queueEmpty();
 	NetMessage readAndPopQueue();
@@ -52,6 +52,7 @@ private:
 	
 	// Read/write threads
 	std::thread readerThread;
+	std::mutex readQueueMutex;
 	bool reading;
 	
 	// Response queue
@@ -59,12 +60,16 @@ private:
 	std::mutex responseQueueLock;
 	
 	
-	NetMessage response;
+//	NetMessage response;
 	
+	// Server interaction
+	void connectToHost();
 	bool write( std::string dataString );
 	std::string read( const int maxBufferLength );
+	
+	// Queue wrapper
+	void pushToReadQueue( std::string header, std::string body );
 
-	void connectToHost();
 //	
 //	void readHeaderFromHost();
 //	void readBodyFromHost();

@@ -21,6 +21,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "NetConfig.hpp"
+#include "GameCode.hpp"
 #include "NetMessage.hpp"
 
 
@@ -75,8 +76,8 @@ private:
 	typedef std::map< std::string, ExecuteFunction > ExecFuncMap;
 	
 	ExecFuncMap funcMap = {
-		{ HEADER_LOGIN		, &Session::login },
-		{ HEADER_LOGOUT		, &Session::logout },
+		{ GameCode::LOGIN		, &Session::login },
+		{ GameCode::LOGOUT		, &Session::logout },
 		{ HEADER_COMMAND	, &Session::doGameCommand },
 		{ HEADER_MESSAGE	, &Session::sendMessageToCharacter }
 	};
