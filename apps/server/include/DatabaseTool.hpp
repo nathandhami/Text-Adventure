@@ -41,12 +41,28 @@ class ExtendedDescription{
 			this->description = description;
 			this->keywords = keywords;
 		}
-		~ExtendedDescription()
-		{
+		~ExtendedDescription(){
 		}
 		string description;
 		vector<string> keywords;
 
+};
+
+class Item{
+	public:
+		Item();
+		Item(int itemID, string description, vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+			this->itemID = itemID;
+			this->description = description;
+			this->extendedDescriptions = extendedDescriptions;
+			this->keywords = keywords;
+		};
+		~Item(){
+		};
+		int itemID;
+		string description;
+		vector<ExtendedDescription> extendedDescriptions;
+		vector<string> keywords;
 };
 
 
@@ -111,8 +127,12 @@ class DatabaseTool{
 
 		 static string getDirectionDesc(int zoneID, string direction);
 
-		 static bool addItem(int itemID, string description, vector<ExtendedDescription> extendedDesciptions, vector<string> keywords);
+		 static bool addItem(Item item);
 
+		 //NEEDS TO BE IMPLEMENTED STILL
+		 static void palceItemInZone(int itemID, int zoneID);
+		 static vector<int> getInstanceIdsOfItemsInZone(int zoneID);
+		 static void moveItemToInventory(int instanceID, int charID);
 	private:
 		
 		static string quotesql( const string& s );

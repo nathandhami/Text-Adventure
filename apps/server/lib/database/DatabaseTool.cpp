@@ -163,7 +163,7 @@ vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
 }
 
 void DatabaseTool::placeNpcInZone(int npcID, int zoneID){
-	string sqlStatment = "INSERT INTO populated_by VALUES (" + to_string(npcID) + "," + to_string(zoneID) + ");";
+	string sqlStatment = "INSERT INTO instanceOfNpc VALUES ( NULL, " + to_string(npcID) + "," + to_string(zoneID) + ");";
 	executeSQLInsert(sqlStatment);
 }
 
@@ -175,7 +175,7 @@ vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
 		throw runtime_error("could not open database");
 	}
 	Query query(db);
-	string sqlStatment = "select npcID from populated_by where zoneID=" + to_string(zoneID) + ";";
+	string sqlStatment = "select npcID from instanceOfNpc where zoneID=" + to_string(zoneID) + ";";
 	query.get_result(sqlStatment.c_str());
 	while(query.fetch_row()) {
 		int npc = (int) query.getval();
@@ -185,8 +185,8 @@ vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
 	return npcsInZone;
 }
 
-void DatabaseTool::removeNpcFromZone(int npcID, int zoneID){
-	string sqlStatment = "delete from populated_by where npcID=" + to_string(npcID) + " and " + "zoneID =" + to_string(zoneID) + ";";
+void DatabaseTool::removeNpcFromZone(int npcInstanceID, int zoneID){
+	string sqlStatment = "delete from instanceOfNpc where npcID=" + to_string(npcInstanceID) + " and " + "zoneID =" + to_string(zoneID) + ";";
 	executeSQLInsert(sqlStatment);
 }
 
@@ -413,8 +413,8 @@ string DatabaseTool::concatKeywords(vector<string> keywords) {
 
 }
 
-bool DatabaseTool::addItem(int itemID, string description, vector<ExtendedDescription> extendedDesciptions, vector<string> keywords) {
-	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(itemID) + "," + quotesql(concatExtendedDescriptions(extendedDesciptions)) + "," + quotesql(concatKeywords(keywords)) + "," + quotesql(description) + ");";
+bool DatabaseTool::addItem(Item item) {
+	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.description) + ");";
 	return executeSQLInsert(sqlStatment);	
 }
 

@@ -95,8 +95,9 @@ void addItemTest() {
 
       ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
       extendedDescriptions.push_back(extendedDesc);
-      cout << DatabaseTool::addItem(3351, description, extendedDescriptions, keywords) << endl;
-      cout << DatabaseTool::addItem(3351, description, extendedDescriptions, keywords) << endl;
+      Item dagger(3351, description, extendedDescriptions, keywords);
+      cout << DatabaseTool::addItem(dagger) << endl;
+      cout << DatabaseTool::addItem(dagger) << endl;
 
 }
 

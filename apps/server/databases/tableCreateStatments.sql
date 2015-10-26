@@ -52,7 +52,8 @@ CREATE TABLE npcs (
   shortDesc varchar(30)
 );
 
-CREATE TABLE populated_by (
+CREATE TABLE instanceOfNpc (
+  npcInstanceID integer primary key,
   npcID integer,
   zoneID integer,
   FOREIGN KEY(npcID) REFERENCES npcs(npcID),
