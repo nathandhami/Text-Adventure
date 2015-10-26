@@ -78,7 +78,7 @@ private:
 	ExecFuncMap funcMap = {
 		{ GameCode::LOGIN		, &Session::login },
 		{ GameCode::LOGOUT		, &Session::logout },
-		{ HEADER_COMMAND	, &Session::doGameCommand },
+		{ GameCode::COMMAND		, &Session::doGameCommand },
 		{ HEADER_MESSAGE	, &Session::sendMessageToCharacter }
 	};
 	

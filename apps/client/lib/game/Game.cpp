@@ -54,6 +54,12 @@ void Game::logout() {
 }
 
 
+void Game::enact( std::string userInputString ) {
+	Game::transceiver->writeToServer( GameCode::COMMAND, userInputString );
+	std::cout << "- Tried to command." << std::endl;
+}
+
+
 // ------------------- PRIVATE ------------------
 
 std::shared_ptr< Transceiver > Game::transceiver;
