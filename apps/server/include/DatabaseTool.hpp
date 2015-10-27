@@ -13,25 +13,85 @@
 
 using namespace std;
 
+enum Transfer {toCharacter, toZone, toNpc };
+
+class Door{
+	public:
+		Door();
+		Door(string description, string direction, vector<string> keywords, int goesTo)
+		{
+			this->description = description;
+			this->direction = direction;
+			this->keywords = keywords;
+			this->goesTo = goesTo;
+		}
+		~Door()
+		{
+		}
+		string description;
+		string direction;
+		vector<string> keywords;
+		int goesTo;
+
+};
+
+class ExtendedDescription{
+	public:
+		ExtendedDescription();
+		ExtendedDescription(string description, vector<string> keywords)
+		{
+			this->description = description;
+			this->keywords = keywords;
+		}
+		~ExtendedDescription(){
+		}
+		string description;
+		vector<string> keywords;
+
+};
+
+class Item{
+	public:
+		Item();
+		Item(int itemID, string longDesc, string shortDesc, vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+			this->itemID = itemID;
+			this->longDesc = longDesc;
+			this->shortDesc = shortDesc;
+			this->extendedDescriptions = extendedDescriptions;
+			this->keywords = keywords;
+			this->instanceID = 0;
+		};
+		~Item(){
+		};
+		int itemID;
+		int instanceID;
+		string shortDesc;
+		string longDesc;
+		vector<ExtendedDescription> extendedDescriptions;
+		vector<string> keywords;
+};
+
 
 
 class DatabaseTool{
 	public:
-		 static void addUser(string userID, string password);
+		 static bool addUser(string userName, string password);
 
 		 static int getUserID(string userName, string password);
 
 		 static string getPassword(int userID);
 
-		 static void addCharacter(string name, int userID);
+		 static bool addCharacter(string name, int userID);
 
 		 static int getCharID(int userID);
 
 		 static bool isCharOnline(int charID);
 
-		 static void setCharOnline(int charID);
+		 static void setCharOnline(int charID, string sessionID);
 
 		 static void setCharOffline(int charID);
+
+		 static string getSessionID(int charID);
 
 		 static void putCharInZone(int charID, int zoneID);
 
@@ -47,31 +107,20 @@ class DatabaseTool{
 
 		 static string getNPCDesc(int npcID);
 
-		 static void addNPC(
+		 static bool addNPC(
 		 	int npcID, 
 		 	string description, 
-		 	string keywords,
+		 	vector<string> keywords,
 		 	string longdesc,
 		 	string shortdesc
 		 	);
 
-		 static void addZone(
+		 static bool addZone(
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
-		 	string extendedDesc,
-		 	int northID,
-		 	string northDesc,
-		 	int southID,
-		 	string southDesc,
-		 	int eastID,
-		 	string eastDesc,
-		 	int westID,
-		 	string westDesc,
-		 	int upID,
-		 	string upDesc,
-		 	int downID,
-		 	string downDesc
+		 	vector<ExtendedDescription> extendedDescriptions,
+		 	vector<Door> doors
 		 	);
 
 		 static string getZoneName(int zoneID);
@@ -84,12 +133,28 @@ class DatabaseTool{
 
 		 static string getDirectionDesc(int zoneID, string direction);
 
+		 static bool addItem(Item item);
 
+		 //NEEDS TO BE IMPLEMENTED STILL
+		 static bool spawnItemInZone(int itemID, int zoneID);
+		 static bool spawnItemInNpcInv(int itemID, int zoneID);
+		 static bool spawnItemInCharacterInv(int itemID, int zoneID);
+		 static bool moveItem(int instanceID, Transfer where, int toID);
 	private:
 		
 		static string quotesql( const string& s );
-		static void executeSQLInsert(string statment);
+		static bool executeSQLInsert(string statment);
 		static string parseExtendedDesc(string extendedDesc, string keyword);
+		static int parseDirectionID(string doors, string direction);
+		static string parseDirectionDesc(string doors, string keyword);
+		static string concatDoors(vector<Door> doors);
+		static string concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions);
+		static string concatKeywords(vector<string> keywords);
 };
+
+
+
+
+
 
 #endif

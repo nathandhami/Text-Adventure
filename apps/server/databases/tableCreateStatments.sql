@@ -9,9 +9,34 @@ CREATE TABLE characters (
   name varchar(30) NOT NULL,
   userID int unique,
   location integer,
-  isOnline integer,
   FOREIGN KEY(userID) REFERENCES user(userID),
   FOREIGN KEY(location) REFERENCES zones(zoneID)
+);
+
+CREATE TABLE charactersOnline (
+  charID integer primary key,
+  sessionID text unique,
+  FOREIGN KEY(charID) REFERENCES characters(charID)
+);
+
+CREATE TABLE items (
+  itemID integer primary key,
+  extendedDesc text,
+  keywords text,
+  longDesc text,
+  shortDesc text
+);
+
+CREATE TABLE instanceOfItem (
+  instanceID integer primary key,
+  itemID integer,
+  charID integer,
+  zoneID integer,
+  npcInstanceID integer,
+  FOREIGN KEY(itemID) REFERENCES items(itemID),
+  FOREIGN KEY(charID) REFERENCES characters(charID),
+  FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID)
 );
 
 CREATE TABLE zones(
@@ -19,18 +44,7 @@ CREATE TABLE zones(
   zoneName varchar(30),
   description text,
   extendedDesc text,
-  northID integer,
-  northDesc text,
-  southID integer,
-  southDesc text,
-  eastID integer,
-  eastDesc text,
-  westID integer,
-  westDesc text,
-  upID integer,
-  upDesc text,
-  downID integer,
-  downDesc text
+  doors text
 );
 
 CREATE TABLE npcs (
@@ -41,7 +55,8 @@ CREATE TABLE npcs (
   shortDesc varchar(30)
 );
 
-CREATE TABLE populated_by (
+CREATE TABLE instanceOfNpc (
+  npcInstanceID integer primary key,
   npcID integer,
   zoneID integer,
   FOREIGN KEY(npcID) REFERENCES npcs(npcID),
