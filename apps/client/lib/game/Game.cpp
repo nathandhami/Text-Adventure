@@ -48,10 +48,19 @@ NetMessage Game::login( std::string userName, std::string password ) {
 }
 
 
+// TO-DO: wait for logout or DC response, implement queue flushing, reset reading and writing
 void Game::logout() {
 	Game::transceiver->writeToServer( GameCode::LOGOUT, "arbitrary string" );
 	std::cout << "- Tried to log out." << std::endl;
 }
+
+
+// BLOCKING
+// TO-DO: make blocking
+/*void Game::selectCharacter( std::string charNameOrNumber ) {
+	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charNameOrNumber );
+	std::cout << "- Tried to select a char." << std::endl;
+}*/
 
 
 void Game::enact( std::string userInputString ) {

@@ -1,6 +1,9 @@
 #include <iostream>
 #include <functional>
 #include <cstdlib>
+#include <chrono>
+#include <iomanip>
+
 
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
@@ -41,7 +44,18 @@ void Transceiver::stop() {
 
 
 void Transceiver::writeToServer( std::string header, std::string body ) {
-	if ( !this->write( header ) || !this->write( body ) ) {
+	// put size of the body into a string
+	std::stringstream formatStream;
+	formatStream << std::setfill( '0' ) << std::setw( NetMessage::MaxLength::BODY_LENGTH ) << body.length();
+	
+	// write to server ensuring no disconnects
+	if ( !this->write( header ) ) {
+		std::cout << "Write Failed." << std::endl;
+		this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+	} else if ( !this->write( formatStream.str() ) ) {
+		std::cout << "Write Failed." << std::endl;
+		this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+	} else if ( !this->write( body ) ) {
 		std::cout << "Write Failed." << std::endl;
 		this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
 	}
@@ -86,7 +100,7 @@ bool Transceiver::write( std::string dataString ) {
 		boost::asio::buffer( dataString ),
 		error
 	);
-
+	
 	return ( error == 0 );
 }
 
@@ -97,8 +111,22 @@ void Transceiver::asyncReadServerResponses() {
 			std::cout << "Reader started." << std::endl;
 			this->reading = true;
 			while ( this->reading ) {
+//				std::string header = this->read( NetMessage::MaxLength::HEADER );
+//				std::string body = this->read( NetMessage::MaxLength::BODY );
+				
+				
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
-				std::string body = this->read( NetMessage::MaxLength::BODY );
+				if ( header == CODE_ERROR_READ ) break;
+				// get body length
+				std::string bodyLengthStr = this->read( NetMessage::MaxLength::BODY_LENGTH );
+				if ( header == CODE_ERROR_READ ) break;
+				int bodyLength = atoi( bodyLengthStr.c_str() );
+				// get body
+				std::string body = this->read( bodyLength );
+				if ( header == CODE_ERROR_READ ) break;
+				
+				
+				
 //				if ( !this->reading ) break; // if thread sneaks to read the last time before program dies
 				if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
 					// handle server down/loss of connection

@@ -76,24 +76,25 @@ std::string Session::getIP( IPType type ) {
 
 
 // new function for 'better' async reading
+// TO-DO: do a proper session shutdown if user dcs
 void Session::asyncReadUserRequest() {
 	this->readerThread = std::thread(
 		[ this ]() {
 			bool running = true;
 			while ( running ) {
 				// while user connected
-				// string = do read header;
+				// get header
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
-				// string = do read body;
-				std::string body = this->read( NetMessage::MaxLength::BODY );
+				if ( header == CODE_ERROR_READ ) break;
+				// get body length
+				std::string bodyLengthStr = this->read( NetMessage::MaxLength::BODY_LENGTH );
+				if ( header == CODE_ERROR_READ ) break;
+				int bodyLength = atoi( bodyLengthStr.c_str() );
+				// get body
+				std::string body = this->read( bodyLength );
+				if ( header == CODE_ERROR_READ ) break;
 				
-				if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
-					// handle user disconnect
-					std::cout << "A user has disconnected." << std::endl;
-					running = false;
-				} else {
-					this->handleRequest( header, body );
-				}
+				this->handleRequest( header, body );
 			}
 		}
 	);
@@ -107,7 +108,13 @@ std::string Session::read( const int maxBufferLength ) {
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;
 	
-	size_t bufferLength = this->socket.read_some(
+	/*size_t bufferLength = this->socket.read(
+		boost::asio::buffer( buffer ),
+		error
+	);*/
+	
+	size_t bufferLength = boost::asio::read(
+		this->socket,
 		boost::asio::buffer( buffer ),
 		error
 	);
@@ -115,6 +122,7 @@ std::string Session::read( const int maxBufferLength ) {
 	if ( error ) {
 		return CODE_ERROR_READ;
 	}
+	std::cout << "\tGOT: " <<  std::string( buffer.begin(), buffer.begin() + bufferLength ) << std::endl;
 	
 	return std::string( buffer.begin(), buffer.begin() + bufferLength );
 }
@@ -123,6 +131,8 @@ std::string Session::read( const int maxBufferLength ) {
 // new handle request function for improved async
 void Session::handleRequest( const std::string header, const std::string body ) {
 	std::cout << "Processing client's request..." << std::endl;
+	std::cout << "Header: " << header << std::endl;
+	std::cout << "Body: " << body << std::endl;
 	
 	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
 	if ( iterator == funcMap.end() ) {
@@ -183,12 +193,33 @@ void Session::asyncWrite() {
 		[ this ]() {
 			while ( this->writeInProgress ) {
 				this->messageQueueLock.lock();
+				// ----- critical section -----
 				NetMessage message = this->responseMessageQueue.front();
 				this->responseMessageQueue.pop();
+				// --- end critical section ---
 				this->messageQueueLock.unlock();
 				
-				this->write( message.header );
-				this->write( message.body );
+//				this->write( message.header );
+//				this->write( message.body );
+				
+				
+				// put size of the body into a string
+				std::stringstream formatStream;
+				formatStream << std::setfill( '0' ) << std::setw( NetMessage::MaxLength::BODY_LENGTH ) << message.body.length();
+
+				// write to server ensuring no disconnects
+				if ( !this->write( message.header ) ) {
+					std::cout << "Write Failed." << std::endl;
+					// handle DC
+				} else if ( !this->write( formatStream.str() ) ) {
+					std::cout << "Write Failed." << std::endl;
+					// handle DC
+				} else if ( !this->write( message.body ) ) {
+					std::cout << "Write Failed." << std::endl;
+					// handle DC
+				}
+				
+				
 				
 				if ( this->responseMessageQueue.empty() ) {
 					this->writeInProgress = false;
