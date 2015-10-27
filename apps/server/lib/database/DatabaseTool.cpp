@@ -437,7 +437,21 @@ bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
 }
 
 
-bool DatabaseTool::moveItem(int instanceID, Transfer where){
+bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
+	string sqlStatment = "";
+	switch(where) {
+		case toCharacter:
+			sqlStatment = "UPDATE instanceOfItem SET zoneID = NULL, npcInstanceID = NULL, charID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		case toZone:
+			sqlStatment = "UPDATE instanceOfItem SET charID = NULL, npcInstanceID = NULL, zoneID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		case toNpc:
+			sqlStatment = "UPDATE instanceOfItem SET charID = NULL, zoneID = NULL, npcInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		default:
+			return false;
+	}
 
 }
 

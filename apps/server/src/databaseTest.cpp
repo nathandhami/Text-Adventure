@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
       // }
       //addZoneTest();
       //addItemTest();
-      spawnItemTest();
-
+      //spawnItemTest();
+      cout << DatabaseTool::moveItem(1, Transfer::toZone, 3054);
 
 
 

@@ -13,7 +13,7 @@
 
 using namespace std;
 
-enum Transfer {ZoneToCharacter, NpcToCharacter, CharacterToZone, CharacterToNpc };
+enum Transfer {toCharacter, toZone, toNpc };
 
 class Door{
 	public:
@@ -139,7 +139,7 @@ class DatabaseTool{
 		 static bool spawnItemInZone(int itemID, int zoneID);
 		 static bool spawnItemInNpcInv(int itemID, int zoneID);
 		 static bool spawnItemInCharacterInv(int itemID, int zoneID);
-		 static bool moveItem(int instanceID, Transfer where);
+		 static bool moveItem(int instanceID, Transfer where, int toID);
 	private:
 		
 		static string quotesql( const string& s );
