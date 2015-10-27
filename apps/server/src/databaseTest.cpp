@@ -7,6 +7,7 @@
 
 void addZoneTest();
 void addItemTest();
+void spawnItemTest();
 
 int main(int argc, char* argv[])
 {
@@ -74,8 +75,8 @@ int main(int argc, char* argv[])
       //    }
       // }
       //addZoneTest();
-      addItemTest();
-
+      //addItemTest();
+      spawnItemTest();
 
 
 
@@ -87,7 +88,8 @@ int main(int argc, char* argv[])
 }
 
 void addItemTest() {
-      string description = "You see a standard issue dagger here.";
+      string longDesc = "You see a standard issue dagger here.";
+      string shortDesc = "A dagger";
       vector<ExtendedDescription> extendedDescriptions;
       
       vector<string> keywords;
@@ -95,10 +97,20 @@ void addItemTest() {
 
       ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
       extendedDescriptions.push_back(extendedDesc);
-      Item dagger(3351, description, extendedDescriptions, keywords);
+      Item dagger(3351, longDesc, shortDesc, extendedDescriptions, keywords);
       cout << DatabaseTool::addItem(dagger) << endl;
       cout << DatabaseTool::addItem(dagger) << endl;
+}
 
+void spawnItemTest() {
+   cout << "spawning items..." << endl;
+   cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
+   cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
+   cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(3351, 9) << endl;
 }
 
 void addZoneTest() {

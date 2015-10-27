@@ -34,6 +34,8 @@ bool DatabaseTool::executeSQLInsert(string statment){
 		throw runtime_error("could not open database");
 	}
 	Query query(db);
+	query.execute("PRAGMA foreign_keys = ON;");
+	query.free_result();
 	return query.execute(statment.c_str());
 
 }
@@ -202,7 +204,7 @@ string DatabaseTool::getNPCDesc(int npcID){
 	return description;
 }
 
-void DatabaseTool::addNPC(
+bool DatabaseTool::addNPC(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -216,11 +218,11 @@ void DatabaseTool::addNPC(
 		+ ", " + quotesql(longdesc)
 		+ ", " + quotesql(shortdesc) 
 		+ ");";
-	executeSQLInsert(sqlStatment);
+	return executeSQLInsert(sqlStatment);
 
 }
 
-void DatabaseTool::addZone(
+bool DatabaseTool::addZone(
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
@@ -233,7 +235,7 @@ void DatabaseTool::addZone(
 			+ ", " + quotesql(concatExtendedDescriptions(extendedDescriptions))
 			+ ", " + quotesql(concatDoors(doors))
 			+ ");";
-	executeSQLInsert(sqlStatment);
+	return executeSQLInsert(sqlStatment);
 }
 
 string DatabaseTool::getZoneName(int zoneID){
@@ -414,8 +416,29 @@ string DatabaseTool::concatKeywords(vector<string> keywords) {
 }
 
 bool DatabaseTool::addItem(Item item) {
-	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.description) + ");";
+	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.longDesc) + "," + quotesql(item.shortDesc) + ");";
 	return executeSQLInsert(sqlStatment);	
+}
+
+bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL);";
+	return executeSQLInsert(sqlStatment);
+
+}
+
+bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, " + to_string(npcInstanceID) + ");";
+	return executeSQLInsert(sqlStatment);
+}
+
+bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , " + to_string(charID) + ", NULL, NULL);";
+	return executeSQLInsert(sqlStatment);
+}
+
+
+bool DatabaseTool::moveItem(int instanceID, Transfer where){
+
 }
 
 

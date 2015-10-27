@@ -23,17 +23,20 @@ CREATE TABLE items (
   itemID integer primary key,
   extendedDesc text,
   keywords text,
-  description text
+  longDesc text,
+  shortDesc text
 );
 
 CREATE TABLE instanceOfItem (
   instanceID integer primary key,
   itemID integer,
   charID integer,
-  zoneID, integer,
+  zoneID integer,
+  npcInstanceID integer,
   FOREIGN KEY(itemID) REFERENCES items(itemID),
   FOREIGN KEY(charID) REFERENCES characters(charID),
-  FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
+  FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID)
 );
 
 CREATE TABLE zones(

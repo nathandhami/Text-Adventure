@@ -13,6 +13,8 @@
 
 using namespace std;
 
+enum Transfer {ZoneToCharacter, NpcToCharacter, CharacterToZone, CharacterToNpc };
+
 class Door{
 	public:
 		Door();
@@ -51,16 +53,20 @@ class ExtendedDescription{
 class Item{
 	public:
 		Item();
-		Item(int itemID, string description, vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+		Item(int itemID, string longDesc, string shortDesc, vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
 			this->itemID = itemID;
-			this->description = description;
+			this->longDesc = longDesc;
+			this->shortDesc = shortDesc;
 			this->extendedDescriptions = extendedDescriptions;
 			this->keywords = keywords;
+			this->instanceID = 0;
 		};
 		~Item(){
 		};
 		int itemID;
-		string description;
+		int instanceID;
+		string shortDesc;
+		string longDesc;
 		vector<ExtendedDescription> extendedDescriptions;
 		vector<string> keywords;
 };
@@ -101,7 +107,7 @@ class DatabaseTool{
 
 		 static string getNPCDesc(int npcID);
 
-		 static void addNPC(
+		 static bool addNPC(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -109,7 +115,7 @@ class DatabaseTool{
 		 	string shortdesc
 		 	);
 
-		 static void addZone(
+		 static bool addZone(
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
@@ -130,9 +136,10 @@ class DatabaseTool{
 		 static bool addItem(Item item);
 
 		 //NEEDS TO BE IMPLEMENTED STILL
-		 static void palceItemInZone(int itemID, int zoneID);
-		 static vector<int> getInstanceIdsOfItemsInZone(int zoneID);
-		 static void moveItemToInventory(int instanceID, int charID);
+		 static bool spawnItemInZone(int itemID, int zoneID);
+		 static bool spawnItemInNpcInv(int itemID, int zoneID);
+		 static bool spawnItemInCharacterInv(int itemID, int zoneID);
+		 static bool moveItem(int instanceID, Transfer where);
 	private:
 		
 		static string quotesql( const string& s );
