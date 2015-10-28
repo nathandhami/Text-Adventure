@@ -16,6 +16,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 #include "ServerConnection.hpp"
 #include "NetMessage.hpp"
@@ -53,7 +54,7 @@ private:
 	// Read/write threads
 	std::thread readerThread;
 	std::mutex readQueueMutex;
-	bool reading;
+	std::atomic< bool > reading;
 	
 	// Response queue
 	std::queue< NetMessage > responseQueue;

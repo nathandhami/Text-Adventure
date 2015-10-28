@@ -82,9 +82,16 @@ int main( /*int argc, const char* argv[]*/ ) {
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
 	Game::enact( "look" );
+	Game::enact( "move north" );
 	
 	Game::logout();
-	while( 1 );
+	
+	
+	while( 1 ) {
+		
+		std::cout << "Response: " << Game::getFrontResponse().body << std::endl;
+		std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+	}
 //	Game::getFrontResponse();
 	
 	Game::stop();

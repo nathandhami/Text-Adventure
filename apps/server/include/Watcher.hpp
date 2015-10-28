@@ -34,7 +34,6 @@ private:
 	boost::asio::io_service ioService;
 	std::shared_ptr< tcp::acceptor > connectionAcceptor;
 	boost::scoped_ptr<boost::thread> runnerThread;
-//	std::vector< std::shared_ptr< Session > > sessions;
 	
 //	bool running;
 	

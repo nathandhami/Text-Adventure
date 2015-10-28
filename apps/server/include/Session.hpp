@@ -14,6 +14,7 @@
 
 #include <queue>
 #include <mutex>
+#include <atomic>
 #include <thread>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -54,8 +55,8 @@ private:
 	std::thread readerThread;
 	std::thread writerThread;
 	
-	bool writing = false;
-	bool reading = false;
+	std::atomic< bool > writing { false };
+	std::atomic< bool > reading { false };
 	
 	// Session write queue members
 	std::queue< NetMessage > responseMessageQueue;

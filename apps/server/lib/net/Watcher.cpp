@@ -66,8 +66,8 @@ void Watcher::handleAccept(
 ) {
 	if ( !error ) {
 		std::string sessionIdString = Server::registerNewSession( newSession );
-		std::async(
-			std::launch::async,
+		
+		std::thread newSessionThread(
 			[ this, newSession, sessionIdString ]() {
 				std::cout << "Session launched." << std::endl;
 				newSession->start( sessionIdString );
@@ -75,6 +75,26 @@ void Watcher::handleAccept(
 				std::cout << "Thread ended." << std::endl;
 			}
 		);
+		
+		newSessionThread.detach();
+		/*this->sessionThreads.push_back( std::thread(
+			[ this, newSession, sessionIdString ]() {
+				std::cout << "Session launched." << std::endl;
+				newSession->start( sessionIdString );
+				Server::destroySession( sessionIdString );
+				std::cout << "Thread ended." << std::endl;
+			}
+		) );*/
+		
+		/*std::async(
+			std::launch::async,
+			[ this, newSession, sessionIdString ]() {
+				std::cout << "Session launched." << std::endl;
+				newSession->start( sessionIdString );
+				Server::destroySession( sessionIdString );
+				std::cout << "Thread ended." << std::endl;
+			}
+		);*/
 		
 //		Server::registerNewSession( newSession );
 		this->startAccept();

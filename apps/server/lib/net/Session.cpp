@@ -167,6 +167,7 @@ void Session::login( const std::string& credentials ) {
 	}
 	
 	std::cout << "Login success." << std::endl;
+	DatabaseTool::setCharOnline( this->currentUser.getUserId(), this->identifierString );
 	this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
 }
 
@@ -186,6 +187,7 @@ void Session::logout( const std::string& credentials ) {
 // Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
 	LOG( "Command happened." );
+	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::CHAT_PRIVATE, "some random stuff" );
 //	std::cout << "Command happened." << std::endl;
 	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
 	if ( parserResponse == HEADER_ERROR ) {
@@ -197,7 +199,7 @@ void Session::doGameCommand( const std::string& commandString ) {
 
 void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {
 	// split char id and message
-	Server::sendMessageToClient( "sdf-dsfsd-dsfs", charNameAndMessage );
+//	Server::sendMessageToClient( "sdf-dsfsd-dsfs", charNameAndMessage );
 }
 
 // ------------ End 
