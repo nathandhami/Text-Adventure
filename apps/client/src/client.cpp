@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
-
+#include <gtkmm.h>
 
 #define MESSAGE_CONNECTING	"Connecting to server..."
 #define MESSAGE_CONNECTED	"Connected successfuly."
@@ -56,7 +56,16 @@ static void readCommands() {
 
 
 int main( int argc, const char* argv[] ) {
-	UIWriter::sendSysStatus( "Connecting to server..." );
+
+	Gtk::Main kit(argc);
+	Gtk::Window window;
+
+	window.set_title("Text Gale Online");
+	window.set_default_size(900, 500);
+	window.set_position(Gtk::WIN_POS_CENTER);
+	
+	kit.run(window);
+	/*UIWriter::sendSysStatus( "Connecting to server..." );
 	
 	transceiver = std::make_shared< Transceiver >();
 	transceiver->run();
@@ -66,8 +75,7 @@ int main( int argc, const char* argv[] ) {
 	login();
 	
 	UIWriter::sendSysStatus( "What would you like to do?" );
-	readCommands();
-	
-	
+	readCommands();*/
+
 	return 0;
 }

@@ -13,4 +13,9 @@ echo "Installing SQLite..."
 apt-get install sqlite3 libsqlite3-dev
 echo "SQLite: done."
 
+# GTK+
+echo "Installing GTK+..."
+apt-get install libgtkmm-3.0-dev
+echo "GTK+: done."
+
 # Other libs...
