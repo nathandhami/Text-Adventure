@@ -8,8 +8,6 @@
 #include <sqlite3.h>
 #include <fstream>
 #include <vector>
-#include "Database.h"
-#include "Query.h"
 
 using namespace std;
 
@@ -97,13 +95,15 @@ class DatabaseTool{
 
 		 static int getCharsLocation(int charID);
 
-		 static vector<int> getAllCharsInZone(int zoneID);
+		 static vector<int> getAllOnlineCharsInZone(int zoneID);
 
 		 static void placeNpcInZone(int npcID, int zoneID);
 
 		 static vector<int> getAllNpcsInZone(int zoneID);
 
 		 static void removeNpcFromZone(int npcID, int zone);
+
+		 static int getNpcIDFromInstanceID(int npcInstanceID);
 
 		 static string getNPCDesc(int npcID);
 

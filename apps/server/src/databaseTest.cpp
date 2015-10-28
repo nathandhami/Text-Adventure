@@ -8,16 +8,15 @@
 void addZoneTest();
 void addItemTest();
 void spawnItemTest();
+void charOnlineTest();
+void npcInstanceTest();
 
 int main(int argc, char* argv[])
 {
    try {
       cout << "running database tests" << endl;
-      // if(DatabaseTool::addUser("devon", "testing")){
-      //    cout << "true" << endl;
-      // } else {
-      //    cout << "false" << endl;
-      // }
+      // cout << DatabaseTool::addUser("test99", "testing") << endl;
+
 
 
 
@@ -36,31 +35,26 @@ int main(int argc, char* argv[])
       //DatabaseTool::removeNpcFromZone(3000, 3054);
 
 
-   	// cout << DatabaseTool::getUserID("devon", "test") << endl;
-   	// cout << DatabaseTool::getUserID("devon2", "tesaeft") << endl;
-   	// cout << DatabaseTool::getUserID("devon", "wrong password") << endl;
+   	// cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
+   	// cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
+   	// cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
 
    	// cout << DatabaseTool::getPassword(1) << endl;
    	// cout << DatabaseTool::getPassword(2) << endl;
+    //   cout << DatabaseTool::getPassword(99999) << endl;
 
-   	//DatabaseTool::addCharacter("leeeroooy jeeenkins", 1);
-   	//cout << "adding leroy" << endl;
+   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1) << endl;
+    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909) << endl;
 
-      // cout << DatabaseTool::isCharOnline(1) << endl;
-      // DatabaseTool::setCharOnline(1, "sessionID");
-      // cout << DatabaseTool::isCharOnline(1) << endl;
-      // cout << "sessionID = " << DatabaseTool::getSessionID(1) << endl;
-      // DatabaseTool::setCharOffline(1);
-      // cout << DatabaseTool::isCharOnline(1) << endl;
+
 
       //cout << DatabaseTool::getDirectionDesc(3054, "temple") << endl; 
    	// cout << DatabaseTool::getCharsLocation(99) << endl;
-   	//DatabaseTool::putCharInZone(2, 8888);
-   	// cout << DatabaseTool::getCharsLocation(1) << endl;
+
 
       // cout << DatabaseTool::getZoneName(3001) << endl;
       // cout << DatabaseTool::getZoneDesc(3001) << endl;
-      //cout << DatabaseTool::getDirectionID(3054, "south") << endl;
+      // cout << DatabaseTool::getDirectionID(3054, "south") << endl;
 
 
       // vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
@@ -75,9 +69,19 @@ int main(int argc, char* argv[])
       //    }
       // }
       //addZoneTest();
-      //addItemTest();
-      //spawnItemTest();
-      cout << DatabaseTool::moveItem(1, Transfer::toZone, 3054);
+      addItemTest();
+      spawnItemTest();
+      //cout << DatabaseTool::moveItem(1, Transfer::toZone, 3054);
+
+      // cout << DatabaseTool::getCharID(1) << endl;
+      // cout << DatabaseTool::getCharID(2) << endl;
+      // DatabaseTool::putCharInZone(1, 3054);
+      // cout << DatabaseTool::getCharsLocation(1) << endl;
+
+      // vector<int> charsInZone = DatabaseTool::getAllOnlineCharsInZone(3054);
+      // for(auto& charID: charsInZone) {
+      //    cout << charID << endl;
+      // }
 
 
 
@@ -85,6 +89,23 @@ int main(int argc, char* argv[])
    catch(runtime_error e){
       cout << e.what() << endl;
    }
+}
+
+void npcInstanceTest() {
+   DatabaseTool::placeNpcInZone(3000, 3054);
+   vector<int> npcsInZone = DatabaseTool::getAllNpcsInZone(3054);
+   for(auto& npcInstanceID: npcsInZone) {
+      cout << DatabaseTool::getNPCDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl;
+   }
+}
+
+void charOnlineTest() {
+   cout << DatabaseTool::isCharOnline(1) << endl;
+   DatabaseTool::setCharOnline(1, "sessionID");
+   cout << DatabaseTool::isCharOnline(1) << endl;
+   cout << "sessionID = " << DatabaseTool::getSessionID(1) << endl;
+   DatabaseTool::setCharOffline(1);
+   cout << DatabaseTool::isCharOnline(1) << endl;
 }
 
 void addItemTest() {
