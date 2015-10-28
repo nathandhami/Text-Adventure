@@ -75,7 +75,7 @@ int main( /*int argc, const char* argv[]*/ ) {
 	Game::initialize();
 	Game::start();
 	
-	NetMessage response = Game::login( "devon", "test" );
+	NetMessage response = Game::login( "testUser1", "test1" );
 	
 	std::cout << "Got response:" << std::endl;
 	std::cout << "\tHeader: " << response.header << std::endl;

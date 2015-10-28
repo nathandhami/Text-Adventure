@@ -12,14 +12,15 @@
 
 #include <iostream>
 
+#include "User.hpp"
+
 namespace Authenticator {
 	int login( std::string data );
+	bool login( User& user, std::string userCredentials );
 	void logout( int userId );
+	bool logout( User& user );
 }
 
-typedef struct {
-	int id;
-	int selectedCharacterId;
-} User;
+
 
 #endif

@@ -65,15 +65,18 @@ void Watcher::handleAccept(
 	const boost::system::error_code& error 
 ) {
 	if ( !error ) {
+		std::string sessionIdString = Server::registerNewSession( newSession );
 		std::async(
 			std::launch::async,
-			[ this, newSession ]() {
+			[ this, newSession, sessionIdString ]() {
 				std::cout << "Session launched." << std::endl;
-				newSession->start();
+				newSession->start( sessionIdString );
+				Server::destroySession( sessionIdString );
+				std::cout << "Thread ended." << std::endl;
 			}
 		);
 		
-		Server::registerNewSession( newSession );
+//		Server::registerNewSession( newSession );
 		this->startAccept();
 	}
 }

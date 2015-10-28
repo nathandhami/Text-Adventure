@@ -24,7 +24,7 @@ void Server::waitUntilDone() {
 }
 
 
-void Server::registerNewSession( Server::SessionPtr newSession ) {
+std::string Server::registerNewSession( Server::SessionPtr newSession ) {
 	std::string identifierString;
 	bool inserted = false;
 	
@@ -37,6 +37,16 @@ void Server::registerNewSession( Server::SessionPtr newSession ) {
 	} while ( !inserted );
 	
 	std::cout << "Registered a session with ID: " << identifierString << std::endl;
+	return identifierString;
+}
+
+void Server::destroySession( std::string identifierString ) {
+	if ( !Server::sessions.count( identifierString ) ) {
+		std::cout << "COULD NOT DELETE THE SESSION." << std::endl;
+		return;
+	}
+	
+	Server::sessions.erase( identifierString );
 }
 
 
