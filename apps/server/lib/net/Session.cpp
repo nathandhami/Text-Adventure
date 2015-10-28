@@ -25,44 +25,46 @@
 //#define MESSAGE_OK_LOGGED_IN
 #define MESSAGE_OK_LOGGED_OUT	"Log out successful."
 
+// Useful Macros
+#define LOG( msg ) std::cout << "[" << this->identifierString << "] " << msg << std::endl
+
 
 using boost::asio::ip::tcp;
 
 
 // ------------------- PUBLIC -------------------
 
+Session::~Session() {
+	LOG( "--- Process terminated ---" );
+}
+
 tcp::socket& Session::getSocket() {
 	return this->socket;
 }
 
 
-void Session::start() {
+void Session::start( std::string identifierString ) {
 	// Initial connection established
 	std::string address( this->getIP( Session::IPType::v4 ) );
-	std::cout << MESSAGE_CONNECT << " IPv4: " << address << std::endl;
+	this->identifierString = identifierString;
 	
-	// Initialize the user
-	this->currentUser.userId = 0;
-	this->currentUser.authorized = false;
-	this->currentUser.characterId = 0;
+	LOG( "Connected: " << address );
 	
-	// Start listening to the client
-//	this->readHeader(); // v
 	this->asyncReadUserRequest();
+	std::cout << "NOW ASYNC" << std::endl;
+	this->readerThread.join();
 }
 
 
 void Session::writeToClient( std::string header, std::string body ) {
 	NetMessage responseMessage( header, body );
-//	responseMessage.saveHeaderString( header );
-//	responseMessage.saveBodyString( body );
 
 	this->messageQueueLock.lock();
 	this->responseMessageQueue.push( responseMessage );
 	this->messageQueueLock.unlock();
 
-	if ( !writeInProgress ) {
-		this->writeInProgress = true;
+	if ( !this->writing ) {
+		this->writing = true;
 		this->asyncWrite();
 	}
 }
@@ -80,22 +82,35 @@ std::string Session::getIP( IPType type ) {
 void Session::asyncReadUserRequest() {
 	this->readerThread = std::thread(
 		[ this ]() {
-			bool running = true;
-			while ( running ) {
+			this->reading = true;
+			while ( this->reading ) {
 				// while user connected
 				// get header
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->gentleShutDown();
+					break;
+				}
 				// get body length
 				std::string bodyLengthStr = this->read( NetMessage::MaxLength::BODY_LENGTH );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->gentleShutDown();
+					break;
+				}
 				int bodyLength = atoi( bodyLengthStr.c_str() );
 				// get body
 				std::string body = this->read( bodyLength );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->gentleShutDown();
+					break;
+				}
+				
+				LOG( "Received request." );
 				
 				this->handleRequest( header, body );
 			}
+			LOG( "Stopped reading." );
+			this->terminating = true;
 		}
 	);
 }
@@ -103,15 +118,10 @@ void Session::asyncReadUserRequest() {
 
 // new read function for the improved async
 std::string Session::read( const int maxBufferLength ) {
-	std::cout << "Waiting for client write..." << std::endl;
+//	std::cout << "Waiting for client write..." << std::endl;
 	
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;
-	
-	/*size_t bufferLength = this->socket.read(
-		boost::asio::buffer( buffer ),
-		error
-	);*/
 	
 	size_t bufferLength = boost::asio::read(
 		this->socket,
@@ -122,7 +132,7 @@ std::string Session::read( const int maxBufferLength ) {
 	if ( error ) {
 		return CODE_ERROR_READ;
 	}
-	std::cout << "\tGOT: " <<  std::string( buffer.begin(), buffer.begin() + bufferLength ) << std::endl;
+//	std::cout << "\tGOT: " <<  std::string( buffer.begin(), buffer.begin() + bufferLength ) << std::endl;
 	
 	return std::string( buffer.begin(), buffer.begin() + bufferLength );
 }
@@ -130,9 +140,9 @@ std::string Session::read( const int maxBufferLength ) {
 
 // new handle request function for improved async
 void Session::handleRequest( const std::string header, const std::string body ) {
-	std::cout << "Processing client's request..." << std::endl;
-	std::cout << "Header: " << header << std::endl;
-	std::cout << "Body: " << body << std::endl;
+	LOG( "Processing client's request..." );
+	LOG( "> Header: " << header );
+	LOG( "> Body: " << body );
 	
 	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
 	if ( iterator == funcMap.end() ) {
@@ -148,32 +158,36 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 // ------------- De-headed functions
 
 void Session::login( const std::string& credentials ) {
-	std::cout << "Login happened." << std::endl;
-	this->currentUser.userId = Authenticator::login( credentials );
-	if ( !this->currentUser.userId ) {
+	LOG( "Login happened." );
+	
+	bool loginSuccess = Authenticator::login( this->currentUser, credentials );
+	if ( !loginSuccess ) {
 		this->writeToClient( GameCode::WRONG, MESSAGE_ERROR_WRONG_CREDENTIALS );
-	} else {
-		std::cout << "Login success." << std::endl;
-		this->currentUser.authorized = true;
-		this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
+		return;
 	}
+	
+	std::cout << "Login success." << std::endl;
+	this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
 }
 
 void Session::logout( const std::string& credentials ) {
-	std::cout << "Logout happened." << std::endl;
-	Authenticator::logout( this->currentUser.userId );
-	this->currentUser.userId = 0;
-	this->currentUser.authorized = false;
-	this->currentUser.characterId = 0;
+	LOG( "Logout happened." );
+	
+	bool logoutSuccess = Authenticator::logout( this->currentUser );
+	if ( !logoutSuccess ) {
+		this->writeToClient( HEADER_ERROR, "Could not log out." );
+		return;
+	}
+	
 	this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
-
 }
 
 
 // Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
-	std::cout << "Command happened." << std::endl;
-	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.userId, commandString );
+	LOG( "Command happened." );
+//	std::cout << "Command happened." << std::endl;
+	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
 	if ( parserResponse == HEADER_ERROR ) {
 		this->writeToClient( HEADER_ERROR, "Invalid Command." );
 	} else {
@@ -191,7 +205,7 @@ void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {
 void Session::asyncWrite() {
 	this->writerThread = std::thread(
 		[ this ]() {
-			while ( this->writeInProgress ) {
+			while ( this->writing ) {
 				this->messageQueueLock.lock();
 				// ----- critical section -----
 				NetMessage message = this->responseMessageQueue.front();
@@ -210,30 +224,31 @@ void Session::asyncWrite() {
 				// write to server ensuring no disconnects
 				if ( !this->write( message.header ) ) {
 					std::cout << "Write Failed." << std::endl;
-					// handle DC
+//					this->gentleShutDown();
 				} else if ( !this->write( formatStream.str() ) ) {
 					std::cout << "Write Failed." << std::endl;
-					// handle DC
+//					this->gentleShutDown();
 				} else if ( !this->write( message.body ) ) {
 					std::cout << "Write Failed." << std::endl;
-					// handle DC
+//					this->gentleShutDown();
 				}
 				
 				
 				
 				if ( this->responseMessageQueue.empty() ) {
-					this->writeInProgress = false;
+					this->writing = false;
 					this->writerThread.detach();
 				}
-				std::cout << "Done writing." << std::endl;
+//				std::cout << "Done writing." << std::endl;
 			}
+			LOG( "Stopped writing." );
 		}
 	);
 }
 
 
 bool Session::write( std::string message ) {
-	std::cout << "Write called: " << message << std::endl;
+//	std::cout << "Write called: " << message << std::endl;
 	boost::system::error_code error;
 	boost::asio::write(
 		this->socket,
@@ -249,7 +264,15 @@ bool Session::write( std::string message ) {
 }
 
 
-
+void Session::gentleShutDown() {
+	
+	LOG( "The client has disconnected. Terminating..." );
+	this->writing = false;
+	this->reading = false;
+	
+	LOG( "SESSION SAFELY ENDED." );
+	
+}
 
 
 

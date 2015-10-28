@@ -23,6 +23,7 @@
 #include "NetConfig.hpp"
 #include "GameCode.hpp"
 #include "NetMessage.hpp"
+#include "User.hpp"
 
 
 using boost::asio::ip::tcp;
@@ -33,9 +34,10 @@ public:
 	enum IPType { v4, v6 };
 	
 	Session( boost::asio::io_service& ioService ): socket( ioService ) {}
+	~Session();
 	
 	tcp::socket& getSocket();
-	void start();
+	void start( std::string identifierString );
 	
 	void writeToClient( std::string header, std::string body );
 	
@@ -45,10 +47,15 @@ private:
 	// Session state members
 	tcp::socket socket;
 	std::string clientIP_v4;
+	std::string identifierString;
+	bool terminating = false;
 	
 	// theads
 	std::thread readerThread;
 	std::thread writerThread;
+	
+	bool writing = false;
+	bool reading = false;
 	
 	// Session write queue members
 	std::queue< NetMessage > responseMessageQueue;
@@ -56,11 +63,11 @@ private:
 	bool writeInProgress = false;
 	
 	//Autherization data
-	typedef struct {
-		bool authorized;
-		int userId;
-		int characterId;
-	} User;
+//	typedef struct {
+//		bool authorized;
+//		int userId;
+//		int characterId;
+//	} User;
 	User currentUser;
 	
 	// Client interactors
@@ -93,6 +100,7 @@ private:
 	
 	
 	std::string getIP( IPType type );
+	void gentleShutDown();
 };
 
 #endif
