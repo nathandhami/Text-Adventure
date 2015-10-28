@@ -6,17 +6,19 @@
 #include <vector>
 #include <sstream>
 #include "DatabaseTool.hpp"
-#include "Database.h"
-#include "Query.h"
+#include "sqlite_modern_cpp.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-using namespace std;
-
 const string DB_LOCATION = "apps/server/databases/adventureDB";
-const string INITIAL_ZONE = "9999";
+const string INITIAL_ZONE = "3001";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
+
+using namespace std;
+using namespace  sqlite;
+
+
 
 
 string DatabaseTool::quotesql( const string& s ) {
@@ -27,88 +29,105 @@ string DatabaseTool::quotesql( const string& s ) {
 	}
 }
 
-void DatabaseTool::executeSQLInsert(string statment){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+bool DatabaseTool::executeSQLInsert(string statment){
+	try {
+		database db( DB_LOCATION );
+		db << "PRAGMA foreign_keys = ON;";
+		db << statment;
+	return true;
+	} catch (sqlite_exception e) {
+		return false;
 	}
-	Query q(db);
-	q.execute(statment.c_str());
+
 
 }
 
-void DatabaseTool::addUser(string userName, string password) {
+bool DatabaseTool::addUser(string userName, string password) {
 	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ");";
-	executeSQLInsert(sqlStatment);
+	return executeSQLInsert(sqlStatment);
 }
 
 int DatabaseTool::getUserID(string userName, string password){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+	try {
+		database db( DB_LOCATION );
+		int charID;
+		db << "select userID from users where userName= ? AND password= ?;"
+		<<userName
+		<<password
+		>>charID;
+		return charID;
+	} catch(sqlite_exception e) {
+		return 0;
 	}
-	Query q(db);
-	string sqlStatment = "select userID from users where userName=" + quotesql(userName) + " AND password=" + quotesql(password) + ";";
-	int charID = (int) q.get_count(sqlStatment.c_str());
-	return charID;
 }
 
 string DatabaseTool::getPassword(int userID) {
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+	try {
+		string password = "";
+		database db( DB_LOCATION );
+		db << "select password from users where userID=?;"
+		<<userID
+		>>password;
+		return password;
+	} catch(sqlite_exception e) {
+		return "";
 	}
-	Query q(db);
-	string sqlStatment = "select password from users where userID=" + to_string(userID) +";";
-	string password = q.get_string(sqlStatment.c_str());
-	return password;
 
 }
 
-void DatabaseTool::addCharacter(string name, int userID){
-	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + "," + to_string(PLAYER_OFFLINE) + ");";
-	executeSQLInsert(sqlStatment);
+bool DatabaseTool::addCharacter(string name, int userID){
+	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + ");";
+	return executeSQLInsert(sqlStatment);
 }
 
 bool DatabaseTool::isCharOnline(int charID){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
-	}
-	Query q(db);
-	string sqlStatment = "select isOnline from characters where userID=" + to_string(charID) +";";
-	int onlineStatus = (int) q.get_count(sqlStatment.c_str());
-	if(onlineStatus == PLAYER_ONLINE) {
-		return true;
-	} else {
-		return false;
+	try {
+		int onlineStatus = 0;
+		database db( DB_LOCATION );
+		db << "SELECT EXISTS(SELECT 1 FROM charactersOnline WHERE charID= ? LIMIT 1);"
+		<<charID
+		>>onlineStatus;
+		return onlineStatus;
+	} catch(sqlite_exception e) {
+		return 0;
 	}
 }
 
-void DatabaseTool::setCharOnline(int charID){
-	string sqlStatment = "UPDATE characters SET isOnline = " + to_string(PLAYER_ONLINE) + " WHERE charID = " + to_string(charID) + ";";
+void DatabaseTool::setCharOnline(int charID, string sessionID){
+	string sqlStatment = "INSERT INTO charactersOnline VALUES ( " + to_string(charID) + " , " + quotesql(sessionID) + ");";
 	executeSQLInsert(sqlStatment);
 }
 
 void DatabaseTool::setCharOffline(int charID){
-	string sqlStatment = "UPDATE characters SET isOnline = " + to_string(PLAYER_OFFLINE) + " WHERE charID = " + to_string(charID) + ";";
+	string sqlStatment = "DELETE FROM charactersOnline WHERE charID = " + to_string(charID) + ";";
 	executeSQLInsert(sqlStatment);
 }
 
-int DatabaseTool::getCharID(int userID){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+string DatabaseTool::getSessionID(int charID) {
+	try {
+		string sessionID;
+		database db( DB_LOCATION );
+		db << "select sessionID from charactersOnline where charID=?;"
+		<<charID
+		>>sessionID;
+		return sessionID;
+	}catch (sqlite_exception e) {
+		return "";
 	}
-	Query q(db);
-	string sqlStatment = "select charID from characters where userID=" + to_string(userID) +";";
-	int charID = (int) q.get_count(sqlStatment.c_str());
-	return charID;
+
+}
+
+int DatabaseTool::getCharID(int userID){
+	try {
+		int charID = 0;
+		database db( DB_LOCATION );
+		db << "select charID from characters where userID=?;"
+		<<userID
+		>>charID;
+		return charID;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
 }
 
 void DatabaseTool::putCharInZone(int charID, int zoneID){
@@ -117,172 +136,180 @@ void DatabaseTool::putCharInZone(int charID, int zoneID){
 }
 
 int DatabaseTool::getCharsLocation(int charID){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+	try {
+		int zoneID = 0;
+		database db( DB_LOCATION );
+		db<< "select location from characters where charID=?;"
+		<<charID
+		>>zoneID;
+		return zoneID;
+	} catch(sqlite_exception e) {
+		return 0;
 	}
-	Query q(db);
-	string sqlStatment = "select location from characters where charID=" + to_string(charID) + ";";
-	int zoneID = (int) q.get_count(sqlStatment.c_str());
-	return zoneID;
 }
 
-
-vector<int> DatabaseTool::getAllCharsInZone(int zoneID){
+vector<int> DatabaseTool::getAllOnlineCharsInZone(int zoneID){
 	vector<int> charsInZone;
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
-	}
-	Query q(db);
-	string sqlStatment = "select charID from characters where location=" + to_string(zoneID) + " and isOnline =" + to_string(PLAYER_ONLINE) + ";";
-	q.get_result(sqlStatment.c_str());
-	while(q.fetch_row()) {
-		int character = (int) q.getval();
-		charsInZone.push_back(character);
-	}
-	q.free_result();
+	database db( DB_LOCATION );
+	db << "select x.charID from characters C, charactersOnline X where location= ? AND x.charID = c.charID;"
+	<< zoneID
+	>>[&](int charID) {
+		charsInZone.push_back(charID);
+	};
 	return charsInZone;
-
 }
 
 void DatabaseTool::placeNpcInZone(int npcID, int zoneID){
-//TODO:implement
-}
-
-vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
-//TODO:implement
-}
-
-void DatabaseTool::removeNpcFromZone(int npcID, int zone){
-//TODO:implement
-}
-
-string DatabaseTool::getNPCDesc(int npcID){
-//TODO:implement
-}
-
-void DatabaseTool::addNPC(
-		 	int npcID, 
-		 	string description, 
-		 	string keywords,
-		 	string longdesc,
-		 	string shortdesc
-		 	){
-//TODO:implement
-}
-
-void DatabaseTool::addZone(
-		 	int zoneID,
-		 	string zoneName,
-		 	string description,
-		 	string extendedDesc,
-		 	int northID,
-		 	string northDesc,
-		 	int southID,
-		 	string southDesc,
-		 	int eastID,
-		 	string eastDesc,
-		 	int westID,
-		 	string westDesc,
-		 	int upID,
-		 	string upDesc,
-		 	int downID,
-		 	string downDesc
-		 	){
-	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
-			+ "," + quotesql(zoneName) 
-			+ "," + quotesql(description) 
-			+ "," + quotesql(extendedDesc)
-			+ "," + to_string(northID)
-			+ "," + quotesql(northDesc)
-			+ "," + to_string(southID)
-			+ "," + quotesql(southDesc)
-			+ "," + to_string(eastID)
-			+ "," + quotesql(eastDesc)
-			+ "," + to_string(westID)
-			+ "," + quotesql(westDesc)
-			+ "," + to_string(upID)
-			+ "," + quotesql(upDesc)
-			+ "," + to_string(downID)
-			+ "," + quotesql(downDesc)
-			+ ");";
+	string sqlStatment = "INSERT INTO instanceOfNpc VALUES ( NULL, " + to_string(npcID) + "," + to_string(zoneID) + ");";
 	executeSQLInsert(sqlStatment);
 }
 
-string DatabaseTool::getZoneName(int zoneID){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
+	vector<int> npcsInZone;
+	database db( DB_LOCATION );
+	db << "select npcInstanceID from instanceOfNpc where zoneID=?;"
+	<< zoneID
+	>>[&](int npcID) {
+		npcsInZone.push_back(npcID);
+	};
+	return npcsInZone;
+}
+
+void DatabaseTool::removeNpcFromZone(int npcInstanceID, int zoneID){
+	string sqlStatment = "delete from instanceOfNpc where npcID=" + to_string(npcInstanceID) + " and " + "zoneID =" + to_string(zoneID) + ";";
+	executeSQLInsert(sqlStatment);
+}
+
+string DatabaseTool::getNPCDesc(int npcID){
+	try {
+		string description;
+		database db( DB_LOCATION );
+		db << "select description from npcs where npcID=?;"
+		<<npcID
+		>>description;
+		return description;
+	} catch(sqlite_exception e) {
+		return "";
 	}
-	Query q(db);
-	string sqlStatment = "select zoneName from zones where zoneID=" + to_string(zoneID) +";";
-	string zoneName = q.get_string(sqlStatment.c_str());
-	return zoneName;
+}
+
+int DatabaseTool::getNpcIDFromInstanceID(int npcInstanceID) {
+	try {
+		int npcID;
+		database db( DB_LOCATION );
+		db << "select npcID from instanceOfNpc where npcInstanceID=?;"
+		<<npcInstanceID
+		>>npcID;
+		return npcID;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
+}
+
+bool DatabaseTool::addNPC(
+		 	int npcID, 
+		 	string description, 
+		 	vector<string> keywords,
+		 	string longdesc,
+		 	string shortdesc
+		 	){
+	string sqlStatment = "INSERT INTO npcs VALUES (" 
+		+ to_string(npcID) 
+		+ ", " + quotesql(description)
+		+ ", " + quotesql(concatKeywords(keywords))
+		+ ", " + quotesql(longdesc)
+		+ ", " + quotesql(shortdesc) 
+		+ ");";
+	return executeSQLInsert(sqlStatment);
+
+}
+
+bool DatabaseTool::addZone(
+		 	int zoneID,
+		 	string zoneName,
+		 	string description,
+		 	vector<ExtendedDescription> extendedDescriptions,
+		 	vector<Door> doors
+		 	){
+	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
+			+ ", " + quotesql(zoneName) 
+			+ ", " + quotesql(description) 
+			+ ", " + quotesql(concatExtendedDescriptions(extendedDescriptions))
+			+ ", " + quotesql(concatDoors(doors))
+			+ ");";
+	return executeSQLInsert(sqlStatment);
+}
+
+string DatabaseTool::getZoneName(int zoneID){
+	try {
+		string zoneName = "";
+		database db( DB_LOCATION );
+		db <<"select zoneName from zones where zoneID=?;"
+		<<zoneID
+		>>zoneName;
+		return zoneName;
+	} catch(sqlite_exception e) {
+		return "";
+	}
 }
 
 string DatabaseTool::getZoneDesc(int zoneID){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+	try {
+		string description = "";
+		database db( DB_LOCATION );
+		db << "select description from zones where zoneID=?;"
+		<<zoneID
+		>>description;
+		return description;
+	} catch(sqlite_exception e) {
+		return "";
 	}
-	Query q(db);
-	string sqlStatment = "select description from zones where zoneID=" + to_string(zoneID) +";";
-	string description = q.get_string(sqlStatment.c_str());
-	return description;
 }
 
-vector<vector<string>> DatabaseTool::getZoneExtendedDesc(int zoneID){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
+	try {
+		string extendedDesc = "";
+		database db( DB_LOCATION );
+		db << "select extendedDesc from zones where zoneID=?;"
+		<<zoneID
+		>>extendedDesc;
+		return parseExtendedDesc(extendedDesc, keyword);
+	} catch(sqlite_exception e) {
+		return "";
 	}
-	Query q(db);
-	string sqlStatment = "select extendedDesc from zones where zoneID=" + to_string(zoneID) +";";
-	string extendedDesc = q.get_string(sqlStatment.c_str());
-	
-	vector<vector<string>> parsedDesc = parseExtendedDesc(extendedDesc);
-	return parsedDesc;
 
 }
 
 int DatabaseTool::getDirectionID(int zoneID, string direction){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+	try {
+		string doors = "";
+		database db( DB_LOCATION );
+		boost::to_lower(direction);
+		db << "select doors from zones where zoneID=?;"
+		<<zoneID
+		>>doors;
+		return parseDirectionID(doors, direction);
+	} catch(sqlite_exception e) {
+		return 0;
 	}
-	Query q(db);
-	boost::to_lower(direction);
-	string lowerCaseDirection = direction;
-	string sqlStatment = "select " + lowerCaseDirection + "ID from zones where zoneID=" + to_string(zoneID) + ";";
-	int directionID = (int) q.get_count(sqlStatment.c_str());
-	return directionID;
-
 }
 
 string DatabaseTool::getDirectionDesc(int zoneID, string direction){
-	Database db( DB_LOCATION );
-	if (!db.Connected())
-	{
-		throw runtime_error("could not open database");
+	try {
+		string doors = "";
+		database db( DB_LOCATION );
+		boost::to_lower(direction);
+		db << "select doors from zones where zoneID=?;"
+		<<zoneID
+		>>doors;
+		return parseDirectionDesc(doors, direction);
+	} catch (sqlite_exception e) {
+		return "";
 	}
-	Query q(db);
-	boost::to_lower(direction);
-	string lowerCaseDirection = direction;
-	string sqlStatment = "select " + lowerCaseDirection + "Desc from zones where zoneID=" + to_string(zoneID) + ";";
-	string directionDesc = q.get_string(sqlStatment.c_str());
-	return directionDesc;
 }
 
-vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
-	string findThis = "- desc:\n";
-	vector<vector<string>> parsedDesc;
+string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
+	string findThis = "desc:";
 
 	vector<string> singleChunk;
 	size_t found = extendedDesc.find(findThis);
@@ -294,30 +321,140 @@ vector<vector<string>> DatabaseTool::parseExtendedDesc(string extendedDesc){
 		found = secondFound;
 	}
 
+	int descIndex = -1;
 	for(int i = 0; i < singleChunk.size(); i++) {
-		vector<string> singleExtendedDesc;
-		string line;
-		string description = "";
-		bool keywordFlag = false;
-		istringstream iss(singleChunk[i]);
-		while(getline(iss, line)) {
-			boost::erase_all(line, "- ");
-			boost::algorithm::trim( line );
-			if((line.find("keywords:") == string::npos) && (keywordFlag == false)){
-				description = description + line;
-			} else if((line.find("keywords:") != string::npos) && (keywordFlag == false)) {
-				singleExtendedDesc.push_back(description);
-				keywordFlag = true;
-			} else if(!line.empty()){
-				singleExtendedDesc.push_back(line);
-			}
+		if(singleChunk[i].find(keyword) != string::npos) {
+			descIndex = i;
 		}
-		parsedDesc.push_back(singleExtendedDesc);
 	}
-	return parsedDesc;
+	if(descIndex == -1) {
+		return "";
+	} else {
+		return singleChunk[descIndex].substr(0, singleChunk[descIndex].find("keywords:"));
+	}
+}
 
+int DatabaseTool::parseDirectionID(string doors, string direction) {
+	string findThis = "desc:";
+
+	vector<string> singleDoor;
+	size_t found = doors.find(findThis);
+	while(found != string::npos) {
+		size_t secondFound = doors.find(findThis, found + 1);
+		string singleExtendedDesc = doors.substr(found, secondFound);
+		boost::erase_all(singleExtendedDesc, findThis);
+		singleDoor.push_back(singleExtendedDesc);
+		found = secondFound;
+	}
+
+	int doorIndex = -1;
+	for(int i = 0; i < singleDoor.size(); i++) {
+		if(singleDoor[i].find(direction) != string::npos){
+			doorIndex = i;
+		}
+	}
+	
+	if(doorIndex == -1) {
+		return 0;
+	} else {
+		string directionID = singleDoor[doorIndex].substr(singleDoor[doorIndex].find("to:"));
+		boost::erase_all(directionID, "to: ");
+		return atoi(directionID.c_str());
+	}
+}
+
+string DatabaseTool::parseDirectionDesc(string doors, string direction) {
+	string findThis = "desc:";
+
+	vector<string> singleDoor;
+	size_t found = doors.find(findThis);
+	while(found != string::npos) {
+		size_t secondFound = doors.find(findThis, found + 1);
+		string singleExtendedDesc = doors.substr(found, secondFound);
+		boost::erase_all(singleExtendedDesc, findThis);
+		singleDoor.push_back(singleExtendedDesc);
+		found = secondFound;
+	}
+
+	int doorIndex = -1;
+	for(int i = 0; i < singleDoor.size(); i++) {
+		if(singleDoor[i].find(direction) != string::npos){
+			doorIndex = i;
+		}
+	}
+	
+	if(doorIndex == -1) {
+		return "";
+	} else {
+		string directionDesc = singleDoor[doorIndex].substr(0, singleDoor[doorIndex].find("dir:"));
+		boost::erase_all(directionDesc, "- ");
+		boost::algorithm::trim( directionDesc );
+		return directionDesc;
+	}
+}
+
+string DatabaseTool::concatDoors(vector<Door> doors) {
+	string combinedDoors = "";
+	for(auto& door: doors) {
+		combinedDoors = combinedDoors + " desc: " + door.description + " dir: " + door.direction + " keywords: " + concatKeywords(door.keywords) + "to: " + to_string(door.goesTo);
+	}
+	return combinedDoors;
+}
+
+string DatabaseTool::concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions) {
+	string combinedDescriptions = "";
+	for(auto& extendedDescription: extendedDescriptions) {
+		combinedDescriptions = combinedDescriptions + " desc: " + extendedDescription.description + " keywords: " + concatKeywords(extendedDescription.keywords);
+	}
+	return combinedDescriptions;
+}
+
+string DatabaseTool::concatKeywords(vector<string> keywords) {
+	string combinedKeywords = "";
+	for(auto& keyword: keywords) {
+		combinedKeywords = combinedKeywords + keyword + " ";
+	}
+	return combinedKeywords;
 
 }
 
+bool DatabaseTool::addItem(Item item) {
+	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.longDesc) + "," + quotesql(item.shortDesc) + ");";
+	return executeSQLInsert(sqlStatment);	
+}
+
+bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL);";
+	return executeSQLInsert(sqlStatment);
+}
+
+bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, " + to_string(npcInstanceID) + ");";
+	return executeSQLInsert(sqlStatment);
+}
+
+bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , " + to_string(charID) + ", NULL, NULL);";
+	return executeSQLInsert(sqlStatment);
+}
+
+
+bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
+	string sqlStatment = "";
+	switch(where) {
+		case toCharacter:
+			sqlStatment = "UPDATE instanceOfItem SET zoneID = NULL, npcInstanceID = NULL, charID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		case toZone:
+			sqlStatment = "UPDATE instanceOfItem SET charID = NULL, npcInstanceID = NULL, zoneID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		case toNpc:
+			sqlStatment = "UPDATE instanceOfItem SET charID = NULL, zoneID = NULL, npcInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		default:
+			return false;
+	}
+
+}
 
 
