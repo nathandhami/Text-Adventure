@@ -4,6 +4,8 @@
 #include <iostream>
 #include "World.hpp"
 #include "Command.hpp"
+#include <tuple>
+#include <string>
 
 
 
@@ -14,8 +16,8 @@ public:
 	~CommandParser();
 
 
-	static std::string  handleIDandCommand(int playerID, std::string command);
-    static Command getCommandFromString(std::string commandString);
+	static std::tuple< std::string, Command >  getHeaderAndCommand(std::string command);
+    static std::tuple< std::string, Command > getHeaderAndCommandFromString(std::string commandString);
 
 
 private:

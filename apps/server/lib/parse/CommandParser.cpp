@@ -6,39 +6,55 @@
  */
 #include <iostream>
 #include "CommandParser.hpp"
-#include <string>
 #include "NetConfig.hpp"
 #include "DictionaryCmds.hpp"
 
-std::string CommandParser::handleIDandCommand(int playerID, std::string command){
+std::tuple< std::string, Command > CommandParser::getHeaderAndCommand( std::string command ){
 
-	Command parsedCommand = getCommandFromString( command );//Parse user command
-	if ( parsedCommand.type == HEADER_ERROR ) return HEADER_ERROR;
-	std::string stringToReturn;
-	//if (DictionaryCmds::checkCommandValid(parsedCommand)){//check command is valid
-	stringToReturn = World::executeCommand( playerID, parsedCommand );//gets response from world class to send to controller
-	std::cout << parsedCommand.type << std::endl;
-	//returns the reply from the world to the controller
-	return stringToReturn;
+	std::tuple< std::string, Command > headerAndParsedCommand;
+	headerAndParsedCommand = getHeaderAndCommandFromString( command );//Parse user command and get a header associated with the command type
+
+	//returns the header type and the command 
+	return headerAndParsedCommand;
 }
 
 
 //takes user command in string form and parses it into a Command struct
-Command CommandParser::getCommandFromString( std::string commandString ) {
+std::tuple< std::string, Command > CommandParser::getHeaderAndCommandFromString( std::string commandString ) {
+	
 	Command parsedCommand;
-	std::string parsableString = DictionaryCmds::getParsableFromInput( commandString );
-	if ( parsableString == DictionaryCmds::INVALID_COMMAND ) {
-		parsedCommand.type = HEADER_ERROR;
-		return parsedCommand;
-	}
-	
+	std::tuple< std::string, Command > headerAndParsedCommand;
+	std::string commandHeader = "header";//TODO MAKE INT AND DEFINE IN DICTIONARY
 	std::vector< std::string > tokens;
-	boost::split( tokens, parsableString, boost::is_any_of( ";" ) );
+	boost::split( tokens, commandString, boost::is_any_of( " " ),boost::token_compress_on );
+	for(int i =0; i<tokens.size();i++){//testing
+		cout << tokens[i] << endl;
+	}
+
+	std::string header;
+	int startOfCommandData;
+	while (header != "invstr"){
+		int i = 0;
+		std::string lowerCaseToken = tokens[0];
+		boost::to_lower( tokens[0] );
+		header = DictionaryCmds::getParsableFromInput( lowerCaseToken );
+		if(header != "invstr"){
+			parsedCommand.type = tokens[0];
+			tokens[0]= tokens[0] + " " + tokens[i+1]; //concatinate the first token with the next to retest if longer command name (eg "look at")
+			commandHeader = header;
+		}else if(header == "invstr"){
+			startOfCommandData = i;
+		}
+	}
+	for ( int i = startOfCommandData; i<tokens.size();i++ ){
+		if( parsedCommand.data.empty() ){
+			parsedCommand.data = tokens[i];
+		}else parsedCommand.data += " " + tokens[i];
+	}
+
+	headerAndParsedCommand = std::make_tuple ( commandHeader, parsedCommand );
 	
-	parsedCommand.type = tokens[ 0 ];
-	parsedCommand.data = tokens[ 1 ];
-	
-	return parsedCommand;
+	return headerAndParsedCommand;
 	//PSEUDO DICTIONARY 
 	/*if ( commandString == "north" ) {
 		parsedCommand.type = "move";
