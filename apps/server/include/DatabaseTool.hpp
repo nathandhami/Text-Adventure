@@ -69,45 +69,66 @@ class Item{
 		vector<string> keywords;
 };
 
+class ResetCommand{
+	public:
+		ResetCommand();
+		ResetCommand(string action, int id, int slot, int npcLimit) {
+			this->action = action;
+			this->id = id;
+			this->slot = slot;
+			this->npcLimit = npcLimit;
+		}
+		~ResetCommand(){
+		};
+		string action;
+		int id;
+		int slot;
+		int npcLimit;
+};
+
 
 
 class DatabaseTool{
 	public:
-		 static bool addUser(string userName, string password);
+		static bool addUser(string userName, string password);
 
-		 static int getUserID(string userName, string password);
+		static int getUserID(string userName, string password);
 
-		 static string getPassword(int userID);
+		static string getPassword(int userID);
 
-		 static bool addCharacter(string name, int userID);
+		static vector<string> getCharactersNames(int userID);
 
-		 static int getCharID(int userID);
+		static int getCharIDFromName(string name);
 
-		 static bool isCharOnline(int charID);
+		static bool addCharacter(string name, int userID);
 
-		 static void setCharOnline(int charID, string sessionID);
+		static int getCharID(int userID);
 
-		 static void setCharOffline(int charID);
+		static bool isCharOnline(int charID);
 
-		 static string getSessionID(int charID);
+		static void setCharOnline(int charID, string sessionID);
 
-		 static void putCharInZone(int charID, int zoneID);
+		static void setCharOffline(int charID);
 
-		 static int getCharsLocation(int charID);
+		static string getSessionID(int charID);
 
-		 static vector<int> getAllOnlineCharsInZone(int zoneID);
+		static void putCharInZone(int charID, int zoneID);
 
-		 static void placeNpcInZone(int npcID, int zoneID);
+		static int getCharsLocation(int charID);
 
-		 static vector<int> getAllNpcsInZone(int zoneID);
+		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
-		 static void removeNpcFromZone(int npcID, int zone);
+		static void placeNpcInZone(int npcID, int zoneID);
 
-		 static int getNpcIDFromInstanceID(int npcInstanceID);
+		static vector<int> getAllNpcsInZone(int zoneID);
 
-		 static string getNPCDesc(int npcID);
+		static void removeNpcFromZone(int npcID, int zone);
 
-		 static bool addNPC(
+		static int getNpcIDFromInstanceID(int npcInstanceID);
+
+		static string getNPCDesc(int npcID);
+
+		static bool addNPC(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -115,7 +136,7 @@ class DatabaseTool{
 		 	string shortdesc
 		 	);
 
-		 static bool addZone(
+		static bool addZone(
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
@@ -123,23 +144,34 @@ class DatabaseTool{
 		 	vector<Door> doors
 		 	);
 
-		 static string getZoneName(int zoneID);
+		static string getZoneName(int zoneID);
 
-		 static string getZoneDesc(int zoneID);
+		static string getZoneDesc(int zoneID);
 
-		 static string getZoneExtendedDesc(int zoneID, string keyword);
+		static string getZoneExtendedDesc(int zoneID, string keyword);
 
-		 static int getDirectionID(int zoneID, string direction);
+		static int getDirectionID(int zoneID, string direction);
 
-		 static string getDirectionDesc(int zoneID, string direction);
+		static string getDirectionDesc(int zoneID, string direction);
 
-		 static bool addItem(Item item);
+		static bool addItem(Item item);
 
-		 //NEEDS TO BE IMPLEMENTED STILL
-		 static bool spawnItemInZone(int itemID, int zoneID);
-		 static bool spawnItemInNpcInv(int itemID, int zoneID);
-		 static bool spawnItemInCharacterInv(int itemID, int zoneID);
-		 static bool moveItem(int instanceID, Transfer where, int toID);
+		static bool spawnItemInZone(int itemID, int zoneID);
+
+		static bool spawnItemInNpcInv(int itemID, int zoneID);
+
+		static bool spawnItemInCharacterInv(int itemID, int zoneID);
+		 
+		static bool moveItem(int instanceID, Transfer where, int toID);
+	
+	//to implement
+		static string look(int charID);
+
+		static bool addResetCommand(ResetCommand command);
+
+		static vector<ResetCommand> getAllResetCommands();
+
+		static void executeCommands();
 	private:
 		
 		static string quotesql( const string& s );

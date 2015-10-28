@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
       //    }
       // }
       //addZoneTest();
-      addItemTest();
-      spawnItemTest();
+      // addItemTest();
+      // spawnItemTest();
       //cout << DatabaseTool::moveItem(1, Transfer::toZone, 3054);
 
       // cout << DatabaseTool::getCharID(1) << endl;
@@ -82,6 +82,13 @@ int main(int argc, char* argv[])
       // for(auto& charID: charsInZone) {
       //    cout << charID << endl;
       // }
+
+      vector<string> usersCharacters = DatabaseTool::getCharactersNames(1);
+      for(auto& name: usersCharacters) {
+         cout << name << endl;
+      }
+
+      cout << DatabaseTool::getCharIDFromName("testChar1") << endl;
 
 
 

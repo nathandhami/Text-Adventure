@@ -80,6 +80,34 @@ bool DatabaseTool::addCharacter(string name, int userID){
 	return executeSQLInsert(sqlStatment);
 }
 
+vector<string> DatabaseTool::getCharactersNames(int userID){
+	vector<string> names;
+	try {
+		database db( DB_LOCATION );
+		db << "select name from characters where userID=?;"
+		<<userID
+		>>[&](string name) {
+			names.push_back(name);
+		};
+		return names;
+	} catch (sqlite_exception e) {
+		return names;
+	}
+}
+		
+int DatabaseTool::getCharIDFromName(string name){
+	try {
+		int charID = 0;
+		database db( DB_LOCATION );
+		db << "select charID from characters where name=?"
+		<<name
+		>>charID;
+		return charID;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
+}
+
 bool DatabaseTool::isCharOnline(int charID){
 	try {
 		int onlineStatus = 0;
@@ -454,6 +482,10 @@ bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
 		default:
 			return false;
 	}
+
+}
+
+string DatabaseTool::look(int charID) {
 
 }
 
