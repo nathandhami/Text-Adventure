@@ -68,6 +68,31 @@ struct ParseItem {
 	vector<std::string> keywords;
 };
 
+/*
+static bool addNPC(
+		 	int npcID, 
+		 	string description, 
+		 	vector<string> keywords,
+		 	string longdesc,
+		 	string shortdesc
+		 	);
+		 	*/
+struct ParseNPC{
+	int npcID;
+	std::string description;
+	vector<std::string> keywords;
+	std::string longDesc;
+	std::string shortDesc;
+};
+
+struct ParseResetCommand{
+	std::string action;
+	int id;
+	int slot;
+	int npcLimit;
+	int room;
+};
+
 // int zoneID, string zoneName, string description,
 //string extendedDesc, int northID, string northDesc, int southID,
 //string southDesc, int eastID, string eastDesc, int westID, string westDesc,
@@ -255,41 +280,62 @@ void parseNPC(const YAML::Node& config) {
 
 	int numOfNPCs = 0;
 	if (config["NPCS"]) {
-		std::cout << "NPC DOES EXIST" << std::endl;
+		
 		for (YAML::iterator it = npcNodes.begin(); it != npcNodes.end(); ++it) {
 			const YAML::Node npcNode = *it;
+			ParseNPC parsingNPC;
 			std::cout << "NPC # " << ++numOfNPCs << std::endl;
 			std::cout << "--------------------------------------------"
 					<< std::endl;
 			std::cout << "Description: " << std::endl;
 			for (unsigned int i = 0; i < npcNode["description"].size(); ++i) {
-				std::cout << npcNode["description"][i] << std::endl;
+				std::cout << npcNode["description"][i].as<std::string>() << std::endl;
+				parsingNPC.description += trimString(npcNode["description"][i].as<std::string>()) + " ";
 			}
 			std::cout << "id: " << npcNode["id"].as<int>() << std::endl;
+			parsingNPC.npcID = npcNode["id"].as<int>();
+
+
 			std::cout << "keywords: " << std::endl;
-			for (unsigned int i = 0; i < npcNode["keywords"].size(); ++i) {
-				std::cout << npcNode["keywords"][i] << std::endl;
-			}
+
+			parsingNPC.keywords = npcNode["keywords"].as<vector<std::string>>();
+			for(auto s : parsingNPC.keywords)
+				std::cout << s << std::endl;
+
 			std::cout << "longdesc :" << std::endl;
+			std::string longDesc;
 			for (unsigned int i = 0; i < npcNode["longdesc"].size(); ++i) {
-				std::cout << npcNode["longdesc"][i] << std::endl;
+				std::cout << npcNode["longdesc"][i].as<std::string>() << std::endl;
+				longDesc += npcNode["longdesc"][i].as<std::string>() + " ";
 			}
+			parsingNPC.longDesc = longDesc;
 
 			std::cout << "short desc: "
 					<< npcNode["shortdesc"].as<std::string>() << std::endl;
+					parsingNPC.shortDesc = npcNode["shortdesc"].as<std::string>();
 
 			std::cout << "--------------------------------------------"
 					<< std::endl;
+
+
+
+			DatabaseTool::addNPC(parsingNPC.npcID,parsingNPC.description,parsingNPC.keywords,parsingNPC.longDesc,parsingNPC.shortDesc);
+
 		}
 	} else {
-		std::cout << "NPC does not exist" << std::endl;
+		std::cout << "NPCs do not exist" << std::endl;
 	}
+
+
+
+
 }
 
 int numofextra = 0;
 
 void parseItems(const YAML::Node &config){
 	YAML::Node itemNodes = config["OBJECTS"];
+
 
 	if(config["OBJECTS"]){
 		
@@ -339,15 +385,86 @@ void parseItems(const YAML::Node &config){
 	}
 }
 
+void parseResetCommands(YAML::Node &config){
+
+	YAML::Node resetNodes = config["RESETS"];
+	
+	if(config["RESETS"]){
+		for(YAML::iterator it = resetNodes.begin(); it!=resetNodes.end();++it){
+			YAML::Node resetNode = *it;
+			ParseResetCommand parsingResetCommand;
+			//initializes only optional fields
+			parsingResetCommand.slot = 0;
+			parsingResetCommand.room = 0;
+			parsingResetCommand.npcLimit = 0;
+			
+			parsingResetCommand.action = resetNode["action"].as<std::string>();
+			std::cout<< "action: " << parsingResetCommand.action << std::endl;
+			parsingResetCommand.id = resetNode["id"].as<int>();
+				std::cout<< "id: " << parsingResetCommand.id << std::endl;
+			
+				if(resetNode["limit"]){
+					parsingResetCommand.npcLimit = resetNode["limit"].as<int>();
+					std::cout << "npc Limit: " << parsingResetCommand.npcLimit << std::endl;
+				}
+
+				if(resetNode["room"]){
+				parsingResetCommand.room = resetNode["room"].as<int>();
+				std::cout<< "room: " <<  parsingResetCommand.room << std::endl;
+			}
+
+			if(resetNode["slot"]){
+				parsingResetCommand.slot = resetNode["slot"].as<int>();
+				std::cout<< "slot: " <<  parsingResetCommand.slot << std::endl;
+			}
+
+
+			// is the action an npc?
+			if(parsingResetCommand.action.compare("npc") == 0){
+				ResetCommand resetCommand("npc",
+									  parsingResetCommand.id,
+									  0,
+									  parsingResetCommand.npcLimit,
+									  parsingResetCommand.room);
+				DatabaseTool::addResetCommand(resetCommand);
+			}
+
+			// equip?
+			//
+			
+
+
+			// MISSING COMMENT to parse for reset command
+			// action 
+			// comment
+			// slot[optional]
+			// room [optional]
+			// id
+			// need to add to database
+
+			// DatabaseTool::addResetCommand(resetCommand);
+
+		}
+
+	}
+	else{
+		std::cout<<"There are no reset commands in this world" << std::endl;
+	}
+
+}
+
 int main() {
 
 	YAML::Node config = YAML::LoadFile(
 			"apps/server/databases/loadableWorlds/midgaard.yml");
 
 //	parseArea(config);
-//	parseNPC(config);
+	parseNPC(config);
 	// parseRooms(config);
-	parseItems(config);
+	// std::cout << "Parsing Items...................";
+	// parseItems(config);
+	// std::cout << "DONE" << std::endl;
+	// parseResetCommands(config);
 
 	checkDatabaseContent();
 
