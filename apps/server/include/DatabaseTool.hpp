@@ -11,7 +11,7 @@
 
 using namespace std;
 
-enum Transfer {toCharacter, toZone, toNpc };
+enum Transfer {toCharacter, toZone, toNpc, toItem};
 
 class Door{
 	public:
@@ -167,6 +167,8 @@ class DatabaseTool{
 		static bool spawnItemInNpcInv(int itemID, int zoneID);
 
 		static bool spawnItemInCharacterInv(int itemID, int zoneID);
+
+		static bool spawnItemInItem(int itemId, int itemInstanceID);
 		 
 		static bool moveItem(int instanceID, Transfer where, int toID);
 	

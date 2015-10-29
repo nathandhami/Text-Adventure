@@ -34,10 +34,12 @@ CREATE TABLE instanceOfItem (
   charID integer,
   zoneID integer,
   npcInstanceID integer,
+  otherItemInstanceID integer,
   FOREIGN KEY(itemID) REFERENCES items(itemID),
   FOREIGN KEY(charID) REFERENCES characters(charID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
-  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID)
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID),
+  FOREIGN KEY(otherItemInstanceID) REFERENCES instanceOfItem(instanceID)
 );
 
 CREATE TABLE zones(
