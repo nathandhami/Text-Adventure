@@ -43,7 +43,7 @@ bool DatabaseTool::executeSQLInsert(string statment){
 }
 
 bool DatabaseTool::addUser(string userName, string password) {
-	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ");";
+	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ", 0);";
 	return executeSQLInsert(sqlStatment);
 }
 
@@ -59,6 +59,24 @@ int DatabaseTool::getUserID(string userName, string password){
 	} catch(sqlite_exception e) {
 		return 0;
 	}
+}
+
+int DatabaseTool::getUserAuthencationLevel(int userID) {
+	try {
+		database db( DB_LOCATION );
+		int authencationLevel;
+		db << "select authencationLevel from users where userID=?"
+		<<userID
+		>>authencationLevel;
+		return authencationLevel;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
+}
+
+bool DatabaseTool::setUserAuthencationLevel(int userID, int authencationLevel) {
+	string statment = "UPDATE users SET authencationLevel = " + to_string(authencationLevel) + " WHERE userID = " + to_string(userID) + ";";
+	return executeSQLInsert(statment);
 }
 
 string DatabaseTool::getPassword(int userID) {
@@ -78,6 +96,34 @@ string DatabaseTool::getPassword(int userID) {
 bool DatabaseTool::addCharacter(string name, int userID){
 	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + ");";
 	return executeSQLInsert(sqlStatment);
+}
+
+vector<string> DatabaseTool::getCharactersNames(int userID){
+	vector<string> names;
+	try {
+		database db( DB_LOCATION );
+		db << "select name from characters where userID=?;"
+		<<userID
+		>>[&](string name) {
+			names.push_back(name);
+		};
+		return names;
+	} catch (sqlite_exception e) {
+		return names;
+	}
+}
+		
+int DatabaseTool::getCharIDFromName(string name){
+	try {
+		int charID = 0;
+		database db( DB_LOCATION );
+		db << "select charID from characters where name=?"
+		<<name
+		>>charID;
+		return charID;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
 }
 
 bool DatabaseTool::isCharOnline(int charID){
@@ -424,17 +470,22 @@ bool DatabaseTool::addItem(Item item) {
 }
 
 bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL);";
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL, NULL);";
 	return executeSQLInsert(sqlStatment);
 }
 
 bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, " + to_string(npcInstanceID) + ");";
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, " + to_string(npcInstanceID) + ", NULL);";
 	return executeSQLInsert(sqlStatment);
 }
 
 bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , " + to_string(charID) + ", NULL, NULL);";
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , " + to_string(charID) + ", NULL, NULL, NULL);";
+	return executeSQLInsert(sqlStatment);
+}
+
+bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, NULL, " + to_string(itemInstanceID) + ");";
 	return executeSQLInsert(sqlStatment);
 }
 
@@ -443,17 +494,40 @@ bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
 	string sqlStatment = "";
 	switch(where) {
 		case toCharacter:
-			sqlStatment = "UPDATE instanceOfItem SET zoneID = NULL, npcInstanceID = NULL, charID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
 			return executeSQLInsert(sqlStatment);
 		case toZone:
-			sqlStatment = "UPDATE instanceOfItem SET charID = NULL, npcInstanceID = NULL, zoneID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
 			return executeSQLInsert(sqlStatment);
 		case toNpc:
-			sqlStatment = "UPDATE instanceOfItem SET charID = NULL, zoneID = NULL, npcInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
+			return executeSQLInsert(sqlStatment);
+		case toItem:
+			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
 			return executeSQLInsert(sqlStatment);
 		default:
 			return false;
 	}
+
+}
+
+bool DatabaseTool::deleteItem(int instanceID){
+	string statment = "delete from instanceOfItem where instanceID=" + to_string(instanceID) + ";";
+	return executeSQLInsert(statment);
+}
+
+bool DatabaseTool::addResetCommand(ResetCommand command){
+	string statment = "insert into resetCommands values ((SELECT IFNULL(MAX(resetID), 0) + 1 FROM resetCommands),"
+		+ quotesql(command.action) + ","
+		+ to_string(command.id) + ","
+		+ to_string(command.slot) + "," 
+		+ to_string(command.npcLimit) + ","
+		+ to_string(command.room) + ");";
+	return executeSQLInsert(statment);
+
+}
+
+string DatabaseTool::look(int charID) {
 
 }
 

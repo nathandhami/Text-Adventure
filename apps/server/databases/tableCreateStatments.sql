@@ -1,7 +1,8 @@
 CREATE TABLE users (
   userID integer primary key,
   userName varchar(30) unique,
-  password varchar(20)
+  password varchar(20) not null,
+  authencationLevel integer not null
 );
 
 CREATE TABLE characters (
@@ -33,10 +34,12 @@ CREATE TABLE instanceOfItem (
   charID integer,
   zoneID integer,
   npcInstanceID integer,
+  otherItemInstanceID integer,
   FOREIGN KEY(itemID) REFERENCES items(itemID),
   FOREIGN KEY(charID) REFERENCES characters(charID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
-  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID)
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID),
+  FOREIGN KEY(otherItemInstanceID) REFERENCES instanceOfItem(instanceID)
 );
 
 CREATE TABLE zones(
@@ -61,4 +64,15 @@ CREATE TABLE instanceOfNpc (
   zoneID integer,
   FOREIGN KEY(npcID) REFERENCES npcs(npcID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
+);
+
+CREATE TABLE resetCommands (
+  resetID integer not null,
+  action text,
+  id integer,
+  slot integer,
+  npcLimit integer,
+  room integer,
+  primary key(action, id, room),
+  FOREIGN KEY(room) REFERENCES zones(zoneID)
 );
