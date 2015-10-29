@@ -503,6 +503,26 @@ bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
 
 }
 
+bool DatabaseTool::deleteItem(int instanceID){
+	string statment = "delete from instanceOfItem where instanceID=" + to_string(instanceID) + ";";
+	return executeSQLInsert(statment);
+}
+
+bool DatabaseTool::addResetCommand(ResetCommand command){
+	try {
+		database db(DB_LOCATION);
+		db << "insert into resetCommands values ( NULL, ?,?,?,?,?);"
+		<<command.action
+		<<command.id
+		<<command.slot
+		<<command.npcLimit
+		<<command.room;
+		return true;
+	} catch (sqlite_exception e) {
+		return false;
+	}
+}
+
 string DatabaseTool::look(int charID) {
 
 }

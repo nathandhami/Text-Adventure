@@ -69,5 +69,7 @@ CREATE TABLE resetCommands (
   action text,
   id integer,
   slot integer,
-  npcLimit integer
+  npcLimit integer,
+  room integer,
+  FOREIGN KEY(room) REFERENCES zones(zoneID)
 );

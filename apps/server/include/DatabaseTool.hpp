@@ -72,11 +72,12 @@ class Item{
 class ResetCommand{
 	public:
 		ResetCommand();
-		ResetCommand(string action, int id, int slot, int npcLimit) {
+		ResetCommand(string action, int id, int slot, int npcLimit, int room) {
 			this->action = action;
 			this->id = id;
 			this->slot = slot;
 			this->npcLimit = npcLimit;
+			this->room = room;
 		}
 		~ResetCommand(){
 		};
@@ -84,6 +85,7 @@ class ResetCommand{
 		int id;
 		int slot;
 		int npcLimit;
+		int room;
 };
 
 
@@ -168,12 +170,11 @@ class DatabaseTool{
 		 
 		static bool moveItem(int instanceID, Transfer where, int toID);
 	
+		static bool deleteItem(int instanceID);
 	//to implement
 		static string look(int charID);
 
 		static bool addResetCommand(ResetCommand command);
-
-		static vector<ResetCommand> getAllResetCommands();
 
 		static void executeCommands();
 	private:
