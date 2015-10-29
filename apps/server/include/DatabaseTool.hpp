@@ -94,6 +94,10 @@ class DatabaseTool{
 
 		static int getUserID(string userName, string password);
 
+		static int getUserAuthencationLevel(int userID);
+
+		static bool setUserAuthencationLevel(int userID, int authencationLevel);
+
 		static string getPassword(int userID);
 
 		static vector<string> getCharactersNames(int userID);

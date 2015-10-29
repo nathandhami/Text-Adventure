@@ -43,7 +43,7 @@ bool DatabaseTool::executeSQLInsert(string statment){
 }
 
 bool DatabaseTool::addUser(string userName, string password) {
-	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ");";
+	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ", 0);";
 	return executeSQLInsert(sqlStatment);
 }
 
@@ -59,6 +59,24 @@ int DatabaseTool::getUserID(string userName, string password){
 	} catch(sqlite_exception e) {
 		return 0;
 	}
+}
+
+int DatabaseTool::getUserAuthencationLevel(int userID) {
+	try {
+		database db( DB_LOCATION );
+		int authencationLevel;
+		db << "select authencationLevel from users where userID=?"
+		<<userID
+		>>authencationLevel;
+		return authencationLevel;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
+}
+
+bool DatabaseTool::setUserAuthencationLevel(int userID, int authencationLevel) {
+	string statment = "UPDATE users SET authencationLevel = " + to_string(authencationLevel) + " WHERE userID = " + to_string(userID) + ";";
+	return executeSQLInsert(statment);
 }
 
 string DatabaseTool::getPassword(int userID) {
