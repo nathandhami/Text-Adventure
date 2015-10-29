@@ -32,11 +32,12 @@ std::string trimString(std::string string) {
 
 	boost::algorithm::trim(string);
 	boost::erase_all(string, "'");
-
+// std::string newStringIsSqlReady = boost::replace_all_copy(string, "'", "\\'");
 //	std::cout<< string << std::endl;
 
 	return string;
 }
+
 
 struct ParseRoom {
 	int zoneID;
@@ -57,15 +58,25 @@ struct ParseRoom {
 	std::string downDesc;
 };
 
+struct ParseItem {
+	// 		Item(int itemID, string longDesc, string shortDesc, 
+	//    vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+	int itemID;
+	std::string longDesc;
+	std::string shortDesc;
+	vector<ExtendedDescription> extendedDescriptions;
+	vector<std::string> keywords;
+};
+
 // int zoneID, string zoneName, string description,
 //string extendedDesc, int northID, string northDesc, int southID,
 //string southDesc, int eastID, string eastDesc, int westID, string westDesc,
 //int upID, string upDesc, int downID, string downDesc
 void addRoomsToDatabase(ParseRoom pr) {
-	DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, pr.extendedDesc,
-			pr.northID, pr.northDesc, pr.southID, pr.southDesc, pr.eastID,
-			pr.eastDesc, pr.westID, pr.westDesc, pr.upID, pr.upDesc, pr.downID,
-			pr.downDesc);
+	// DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, pr.extendedDesc,
+	// 		pr.northID, pr.northDesc, pr.southID, pr.southDesc, pr.eastID,
+	// 		pr.eastDesc, pr.westID, pr.westDesc, pr.upID, pr.upDesc, pr.downID,
+	// 		pr.downDesc);
 //	 DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, "",
 //	 			 	 	 	   pr.northID,  "", pr.southID, "",
 //	 			 	 	 	   pr.eastID,"", pr.westID,"", pr.upID, "", pr.downID, "");
@@ -275,6 +286,65 @@ void parseNPC(const YAML::Node& config) {
 	}
 }
 
+void parseItems(const YAML::Node &config){
+	YAML::Node itemNodes = config["OBJECTS"];
+
+	// REFERENCE
+	// 		Item(int itemID, string longDesc, string shortDesc, 
+	//    vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+		// string longDesc = "You see a standard issue dagger here.";
+  //     string shortDesc = "A dagger";
+  //     vector<ExtendedDescription> extendedDescriptions;
+      
+  //     vector<string> keywords;
+  //     keywords.push_back("dagger");
+
+  //     ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
+  //     extendedDescriptions.push_back(extendedDesc);
+  //     Item dagger(3351, longDesc, shortDesc, extendedDescriptions, keywords);
+  //     cout << DatabaseTool::addItem(dagger) << endl;
+
+	if(config["OBJECTS"]){
+		
+		vector<std::string> prac;
+		vector<ExtendedDescription> extendedDescriptions;
+        vector<string> keywords;
+         // keywords.push_back("dagger");
+      ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
+      // extendedDescriptions.push_back(extendedDesc);
+
+		for(YAML::iterator it = itemNodes.begin(); it!= itemNodes.end(); ++it){
+			const YAML::Node itemNode = *it;
+			ParseItem parsingItem;
+
+			parsingItem.itemID =	itemNode["id"].as<int>();
+			parsingItem.shortDesc = trimString(itemNode["shortdesc"].as<std::string>());
+			for (unsigned int i = 0; i < itemNode["longdesc"].size(); ++i) {
+				parsingItem.longDesc = trimString(itemNode["longdesc"][i].as<std::string>());
+				// std::cout << parsingItem.longDesc << "\n";
+			}
+
+				// cleaner
+				parsingItem.keywords = itemNode["keywords"].as<vector<std::string>>();
+
+				//get extra info
+				
+			
+
+
+
+			Item newItem (parsingItem.itemID,parsingItem.longDesc,parsingItem.shortDesc,
+						  extendedDescriptions,parsingItem.keywords);
+			DatabaseTool::addItem(newItem);
+			
+
+		}
+
+
+
+	}
+}
+
 int main() {
 
 	YAML::Node config = YAML::LoadFile(
@@ -282,7 +352,8 @@ int main() {
 
 //	parseArea(config);
 //	parseNPC(config);
-	parseRooms(config);
+	// parseRooms(config);
+	parseItems(config);
 
 	checkDatabaseContent();
 
