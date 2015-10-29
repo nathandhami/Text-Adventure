@@ -286,23 +286,10 @@ void parseNPC(const YAML::Node& config) {
 	}
 }
 
+int numofextra = 0;
+
 void parseItems(const YAML::Node &config){
 	YAML::Node itemNodes = config["OBJECTS"];
-
-	// REFERENCE
-	// 		Item(int itemID, string longDesc, string shortDesc, 
-	//    vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
-		// string longDesc = "You see a standard issue dagger here.";
-  //     string shortDesc = "A dagger";
-  //     vector<ExtendedDescription> extendedDescriptions;
-      
-  //     vector<string> keywords;
-  //     keywords.push_back("dagger");
-
-  //     ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
-  //     extendedDescriptions.push_back(extendedDesc);
-  //     Item dagger(3351, longDesc, shortDesc, extendedDescriptions, keywords);
-  //     cout << DatabaseTool::addItem(dagger) << endl;
 
 	if(config["OBJECTS"]){
 		
@@ -321,23 +308,30 @@ void parseItems(const YAML::Node &config){
 			parsingItem.shortDesc = trimString(itemNode["shortdesc"].as<std::string>());
 			for (unsigned int i = 0; i < itemNode["longdesc"].size(); ++i) {
 				parsingItem.longDesc = trimString(itemNode["longdesc"][i].as<std::string>());
-				// std::cout << parsingItem.longDesc << "\n";
 			}
-
-				// cleaner
 				parsingItem.keywords = itemNode["keywords"].as<vector<std::string>>();
 
-				//get extra info
+				//extra
+				YAML::Node extraNodeForItemNode =  itemNode["extra"];
+				std::string edesc;
+
+				for(unsigned int i = 0; i < extraNodeForItemNode[0]["desc"].size(); ++i){
+				   edesc += trimString(extraNodeForItemNode[0]["desc"][i].as<std::string>()) + " ";
+				}
+
+				vector<std::string> extraKeywords;
+
+				for(unsigned int i =0; i < extraNodeForItemNode[0]["keywords"].size(); ++i){
 				
-			
+					extraKeywords.push_back(extraNodeForItemNode[0]["keywords"][i].as<std::string>());
+				}
 
-
+				ExtendedDescription extendedDesc(edesc,extraKeywords);
+				parsingItem.extendedDescriptions.push_back(extendedDesc);
 
 			Item newItem (parsingItem.itemID,parsingItem.longDesc,parsingItem.shortDesc,
-						  extendedDescriptions,parsingItem.keywords);
+						  parsingItem.extendedDescriptions,parsingItem.keywords);
 			DatabaseTool::addItem(newItem);
-			
-
 		}
 
 
