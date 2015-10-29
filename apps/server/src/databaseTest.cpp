@@ -91,8 +91,10 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getCharIDFromName("testChar1") << endl;
 
       ResetCommand command("npc", 3068, 0, 2, 3040);
+      ResetCommand command2("npc", 3068, 0, 2, 3001);
       cout << DatabaseTool::addResetCommand(command) << endl;
-
+      cout << DatabaseTool::addResetCommand(command2) << endl;
+      cout << DatabaseTool::addResetCommand(command2) << endl;
 
    }
    catch(runtime_error e){

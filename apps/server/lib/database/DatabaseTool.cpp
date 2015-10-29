@@ -509,18 +509,14 @@ bool DatabaseTool::deleteItem(int instanceID){
 }
 
 bool DatabaseTool::addResetCommand(ResetCommand command){
-	try {
-		database db(DB_LOCATION);
-		db << "insert into resetCommands values ( NULL, ?,?,?,?,?);"
-		<<command.action
-		<<command.id
-		<<command.slot
-		<<command.npcLimit
-		<<command.room;
-		return true;
-	} catch (sqlite_exception e) {
-		return false;
-	}
+	string statment = "insert into resetCommands values ((SELECT IFNULL(MAX(resetID), 0) + 1 FROM resetCommands),"
+		+ quotesql(command.action) + ","
+		+ to_string(command.id) + ","
+		+ to_string(command.slot) + "," 
+		+ to_string(command.npcLimit) + ","
+		+ to_string(command.room) + ");";
+	return executeSQLInsert(statment);
+
 }
 
 string DatabaseTool::look(int charID) {

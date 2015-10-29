@@ -65,11 +65,12 @@ CREATE TABLE instanceOfNpc (
 );
 
 CREATE TABLE resetCommands (
-  resetID integer primary key,
+  resetID integer not null,
   action text,
   id integer,
   slot integer,
   npcLimit integer,
   room integer,
+  primary key(action, id, room),
   FOREIGN KEY(room) REFERENCES zones(zoneID)
 );
