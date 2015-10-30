@@ -96,11 +96,15 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::addResetCommand(command2) << endl;
       // cout << DatabaseTool::addResetCommand(command2) << endl;
 
-      npcInstanceTest();
+      
    }
    catch(runtime_error e){
       cout << e.what() << endl;
    }
+}
+
+void updateAttributesTest() {
+   
 }
 
 void npcInstanceTest() {

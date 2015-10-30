@@ -123,6 +123,23 @@ class Attributes {
 		int feetSlot;
 		int handSlot;
 		int weponSlot;
+		void print() {
+			cout << "id: " << this->id << endl;
+			cout << "level: " << this->level << endl;
+			cout << "experience: " << this->experience << endl;
+			cout << "health: " << this->health << endl;
+			cout << "strength: " << this->strength << endl;
+			cout << "intelligence: " << this->intelligence << endl;
+			cout << "dexterity: " << this->dexterity << endl;
+			cout << "charisma: " << this->charisma << endl;
+			cout << "ringSlot: " << this->ringSlot << endl;
+			cout << "headSlot: " << this->headSlot << endl;
+			cout << "chestSlot: " << this->chestSlot << endl;
+			cout << "greavesSlot: " << this->greavesSlot << endl;
+			cout << "feetSlot: " << this->feetSlot << endl;
+			cout << "handSlot: " << this->handSlot << endl;
+			cout << "weponSlot: " << this->weponSlot << endl;
+		}
 };
 
 class ResetCommand{

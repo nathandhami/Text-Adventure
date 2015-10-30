@@ -247,7 +247,6 @@ bool DatabaseTool::placeNpcInZone(int npcID, int zoneID){
 		<<npcInstanceID;
 		return true;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
 		return false;
 	}
 }
