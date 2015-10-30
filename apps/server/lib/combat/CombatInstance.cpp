@@ -160,7 +160,10 @@ CombatInstance(int playerID, int enemyID, int givenEnemyType) {
 	playerTwoID = enemyID;
 
 	int errorStartingThread = pthread_create(&combatThread, NULL, runCombat, NULL);
-
+	if (errorStartingThread) {
+		cout << "Failed to start CombatInstance thread: " << errorStartingThread << endl;
+        exit(-1);
+	}
 	pthread_exit(NULL);
 }
 

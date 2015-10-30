@@ -1,5 +1,5 @@
 add_library(Zone Zone.cpp)
 add_library(World World.cpp)
 add_library(WorldConstants WorldConstants.cpp)
-target_link_libraries ( World ${Boost_LIBRARIES} DatabaseTool Zone WorldConstants )
+target_link_libraries ( World ${Boost_LIBRARIES} DatabaseTool Zone WorldConstants ${CMAKE_THREAD_LIBS_INIT} )
 target_link_libraries ( Zone DatabaseTool WorldConstants )

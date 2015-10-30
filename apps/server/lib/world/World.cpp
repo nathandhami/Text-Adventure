@@ -1,5 +1,4 @@
 #include "World.hpp"
-#include "WorldConstants.hpp"
 
 // --------Private functions--------
 
@@ -27,6 +26,14 @@ string World::playerLook(int playerID, string keyword) {
 	return Zone::getDescription(currentZoneID, keyword);
 }
 
+void *runRespawn() {
+	while (keepRespawning) {
+		DatabaseTool::respawnAll();
+		sleep(RESPAWN_TIME_SECONDS);
+	}
+	pthread_exit(NULL);
+}
+
 // --------Public functions--------
 
 string World::executeCommand(int playerID, Command givenCommand) {
@@ -46,4 +53,27 @@ string World::executeCommand(int playerID, Command givenCommand) {
 		return playerLook(playerID, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
+}
+
+void World::startRespawnLoop() {
+	keepRespawning = true;
+	int errorStartingThread = pthread_create(&respawnThread, NULL, runRespawn, NULL);
+	if (errorStartingThread) {
+		cout << "Failed to start Respawn thread: " << errorStartingThread << endl;
+        exit(-1);
+    }
+	pthread_exit(NULL);
+}
+
+void World::stopRespawnLoop() {
+	keepRespawning = false;
+	pthread_join(respawnThread);
+}
+
+bool World::isRespawnLoopRunning() {
+	return keepRespawning;
+}
+
+void World::respawnImmediately() {
+	DatabaseTool::respawnAll();
 }
