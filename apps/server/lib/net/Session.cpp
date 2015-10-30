@@ -168,6 +168,10 @@ void Session::login( const std::string& credentials ) {
 	}
 	
 	std::cout << "Login success." << std::endl;
+	if ( DatabaseTool::isCharOnline( this->currentUser.getUserId() ) ) {
+		this->writeToClient( GameCode::INVALID, "Already logged in." );
+		return;
+	}
 	DatabaseTool::setCharOnline( this->currentUser.getUserId(), this->identifierString );
 	this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
 }
