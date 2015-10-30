@@ -11,6 +11,7 @@ void spawnItemTest();
 void charOnlineTest();
 void npcInstanceTest();
 void updateAttributesTest();
+void inventoryTest();
 
 int main(int argc, char* argv[])
 {
@@ -72,8 +73,8 @@ int main(int argc, char* argv[])
       //addZoneTest();
       //addItemTest();
       //spawnItemTest();
-      cout << DatabaseTool::moveItem(1, Transfer::toItem, 3) << endl;
-      cout << DatabaseTool::moveItem(1, Transfer::toItem, 4) << endl;
+      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 3) << endl;
+      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 4) << endl;
       // cout << DatabaseTool::getCharID(1) << endl;
       // cout << DatabaseTool::getCharID(2) << endl;
       // DatabaseTool::putCharInZone(1, 3054);
@@ -101,11 +102,23 @@ int main(int argc, char* argv[])
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
       //updateAttributesTest();
       //npcInstanceTest();
+      inventoryTest();
 
       
    }
    catch(runtime_error e){
       cout << e.what() << endl;
+   }
+}
+
+void inventoryTest() {
+   vector<string> itemNames = DatabaseTool::getItemsInInventory(1);
+   vector<int> itemIDs = DatabaseTool::getInstanceIDsOfItemsInInventory(1);
+   for(auto& item: itemNames) {
+      cout << item << endl;
+   }
+   for(auto& item: itemIDs) {
+      cout << item << endl;
    }
 }
 

@@ -245,6 +245,10 @@ class DatabaseTool{
 
 		static bool addItem(Item item);
 
+		static vector<string> getItemsInInventory(int charID);
+
+		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
+
 		static bool spawnItemInZone(int itemID, int zoneID);
 
 		static bool spawnItemInNpcInv(int itemID, int zoneID);
@@ -262,6 +266,7 @@ class DatabaseTool{
 		static Attributes getAttributes(int id, Target characterOrNpc);
 
 		static bool updateAttributes(Attributes attributes, Target characterOrNpc);
+
 
 	//to implement
 		static string look(int charID);

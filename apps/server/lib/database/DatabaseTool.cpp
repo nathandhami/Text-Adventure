@@ -540,6 +540,36 @@ bool DatabaseTool::addItem(Item item) {
 	return executeSQLInsert(sqlStatment);	
 }
 
+vector<string> DatabaseTool::getItemsInInventory(int charID) {
+	vector<string> items;
+	try {
+		database db(DB_LOCATION);
+		db << "select shortDesc from items X, instanceOfItem Y where X.itemID = Y.itemID and charID =?"
+		<<charID
+		>>[&](string desc) {
+			items.push_back(desc);
+		};
+		return items;
+	} catch(sqlite_exception e) {
+		return items;
+	}
+}
+
+vector<int> DatabaseTool::getInstanceIDsOfItemsInInventory(int charID) {
+	vector<int> items;
+	try {
+		database db(DB_LOCATION);
+		db << "select instanceID from instanceOfItem where charID =?"
+		<<charID
+		>>[&](int instanceID) {
+			items.push_back(instanceID);
+		};
+		return items;
+	} catch(sqlite_exception e) {
+		return items;
+	}
+}
+
 bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
 	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL, NULL, 0);";
 	return executeSQLInsert(sqlStatment);
