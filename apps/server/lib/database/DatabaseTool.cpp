@@ -536,48 +536,132 @@ string DatabaseTool::concatKeywords(vector<string> keywords) {
 }
 
 bool DatabaseTool::addItem(Item item) {
-	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.longDesc) + "," + quotesql(item.shortDesc) + ");";
+	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.longDesc) + "," + quotesql(item.shortDesc) + ", 0, 0, 0);";
 	return executeSQLInsert(sqlStatment);	
 }
 
 bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL, NULL);";
+	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL, NULL, 0);";
 	return executeSQLInsert(sqlStatment);
 }
 
 bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, " + to_string(npcInstanceID) + ", NULL);";
-	return executeSQLInsert(sqlStatment);
+	try {
+		int canPickUp;
+		database db (DB_LOCATION);
+		db << "select canPickUp from items where itemID = ?;"
+		<<itemID
+		>>canPickUp;
+		if(canPickUp > 0) {
+			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , NULL , NULL, ?, NULL, 0);"
+			<<itemID
+			<<npcInstanceID;
+			return true;
+		} else {
+			return false;
+		}
+	}catch(sqlite_exception e) {
+		return 0;
+	}
 }
 
 bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , " + to_string(charID) + ", NULL, NULL, NULL);";
-	return executeSQLInsert(sqlStatment);
+	try {
+		int canPickUp;
+		database db (DB_LOCATION);
+		db << "select canPickUp from items where itemID = ?;"
+		<<itemID
+		>>canPickUp;
+		if(canPickUp > 0) {
+			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , ? , NULL, NULL, NULL, 0);"
+			<<itemID
+			<<charID;
+			return true;
+		} else {
+			return false;
+		}
+	}catch(sqlite_exception e) {
+		return 0;
+	}
 }
 
 bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , NULL, NULL, " + to_string(itemInstanceID) + ");";
-	return executeSQLInsert(sqlStatment);
+	try {
+		int canPickUp;
+		int isContainer;
+		database db (DB_LOCATION);
+		db << "select canPickUp from items where itemID = ?;"
+		<<itemID
+		>>canPickUp;
+
+		db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and instanceID = ?;"
+		<<itemInstanceID
+		>> isContainer;
+
+		if((canPickUp > 0) && (isContainer > 0)) {
+			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , NULL , NULL, NULL, ? , 0);"
+			<<itemID
+			<<itemInstanceID;
+			return true;
+		} else {
+			return false;
+		}
+	}catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return 0;
+	}
 }
 
 
 bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
-	string sqlStatment = "";
-	switch(where) {
-		case toCharacter:
-			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
-			return executeSQLInsert(sqlStatment);
-		case toZone:
-			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
-			return executeSQLInsert(sqlStatment);
-		case toNpc:
-			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
-			return executeSQLInsert(sqlStatment);
-		case toItem:
-			sqlStatment = "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = " + to_string(toID) + " WHERE instanceID = " + to_string(instanceID) + ";";
-			return executeSQLInsert(sqlStatment);
-		default:
-			return false;
+	try {
+		int canPickUp;
+		int isContainer;
+		database db(DB_LOCATION);
+		db << "select canPickUp from items X, instanceOfItem Y where X.itemID = Y.itemID and instanceID = ?;"
+		<<instanceID
+		>>canPickUp;
+		switch(where) {
+			case toCharacter:
+				if(canPickUp > 0) {
+					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
+					<<toID
+					<<instanceID;
+					return true;
+				} else {
+					return false;
+				}
+			case toZone:
+				db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = ? WHERE instanceID = ?;"
+				<<toID
+				<<instanceID;
+				return true;
+			case toNpc:
+				if(canPickUp > 0) {
+					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
+					<<toID
+					<<instanceID;
+					return true;
+				} else {
+					return false;
+				}
+			case toItem:
+				db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and instanceID = ?;"
+				<< toID
+				>> isContainer;
+				if((canPickUp > 0) && (isContainer >0)) {
+					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = ? WHERE instanceID = ?;"
+					<<toID
+					<<instanceID;
+					return true;
+				} else {
+					return false;
+				}
+			default:
+				return false;
+		}
+	} catch(sqlite_exception e) {
+		return false;
 	}
 
 }

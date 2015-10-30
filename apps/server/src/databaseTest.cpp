@@ -70,10 +70,10 @@ int main(int argc, char* argv[])
       //    }
       // }
       //addZoneTest();
-      // addItemTest();
-      // spawnItemTest();
-      //cout << DatabaseTool::moveItem(1, Transfer::toZone, 3054);
-
+      //addItemTest();
+      //spawnItemTest();
+      cout << DatabaseTool::moveItem(1, Transfer::toItem, 3) << endl;
+      cout << DatabaseTool::moveItem(1, Transfer::toItem, 4) << endl;
       // cout << DatabaseTool::getCharID(1) << endl;
       // cout << DatabaseTool::getCharID(2) << endl;
       // DatabaseTool::putCharInZone(1, 3054);
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
       //updateAttributesTest();
-      npcInstanceTest();
+      //npcInstanceTest();
 
       
    }
@@ -155,7 +155,7 @@ void addItemTest() {
 
       ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
       extendedDescriptions.push_back(extendedDesc);
-      Item dagger(3351, longDesc, shortDesc, extendedDescriptions, keywords);
+      Item dagger(9999, longDesc, shortDesc, extendedDescriptions, keywords);
       cout << DatabaseTool::addItem(dagger) << endl;
       cout << DatabaseTool::addItem(dagger) << endl;
 }
@@ -163,12 +163,13 @@ void addItemTest() {
 void spawnItemTest() {
    cout << "spawning items..." << endl;
    cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
-   cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
+   cout << DatabaseTool::spawnItemInZone(9999, 3001) << endl;
    cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInNpcInv(9999, 1) << endl;
    cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(3351, 9) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(9999, 1) << endl;
+   cout << DatabaseTool::spawnItemInItem(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInItem(3351, 2) << endl;
 }
 
 void addZoneTest() {

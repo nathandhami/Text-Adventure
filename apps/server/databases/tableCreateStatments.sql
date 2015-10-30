@@ -25,7 +25,10 @@ CREATE TABLE items (
   extendedDesc text,
   keywords text,
   longDesc text,
-  shortDesc text
+  shortDesc text,
+  canPickUp integer,
+  isContainer integer,
+  equipableSlot integer
 );
 
 CREATE TABLE instanceOfItem (
@@ -35,6 +38,7 @@ CREATE TABLE instanceOfItem (
   zoneID integer,
   npcInstanceID integer,
   otherItemInstanceID integer,
+  isEquiped integer,
   FOREIGN KEY(itemID) REFERENCES items(itemID),
   FOREIGN KEY(charID) REFERENCES characters(charID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
