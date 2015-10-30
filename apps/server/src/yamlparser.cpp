@@ -350,7 +350,7 @@ void parseNPC(const YAML::Node& config) {
 			// std::cout << "--------------------------------------------"
 					// << std::endl;
 
-
+ 
 
 			DatabaseTool::addNPC(parsingNPC.npcID,
 								 parsingNPC.description,
