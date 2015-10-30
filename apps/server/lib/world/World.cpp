@@ -33,7 +33,7 @@ string World::playerPickupItem(int playerID, string item) {
 	if (DatabaseTool::pickupItem(item, zoneID)) {
 		return "You pick up the " + item + ".\n";
 	}
-	return "The " + item + "is not in the room or cannot be picked up.\n";
+	return "The " + item + " is not in the room or cannot be picked up.\n";
 }
 
 // --------Public functions--------
