@@ -93,9 +93,23 @@ string DatabaseTool::getPassword(int userID) {
 
 }
 
-bool DatabaseTool::addCharacter(string name, int userID){
-	string sqlStatment = "INSERT INTO characters VALUES ( NULL, " + quotesql(name) + "," + to_string(userID) + "," + INITIAL_ZONE + ");";
-	return executeSQLInsert(sqlStatment);
+bool DatabaseTool::addCharacter(string name, int userID, string description){
+	try {
+		database db(DB_LOCATION);
+		db << "PRAGMA foreign_keys = ON;";
+		db << "INSERT INTO characters VALUES ( NULL, ? , ?, ?);"
+		<<name
+		<<userID
+		<<INITIAL_ZONE;
+		int charID = db.last_insert_rowid();
+
+		db << "INSERT INTO playerAttributes VALUES (?, ?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		<<charID
+		<<description;
+		return true;
+	} catch(sqlite_exception e) {
+		return false;
+	}
 }
 
 vector<string> DatabaseTool::getCharactersNames(int userID){
@@ -128,7 +142,7 @@ int DatabaseTool::getCharIDFromName(string name){
 
 string DatabaseTool::getCharNameFromID(int charID) {
 	try {
-		string name = ""
+		string name = "";
 		database db(DB_LOCATION);
 		db << "select name from characters where charID = ?;"
 		<< charID
@@ -219,9 +233,23 @@ vector<int> DatabaseTool::getAllOnlineCharsInZone(int zoneID){
 	return charsInZone;
 }
 
-void DatabaseTool::placeNpcInZone(int npcID, int zoneID){
-	string sqlStatment = "INSERT INTO instanceOfNpc VALUES ( NULL, " + to_string(npcID) + "," + to_string(zoneID) + ", 1);";
-	executeSQLInsert(sqlStatment);
+bool DatabaseTool::placeNpcInZone(int npcID, int zoneID){
+	try {
+		database db(DB_LOCATION);
+		db << "PRAGMA foreign_keys = ON;";
+		db << "INSERT INTO instanceOfNpc VALUES ( NULL, ?, ?, 1);"
+		<<npcID
+		<<zoneID;
+
+		int npcInstanceID = db.last_insert_rowid();
+
+		db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		<<npcInstanceID;
+		return true;
+	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return false;
+	}
 }
 
 vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
@@ -540,20 +568,91 @@ bool DatabaseTool::addResetCommand(ResetCommand command){
 		+ to_string(command.npcLimit) + ","
 		+ to_string(command.room) + ");";
 	return executeSQLInsert(statment);
-
 }
 
 Attributes DatabaseTool::getAttributes(int id, Target target){
-	database db(DB_LOCATION);
-	db << "select charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?"
-	<< id
-	>>[&](int charID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-		return Attributes(charID, level, experience, health, strength, intelligence, dexterity, charisma )
+	switch(target) {
+		case character:
+			try {
+				database db(DB_LOCATION);
+				db << "select charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
+				<< id
+				>>[&](int charID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+					Attributes attributes(charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+					return attributes;
+				};
+			} catch(sqlite_exception e) {
+				Attributes emptyAttributes;
+				return emptyAttributes;
+			}
+		case npc:
+			try {
+				database db(DB_LOCATION);
+				db << "select npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
+				<< id
+				>>[&](int npcInstanceID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+					Attributes attributes(npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+					return attributes;
+				};
+			} catch(sqlite_exception e) {
+				Attributes emptyAttributes;
+				return emptyAttributes;
+			}
+		default:
+			Attributes emptyAttributes;
+			return emptyAttributes;
 	}
 }
 
 bool DatabaseTool::updateAttributes(Attributes attributes, Target target){
-
+	switch(target) {
+		case character:
+			try {
+				database db(DB_LOCATION);
+				db << "UPDATE playerAttributes SET level = ?, experience = ?, health = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
+				<<attributes.level
+				<<attributes.experience
+				<<attributes.health
+				<<attributes.strength
+				<<attributes.intelligence
+				<<attributes.dexterity
+				<<attributes.charisma
+				<<attributes.ringSlot
+				<<attributes.headSlot
+				<<attributes.chestSlot
+				<<attributes.greavesSlot
+				<<attributes.feetSlot
+				<<attributes.handSlot
+				<<attributes.weponSlot
+				<<attributes.id;
+				return true;
+			} catch(sqlite_exception e) {
+				return false;
+			}
+		case npc:
+			try {
+				database db(DB_LOCATION);
+				db << "UPDATE npcAttributes SET level = ?, experience = ?, health = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
+				<<attributes.level
+				<<attributes.experience
+				<<attributes.health
+				<<attributes.strength
+				<<attributes.intelligence
+				<<attributes.dexterity
+				<<attributes.charisma
+				<<attributes.ringSlot
+				<<attributes.headSlot
+				<<attributes.chestSlot
+				<<attributes.greavesSlot
+				<<attributes.feetSlot
+				<<attributes.handSlot
+				<<attributes.weponSlot
+				<<attributes.id;
+				return true;
+			} catch(sqlite_exception e) {
+				return false;
+			}
+	}
 }
 
 string DatabaseTool::look(int charID) {
