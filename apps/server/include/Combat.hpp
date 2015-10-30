@@ -16,7 +16,7 @@ class CombatActions {
 	static const int NPC_ONLY = 2;
 	static const string HOW_TO_START_FIGHT = "To start a fight, use one of these commands\n    fight <name>\n    fight player <name>\n    fight npc <name>\n";
 	
-	static list<CombatInstance> combatInstances;
+	static deque<CombatInstance> combatInstances;
 
 	static CombatInstance Combat::getCombatInstance(int playerID);
 

@@ -33,29 +33,29 @@ class CombatInstance {
 
 	deque<deque<int>> playersActionQueue;
 
-	static void CombatInstance::notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
+	void CombatInstance::notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
 	
-	static void CombatInstance::executePlayerAttack(int player, int characterType);
+	void CombatInstance::executePlayerAttack(int player, int characterType);
 	
-	static void CombatInstance::executePlayerRetreat(int player);
-	
-	static void CombatInstance::executePlayerAction(int player, int characterType);
+	void CombatInstance::executePlayerRetreat(int player);
 
-	static void CombatInstance::removePlayersFromCombat(int playerID, int playerType);
-	static void CombatInstance::removePlayersFromCombat();
+	void CombatInstance::executePlayerAction(int player, int characterType);
 
-	static void *CombatInstance::runCombat();
+	void CombatInstance::removePlayersFromCombat(int playerID, int playerType);
+	void CombatInstance::removePlayersFromCombat();
+
+	void *CombatInstance::runCombat();
 
 
 public:
 
-	static void CombatInstance::acceptChallenge();
+	void CombatInstance::acceptChallenge();
 
-	static void CombatInstance::endCombat(string message);
+	void CombatInstance::endCombat(string message);
 	
-	static CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType);
+	CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType);
 
-	static CombatInstance::~CombatInstance();
+	CombatInstance::~CombatInstance();
 
 };
 
