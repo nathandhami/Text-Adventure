@@ -10,6 +10,7 @@ void addItemTest();
 void spawnItemTest();
 void charOnlineTest();
 void npcInstanceTest();
+void updateAttributesTest();
 
 int main(int argc, char* argv[])
 {
@@ -52,8 +53,8 @@ int main(int argc, char* argv[])
    	// cout << DatabaseTool::getPassword(2) << endl;
     //   cout << DatabaseTool::getPassword(99999) << endl;
 
-   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1) << endl;
-    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909) << endl;
+   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
+    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
 
 
 
@@ -107,12 +108,16 @@ int main(int argc, char* argv[])
 
       // cout << DatabaseTool::getCharIDFromName("testChar1") << endl;
 
-      ResetCommand command("npc", 3068, 0, 2, 3040);
-      ResetCommand command2("npc", 3068, 0, 2, 3001);
-      cout << DatabaseTool::addResetCommand(command) << endl;
-      cout << DatabaseTool::addResetCommand(command2) << endl;
-      cout << DatabaseTool::addResetCommand(command2) << endl;
+      // ResetCommand command("npc", 3068, 0, 2, 3040);
+      // ResetCommand command2("npc", 3068, 0, 2, 3001);
+      // cout << DatabaseTool::addResetCommand(command) << endl;
+      // cout << DatabaseTool::addResetCommand(command2) << endl;
+      // cout << DatabaseTool::addResetCommand(command2) << endl;
+      
 
+      //cout << DatabaseTool::getCharNameFromID(1) << endl;;
+      //updateAttributesTest();
+      npcInstanceTest();
 
    }
    catch(runtime_error e){
@@ -120,13 +125,32 @@ int main(int argc, char* argv[])
    }
 }
 
+void updateAttributesTest() {
+   Attributes attributes = DatabaseTool::getAttributes(1, Target::npc);
+   attributes.print();
+   attributes.level = 99;
+   DatabaseTool::updateAttributes(attributes, Target::npc);
+
+}
+
 
 void npcInstanceTest() {
-   DatabaseTool::placeNpcInZone(3000, 3054);
-   vector<int> npcsInZone = DatabaseTool::getAllNpcsInZone(3054);
+   DatabaseTool::createNpcInstance(3000, 3054);
+   vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
-      cout << DatabaseTool::getNPCDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl;
+      cout << DatabaseTool::getNPCDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl << endl;;
    }
+
+   cout << DatabaseTool::isNpcAlive(1) <<  endl;
+   DatabaseTool::murderNpc(1);
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+   DatabaseTool::reviveNpc(1);
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+   DatabaseTool::murderNpc(1);
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+   DatabaseTool::respawnAll();
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+
 }
 
 void charOnlineTest() {
