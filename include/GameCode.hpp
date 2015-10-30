@@ -26,7 +26,7 @@ namespace GameCode {
 	const std::string COMBAT 		= "cmb";
 	
 	// Chat headers
-	const std::string CHAT_ALL 		= "cha";
+	const std::string CHAT_ZONE 	= "chz";
 	const std::string CHAT_PRIVATE 	= "chp";
 	
 	// System headers
