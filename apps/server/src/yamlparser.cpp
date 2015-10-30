@@ -445,7 +445,7 @@ int main() {
 	std::cout << "Parsing Items...................";
 	parseItems(config);
 	std::cout << "DONE" << std::endl;
-	// parseResetCommands(config);
+	parseResetCommands(config);
 
 	checkDatabaseContent();
 
