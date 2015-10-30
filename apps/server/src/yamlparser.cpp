@@ -3,7 +3,7 @@
 // Author      : 
 // Version     :
 //============================================================================
-// RUN EXECUTABLE build/bin/yamltest FROM PROJECT SOURCE FOLDER
+// RUN EXECUTABLE build/bin/yamltest FROM parsingRoomOJECT SOURCE FOLDER
 
 #include <iostream>
 #include <assert.h>
@@ -43,19 +43,16 @@ struct ParseRoom {
 	int zoneID;
 	std::string zoneName;
 	std::string description;
-	std::string extendedDesc;
-	int northID;
-	std::string northDesc;
-	int southID;
-	std::string southDesc;
-	int eastID;
-	std::string eastDesc;
-	int westID;
-	std::string westDesc;
-	int upID;
-	std::string upDesc;
-	int downID;
-	std::string downDesc;
+    vector<ExtendedDescription> extendedDescriptions;
+    vector<Door> doors;
+};
+
+//Door(string description, string direction, vector<string> keywords, int goesTo)
+struct ParseDoor {
+	std::string description;
+	std::string direction;
+	vector<std::string> keywords;
+	int goesTo;
 };
 
 struct ParseItem {
@@ -97,14 +94,14 @@ struct ParseResetCommand{
 //string extendedDesc, int northID, string northDesc, int southID,
 //string southDesc, int eastID, string eastDesc, int westID, string westDesc,
 //int upID, string upDesc, int downID, string downDesc
-void addRoomsToDatabase(ParseRoom pr) {
-	// DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, pr.extendedDesc,
-	// 		pr.northID, pr.northDesc, pr.southID, pr.southDesc, pr.eastID,
-	// 		pr.eastDesc, pr.westID, pr.westDesc, pr.upID, pr.upDesc, pr.downID,
-	// 		pr.downDesc);
-//	 DatabaseTool::addZone(pr.zoneID, pr.zoneName, pr.description, "",
-//	 			 	 	 	   pr.northID,  "", pr.southID, "",
-//	 			 	 	 	   pr.eastID,"", pr.westID,"", pr.upID, "", pr.downID, "");
+void addRoomsToDatabase(ParseRoom parsingRoom) {
+	// DatabaseTool::addZone(parsingRoom.zoneID, parsingRoom.zoneName, parsingRoom.description, parsingRoom.extendedDesc,
+	// 		parsingRoom.northID, parsingRoom.northDesc, parsingRoom.southID, parsingRoom.southDesc, parsingRoom.eastID,
+	// 		parsingRoom.eastDesc, parsingRoom.westID, parsingRoom.westDesc, parsingRoom.upID, parsingRoom.upDesc, parsingRoom.downID,
+	// 		parsingRoom.downDesc);
+//	 DatabaseTool::addZone(parsingRoom.zoneID, parsingRoom.zoneName, parsingRoom.description, "",
+//	 			 	 	 	   parsingRoom.northID,  "", parsingRoom.southID, "",
+//	 			 	 	 	   parsingRoom.eastID,"", parsingRoom.westID,"", parsingRoom.upID, "", parsingRoom.downID, "");
 }
 
 // test anything in the database here
@@ -125,95 +122,119 @@ void parseRooms(const YAML::Node& config) {
 				++it) {
 
 			const YAML::Node roomNode = *it;
-			ParseRoom pr;
+			ParseRoom parsingRoom;
 
-			std::cout << "Room # " << ++numOfRooms << std::endl;
-			std::cout << "------------------------" << std::endl;
+			// std::cout << "Room # " << ++numOfRooms << std::endl;
+			// std::cout << "------------------------" << std::endl;
 
-			std::cout << "Room Description: " << std::endl;
+			// std::cout << "Room Description: " << std::endl;
 
 			// if there is more than one line of description
 			for (unsigned int i = 0; i < roomNode["desc"].size(); ++i) {
 //				std::cout << roomNode["desc"][i].as<std::string>() << std::endl;
-				pr.description += " " + roomNode["desc"][i].as<std::string>();
+				parsingRoom.description += " " + roomNode["desc"][i].as<std::string>();
 			}
 
-			pr.description = trimString(pr.description);
-			std::cout << pr.description << std::endl;
+			parsingRoom.description = trimString(parsingRoom.description);
+			// std::cout << parsingRoom.description << std::endl;
+
+
+			vector<Door> doors;
+			ParseDoor parsingDoor;
+			//Door(string description, string direction, vector<string> keywords, int goesTo)
+
 //
-//			// processes each door
-//			for (unsigned int j = 0; j < roomNode["doors"].size(); ++j) {
-//				std::cout << "Door #" << j + 1 << std::endl;
-//				std::cout << "---------------" << std::endl;
-//				std::cout << "Door Description: " << std::endl;
-//				// within each door there are further categories
-//				std::string tempStr;
-//				for (unsigned int k = 0;k < roomNode["doors"][j]["desc"].size(); ++k)
-//					tempStr += " "  + roomNode["doors"][j]["desc"][k].as<std::string>();
-//
-//					tempStr = trimString(tempStr);
-//
-////					std::cout << roomNode["doors"][j]["desc"][k] << std::endl;
-////				std::cout << "dir : " << roomNode["doors"][j]["dir"] << std::endl;
-//
-////				std::cout << "keywords: " << std::endl;
-//				for (unsigned int k = 0;
-//						k < roomNode["doors"][j]["keywords"].size(); ++k);
-////					std::cout << roomNode["doors"][j]["keywords"][k]
-////							<< std::endl;
-////				std::cout << "to: " << roomNode["doors"][j]["to"] << std::endl;
-//
-//
-//				// check if door leads to north,south,east,...
-//				if(roomNode["doors"][j]["dir"].as<std::string>().compare("north") == 0){
-//					pr.northID = roomNode["doors"][j]["to"].as<int>();
-//					pr.northDesc = tempStr;
-//					std::cout << pr.northDesc << std::endl;
-//					std::cout << "DOOR ID: " << pr.southID << std::endl;
-//				}
-//
-//				else if(roomNode["doors"][j]["dir"].as<std::string>().compare("south") == 0){
-//					pr.southID = roomNode["doors"][j]["to"].as<int>();
-//				    pr.southDesc = tempStr;
-//				    std::cout << pr.southDesc << std::endl;
-//				    std::cout << "DOOR ID: " << pr.southID << std::endl;
-//				}
-//
-//				else if(roomNode["doors"][j]["dir"].as<std::string>().compare("west") == 0){
-//					pr.westID = roomNode["doors"][j]["to"].as<int>();
-//					pr.westDesc = tempStr;
-//					std::cout << pr.westDesc << std::endl;
-//					std::cout << "DOOR ID: " << pr.westID << std::endl;
-//				}
-//
-//                else if(roomNode["doors"][j]["dir"].as<std::string>().compare("east") == 0){
-//					pr.eastID = roomNode["doors"][j]["to"].as<int>();
-//					pr.eastDesc = tempStr;
-//					std::cout << pr.eastDesc << std::endl;
-//					std::cout << "DOOR ID: " << pr.eastID << std::endl;
-//
-//				}
-//				else if(roomNode["doors"][j]["dir"].as<std::string>().compare("up") == 0){
-//					pr.upID = roomNode["doors"][j]["to"].as<int>();
-//					pr.upDesc = tempStr;
-//					std::cout << pr.upDesc << std::endl;
-//					  std::cout << "DOOR ID: " << pr.upID << std::endl;
-//				}
-//
-//				else if(roomNode["doors"][j]["dir"].as<std::string>().compare("down") == 0){
-//				   pr.downID = roomNode["doors"][j]["to"].as<int>();
-//				   pr.downDesc = tempStr;
-//				   std::cout << pr.downDesc << std::endl;
-//				   std::cout << "DOOR ID: " << pr.downID << std::endl;
-//				}
-//			}
+//			// parsingRoomocesses each door
+			for (unsigned int j = 0; j < roomNode["doors"].size(); ++j) {
+				// std::cout << "Door #" << j + 1 << std::endl;
+				// std::cout << "---------------" << std::endl;
+				// std::cout << "Door Description: " << std::endl;
+				// within each door there are further categories
+				std::string doorDescription;
+				for (unsigned int k = 0;k < roomNode["doors"][j]["desc"].size(); ++k)
+					doorDescription += " "  + roomNode["doors"][j]["desc"][k].as<std::string>();
+
+					doorDescription = trimString(doorDescription);
+
+
+
+//				std::cout << roomNode["doors"][j]["desc"][k] << std::endl;
+//				std::cout << "dir : " << roomNode["doors"][j]["dir"] << std::endl;
+				  parsingDoor.direction = roomNode["doors"][j]["dir"].as<std::string>();
+
+//				std::cout << "keywords: " << std::endl;
+					vector<std::string> doorKeywords;
+				for (unsigned int k = 0;
+						k < roomNode["doors"][j]["keywords"].size(); ++k){
+					// std::cout << roomNode["doors"][j]["keywords"][k];
+					doorKeywords.push_back(roomNode["doors"][j]["keywords"][k].as<std::string>());
+			}
+
+			parsingDoor.keywords = doorKeywords;
+			parsingDoor.goesTo = roomNode["doors"][j]["to"].as<int>();
+			parsingDoor.description = doorDescription;
+
+			Door newDoor(parsingDoor.description,
+						 parsingDoor.direction,
+						 parsingDoor.keywords,
+						 parsingDoor.goesTo);
+
+			parsingRoom.doors.push_back(newDoor);
+//							<< std::endl;
+//				std::cout << "to: " << roomNode["doors"][j]["to"] << std::endl;
+
+
+				// check if door leads to north,south,east,...
+				// if(roomNode["doors"][j]["dir"].as<std::string>().compare("north") == 0){
+				// 	parsingRoom.northID = roomNode["doors"][j]["to"].as<int>();
+				// 	parsingRoom.northDesc = doorDescription;
+				// 	std::cout << parsingRoom.northDesc << std::endl;
+				// 	std::cout << "DOOR ID: " << parsingRoom.southID << std::endl;
+				// }
+
+				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("south") == 0){
+				// 	parsingRoom.southID = roomNode["doors"][j]["to"].as<int>();
+				//     parsingRoom.southDesc = doorDescription;
+				//     std::cout << parsingRoom.southDesc << std::endl;
+				//     std::cout << "DOOR ID: " << parsingRoom.southID << std::endl;
+				// }
+
+				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("west") == 0){
+				// 	parsingRoom.westID = roomNode["doors"][j]["to"].as<int>();
+				// 	parsingRoom.westDesc = doorDescription;
+				// 	std::cout << parsingRoom.westDesc << std::endl;
+				// 	std::cout << "DOOR ID: " << parsingRoom.westID << std::endl;
+				// }
+
+    //            else if(roomNode["doors"][j]["dir"].as<std::string>().compare("east") == 0){
+				// 	parsingRoom.eastID = roomNode["doors"][j]["to"].as<int>();
+				// 	parsingRoom.eastDesc = doorDescription;
+				// 	std::cout << parsingRoom.eastDesc << std::endl;
+				// 	std::cout << "DOOR ID: " << parsingRoom.eastID << std::endl;
+
+				// }
+				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("up") == 0){
+				// 	parsingRoom.upID = roomNode["doors"][j]["to"].as<int>();
+				// 	parsingRoom.upDesc = doorDescription;
+				// 	std::cout << parsingRoom.upDesc << std::endl;
+				// 	  std::cout << "DOOR ID: " << parsingRoom.upID << std::endl;
+				// }
+
+				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("down") == 0){
+				//    parsingRoom.downID = roomNode["doors"][j]["to"].as<int>();
+				//    parsingRoom.downDesc = doorDescription;
+				//    std::cout << parsingRoom.downDesc << std::endl;
+				//    std::cout << "DOOR ID: " << parsingRoom.downID << std::endl;
+				// }
+			}
 //
 //			// if room has more descriptions
 
 			for (unsigned int j = 0;
 					j < roomNode["extended_descriptions"].size();
 					++j) {
-				std::string extendedDescription = "edesc:\\n";
+				// std::string extendedDescription = "edesc:\\n";
+				std::string extendedDescription;
 
 
 				for (unsigned int k = 0;
@@ -227,9 +248,8 @@ void parseRooms(const YAML::Node& config) {
 //					<< std::endl;
 				}
 
-				extendedDescription += "\\nkeywords:\\n- ";
-
 				// if checks
+				vector<std::string> extraKeywords;
 				for (unsigned int k = 0;
 						k < roomNode["extended_descriptions"][j]["keywords"].size();
 						++k) {
@@ -238,22 +258,34 @@ void parseRooms(const YAML::Node& config) {
 //						<< roomNode["extended_descriptions"][j]["keywords"][k]
 //						<< std::endl;
 
-						extendedDescription += trimString(roomNode["extended_descriptions"][j]["keywords"][k].as<std::string>()) + "\\n- ";
+						// extendedDescription += trimString(roomNode["extended_descriptions"][j]["keywords"][k].as<std::string>());
+					extraKeywords.push_back(trimString(roomNode["extended_descriptions"][j]["keywords"][k].as<std::string>()));
 				}
 
-				std::cout << extendedDescription << std::endl;
-				pr.extendedDesc = extendedDescription;
+				// parsingRoom.keywords = roomNode["keywords"].as<vector<std::string>>();
+				ExtendedDescription extendedDesc(extendedDescription,extraKeywords);
+				parsingRoom.extendedDescriptions.push_back(extendedDesc);
+
+
+				// std::cout << extendedDescription << std::endl;
+				// parsingRoom.extendedDesc = extendedDescription;
 			}
-//			std::cout << "---------------" << std::endl;
+			// std::cout << "---------------" << std::endl;
 ////			std::cout << "room name: " << roomNode["name"] << std::endl;
-			pr.zoneName = trimString(roomNode["name"].as<std::string>());
-			std::cout << pr.zoneName << std::endl;
+			parsingRoom.zoneName = trimString(roomNode["name"].as<std::string>());
+			// std::cout << parsingRoom.zoneName << std::endl;
 //			std::cout << "room id: " << roomNode["id"] << std::endl;
-			pr.zoneID = roomNode["id"].as<int>();
-			std::cout << "room id: " << pr.zoneID << std::endl;
+			parsingRoom.zoneID = roomNode["id"].as<int>();
+			// std::cout << "room id: " << parsingRoom.zoneID << std::endl;
+
+			DatabaseTool::addZone(parsingRoom.zoneID,
+								  parsingRoom.zoneName,
+								  parsingRoom.description,
+								  parsingRoom.extendedDescriptions,
+								  parsingRoom.doors);
 
 			// Insert room into database
-			addRoomsToDatabase(pr);
+			// addRoomsToDatabase(parsingRoom);
 		}
 
 	}
@@ -265,9 +297,10 @@ void parseArea(const YAML::Node& config) {
 		std::string str;
 		if (config["AREA"]["name"]) {
 			str = config["AREA"]["name"].as<std::string>();
-			std::cout << "It does exist " << str << std::endl;
+			std::cout << "Loaded world: " << str << std::endl;
+			std::cout << "-------------------------------------------------" << std::endl;
 		} else {
-			std::cout << "It does not exist" << std::endl;
+			std::cout << "area does not exist" << std::endl;
 		}
 	} else {
 		std::cout << "area does not exist" << std::endl;
@@ -284,42 +317,46 @@ void parseNPC(const YAML::Node& config) {
 		for (YAML::iterator it = npcNodes.begin(); it != npcNodes.end(); ++it) {
 			const YAML::Node npcNode = *it;
 			ParseNPC parsingNPC;
-			std::cout << "NPC # " << ++numOfNPCs << std::endl;
-			std::cout << "--------------------------------------------"
-					<< std::endl;
-			std::cout << "Description: " << std::endl;
+			// std::cout << "NPC # " << ++numOfNPCs << std::endl;
+			// std::cout << "--------------------------------------------"
+					// << std::endl;
+			// std::cout << "Description: " << std::endl;
 			for (unsigned int i = 0; i < npcNode["description"].size(); ++i) {
-				std::cout << npcNode["description"][i].as<std::string>() << std::endl;
+				// std::cout << npcNode["description"][i].as<std::string>() << std::endl;
 				parsingNPC.description += trimString(npcNode["description"][i].as<std::string>()) + " ";
 			}
-			std::cout << "id: " << npcNode["id"].as<int>() << std::endl;
+			// std::cout << "id: " << npcNode["id"].as<int>() << std::endl;
 			parsingNPC.npcID = npcNode["id"].as<int>();
 
 
-			std::cout << "keywords: " << std::endl;
+			// std::cout << "keywords: " << std::endl;
 
 			parsingNPC.keywords = npcNode["keywords"].as<vector<std::string>>();
-			for(auto s : parsingNPC.keywords)
-				std::cout << s << std::endl;
+			// for(auto s : parsingNPC.keywords)
+			// 	std::cout << s << std::endl;
 
-			std::cout << "longdesc :" << std::endl;
+			// std::cout << "longdesc :" << std::endl;
 			std::string longDesc;
 			for (unsigned int i = 0; i < npcNode["longdesc"].size(); ++i) {
-				std::cout << npcNode["longdesc"][i].as<std::string>() << std::endl;
+				// std::cout << npcNode["longdesc"][i].as<std::string>() << std::endl;
 				longDesc += npcNode["longdesc"][i].as<std::string>() + " ";
 			}
 			parsingNPC.longDesc = longDesc;
 
-			std::cout << "short desc: "
-					<< npcNode["shortdesc"].as<std::string>() << std::endl;
+			// std::cout << "short desc: "
+					// << npcNode["shortdesc"].as<std::string>() << std::endl;
 					parsingNPC.shortDesc = npcNode["shortdesc"].as<std::string>();
 
-			std::cout << "--------------------------------------------"
-					<< std::endl;
+			// std::cout << "--------------------------------------------"
+					// << std::endl;
 
 
 
-			DatabaseTool::addNPC(parsingNPC.npcID,parsingNPC.description,parsingNPC.keywords,parsingNPC.longDesc,parsingNPC.shortDesc);
+			DatabaseTool::addNPC(parsingNPC.npcID,
+								 parsingNPC.description,
+								 parsingNPC.keywords,
+								 parsingNPC.longDesc,
+								 parsingNPC.shortDesc);
 
 		}
 	} else {
@@ -339,11 +376,11 @@ void parseItems(const YAML::Node &config){
 
 	if(config["OBJECTS"]){
 		
-		vector<std::string> prac;
+		vector<std::string> parsingRoomac;
 		vector<ExtendedDescription> extendedDescriptions;
         vector<string> keywords;
          // keywords.push_back("dagger");
-      ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
+      ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  ImparsingRoominted on the side is: Merc Industries", keywords);
       // extendedDescriptions.push_back(extendedDesc);
 
 		for(YAML::iterator it = itemNodes.begin(); it!= itemNodes.end(); ++it){
@@ -458,12 +495,16 @@ int main() {
 	YAML::Node config = YAML::LoadFile(
 			"apps/server/databases/loadableWorlds/midgaard.yml");
 
-//	parseArea(config);
+	parseArea(config);
+	std::cout << "Parsing NPCS...................";
 	parseNPC(config);
-	// parseRooms(config);
-	// std::cout << "Parsing Items...................";
-	// parseItems(config);
-	// std::cout << "DONE" << std::endl;
+	std::cout << "DONE" << std::endl;
+	std::cout << "Parsing ROOMS...................";
+	parseRooms(config);
+	std::cout << "DONE" << std::endl;
+	std::cout << "Parsing Items...................";
+	parseItems(config);
+	std::cout << "DONE" << std::endl;
 	// parseResetCommands(config);
 
 	checkDatabaseContent();
