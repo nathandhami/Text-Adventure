@@ -569,37 +569,34 @@ bool DatabaseTool::addResetCommand(ResetCommand command){
 	return executeSQLInsert(statment);
 }
 
-Attributes DatabaseTool::getAttributes(int id, Target target){
-	switch(target) {
-		case character:
-			try {
-				database db(DB_LOCATION);
+Attributes DatabaseTool::getAttributes(int id, Target characterOrNpc){
+	Attributes attributes;
+	try {
+		database db(DB_LOCATION);
+		switch(characterOrNpc) {
+			case character:
 				db << "select charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
 				<< id
 				>>[&](int charID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-					Attributes attributes(charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
-					return attributes;
+					Attributes characterAttributes(charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+					attributes = characterAttributes;
 				};
-			} catch(sqlite_exception e) {
-				Attributes emptyAttributes;
-				return emptyAttributes;
-			}
-		case npc:
-			try {
-				database db(DB_LOCATION);
+				return attributes;
+				break;
+			case npc:
 				db << "select npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
 				<< id
 				>>[&](int npcInstanceID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-					Attributes attributes(npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
-					return attributes;
+					Attributes npcAttributes(npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+					attributes = npcAttributes;
 				};
-			} catch(sqlite_exception e) {
-				Attributes emptyAttributes;
-				return emptyAttributes;
-			}
-		default:
-			Attributes emptyAttributes;
-			return emptyAttributes;
+				return attributes;
+				break;
+			default:
+				return attributes;
+		}
+	} catch(sqlite_exception e) {
+		return attributes;
 	}
 }
 

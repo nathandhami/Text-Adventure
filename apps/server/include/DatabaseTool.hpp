@@ -251,9 +251,9 @@ class DatabaseTool{
 
 				static bool addResetCommand(ResetCommand command);
 	//to implement
-		static Attributes getAttributes(int id, Target target);
+		static Attributes getAttributes(int id, Target characterOrNpc);
 
-		static bool updateAttributes(Attributes attributes, Target target);
+		static bool updateAttributes(Attributes attributes, Target characterOrNpc);
 
 		static string look(int charID);
 

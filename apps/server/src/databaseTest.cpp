@@ -10,6 +10,7 @@ void addItemTest();
 void spawnItemTest();
 void charOnlineTest();
 void npcInstanceTest();
+void updateAttributesTest();
 
 int main(int argc, char* argv[])
 {
@@ -95,6 +96,10 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::addResetCommand(command) << endl;
       // cout << DatabaseTool::addResetCommand(command2) << endl;
       // cout << DatabaseTool::addResetCommand(command2) << endl;
+      
+
+      //cout << DatabaseTool::getCharNameFromID(1) << endl;;
+      updateAttributesTest();
 
       
    }
@@ -104,7 +109,11 @@ int main(int argc, char* argv[])
 }
 
 void updateAttributesTest() {
-   
+   Attributes attributes = DatabaseTool::getAttributes(1, Target::npc);
+   attributes.print();
+   attributes.level = 99;
+   DatabaseTool::updateAttributes(attributes, Target::npc);
+
 }
 
 void npcInstanceTest() {
