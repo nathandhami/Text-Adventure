@@ -11,7 +11,7 @@ int CarrierPigeon::deliverPackage( int senderId/*, Command messageCommand*/ ) {
 	
 	
 	
-	CarrierPigeon::deliverToCharacter( senderId, "wolololo." );
+	CarrierPigeon::deliverToCharacter( senderId, "@ testChar1 wolololo." );
 	
 	return 0;
 }

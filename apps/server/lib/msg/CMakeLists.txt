@@ -1,2 +1,2 @@
 add_library( CarrierPigeon CarrierPigeon.cpp )
-target_link_libraries ( CarrierPigeon Server )
+target_link_libraries ( CarrierPigeon Server DatabaseTool )

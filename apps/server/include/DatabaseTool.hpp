@@ -8,12 +8,10 @@
 #include <sqlite3.h>
 #include <fstream>
 #include <vector>
-#include "Database.h"
-#include "Query.h"
 
 using namespace std;
 
-enum Transfer {toCharacter, toZone, toNpc };
+enum Transfer {toCharacter, toZone, toNpc, toItem};
 
 class Door{
 	public:
@@ -71,43 +69,72 @@ class Item{
 		vector<string> keywords;
 };
 
+class ResetCommand{
+	public:
+		ResetCommand();
+		ResetCommand(string action, int id, int slot, int npcLimit, int room) {
+			this->action = action;
+			this->id = id;
+			this->slot = slot;
+			this->npcLimit = npcLimit;
+			this->room = room;
+		}
+		~ResetCommand(){
+		};
+		string action;
+		int id;
+		int slot;
+		int npcLimit;
+		int room;
+};
+
 
 
 class DatabaseTool{
 	public:
-		 static bool addUser(string userName, string password);
+		static bool addUser(string userName, string password);
 
-		 static int getUserID(string userName, string password);
+		static int getUserID(string userName, string password);
 
-		 static string getPassword(int userID);
+		static int getUserAuthencationLevel(int userID);
 
-		 static bool addCharacter(string name, int userID);
+		static bool setUserAuthencationLevel(int userID, int authencationLevel);
 
-		 static int getCharID(int userID);
+		static string getPassword(int userID);
 
-		 static bool isCharOnline(int charID);
+		static vector<string> getCharactersNames(int userID);
 
-		 static void setCharOnline(int charID, string sessionID);
+		static int getCharIDFromName(string name);
 
-		 static void setCharOffline(int charID);
+		static bool addCharacter(string name, int userID);
 
-		 static string getSessionID(int charID);
+		static int getCharID(int userID);
 
-		 static void putCharInZone(int charID, int zoneID);
+		static bool isCharOnline(int charID);
 
-		 static int getCharsLocation(int charID);
+		static void setCharOnline(int charID, string sessionID);
 
-		 static vector<int> getAllCharsInZone(int zoneID);
+		static void setCharOffline(int charID);
 
-		 static void placeNpcInZone(int npcID, int zoneID);
+		static string getSessionID(int charID);
 
-		 static vector<int> getAllNpcsInZone(int zoneID);
+		static void putCharInZone(int charID, int zoneID);
 
-		 static void removeNpcFromZone(int npcID, int zone);
+		static int getCharsLocation(int charID);
 
-		 static string getNPCDesc(int npcID);
+		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
-		 static bool addNPC(
+		static void placeNpcInZone(int npcID, int zoneID);
+
+		static vector<int> getAllNpcsInZone(int zoneID);
+
+		static void removeNpcFromZone(int npcID, int zone);
+
+		static int getNpcIDFromInstanceID(int npcInstanceID);
+
+		static string getNPCDesc(int npcID);
+
+		static bool addNPC(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -115,7 +142,7 @@ class DatabaseTool{
 		 	string shortdesc
 		 	);
 
-		 static bool addZone(
+		static bool addZone(
 		 	int zoneID,
 		 	string zoneName,
 		 	string description,
@@ -123,23 +150,35 @@ class DatabaseTool{
 		 	vector<Door> doors
 		 	);
 
-		 static string getZoneName(int zoneID);
+		static string getZoneName(int zoneID);
 
-		 static string getZoneDesc(int zoneID);
+		static string getZoneDesc(int zoneID);
 
-		 static string getZoneExtendedDesc(int zoneID, string keyword);
+		static string getZoneExtendedDesc(int zoneID, string keyword);
 
-		 static int getDirectionID(int zoneID, string direction);
+		static int getDirectionID(int zoneID, string direction);
 
-		 static string getDirectionDesc(int zoneID, string direction);
+		static string getDirectionDesc(int zoneID, string direction);
 
-		 static bool addItem(Item item);
+		static bool addItem(Item item);
 
-		 //NEEDS TO BE IMPLEMENTED STILL
-		 static bool spawnItemInZone(int itemID, int zoneID);
-		 static bool spawnItemInNpcInv(int itemID, int zoneID);
-		 static bool spawnItemInCharacterInv(int itemID, int zoneID);
-		 static bool moveItem(int instanceID, Transfer where, int toID);
+		static bool spawnItemInZone(int itemID, int zoneID);
+
+		static bool spawnItemInNpcInv(int itemID, int zoneID);
+
+		static bool spawnItemInCharacterInv(int itemID, int zoneID);
+
+		static bool spawnItemInItem(int itemId, int itemInstanceID);
+		 
+		static bool moveItem(int instanceID, Transfer where, int toID);
+	
+		static bool deleteItem(int instanceID);
+	//to implement
+		static string look(int charID);
+
+		static bool addResetCommand(ResetCommand command);
+
+		static void executeCommands();
 	private:
 		
 		static string quotesql( const string& s );
