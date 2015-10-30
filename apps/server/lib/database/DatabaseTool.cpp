@@ -233,7 +233,7 @@ vector<int> DatabaseTool::getAllOnlineCharsInZone(int zoneID){
 	return charsInZone;
 }
 
-bool DatabaseTool::placeNpcInZone(int npcID, int zoneID){
+bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 	try {
 		database db(DB_LOCATION);
 		db << "PRAGMA foreign_keys = ON;";
@@ -251,7 +251,7 @@ bool DatabaseTool::placeNpcInZone(int npcID, int zoneID){
 	}
 }
 
-vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
+vector<int> DatabaseTool::getAllAliveNpcsInZone(int zoneID){
 	vector<int> npcsInZone;
 	database db( DB_LOCATION );
 	db << "select npcInstanceID from instanceOfNpc where zoneID=? and isAlive = 1;"
@@ -262,12 +262,40 @@ vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
 	return npcsInZone;
 }
 
-void DatabaseTool::removeNpcFromZone(int npcInstanceID, int zoneID){
-	string sqlStatment = "delete from instanceOfNpc where npcID=" + to_string(npcInstanceID) + " and " + "zoneID =" + to_string(zoneID) + ";";
+void DatabaseTool::deleteNpcInstance(int npcInstanceID){
+	string sqlStatment = "delete from instanceOfNpc where npcID=" + to_string(npcInstanceID) + ";";
 	executeSQLInsert(sqlStatment);
 }
 
+bool DatabaseTool::isNpcAlive(int npcInstanceID){
+	try {
+		int isAlive;
+		database db(DB_LOCATION);
+		db << "select isAlive from instanceOfNpc where npcInstanceID = ?;"
+		<<npcInstanceID
+		>> isAlive;
+		return isAlive;
+	} catch(sqlite_exception e) {
+		return false;
+	}
 
+}
+
+void DatabaseTool::respawnAll(){
+	string statment = "UPDATE instanceOfNpc SET isAlive = 1;";
+	executeSQLInsert(statment);
+
+}
+
+bool DatabaseTool::murderNpc(int npcInstanceID){
+	string statment = "UPDATE instanceOfNpc SET isAlive = 0 where npcInstanceID = " + to_string(npcInstanceID) + ";";
+	return executeSQLInsert(statment);
+}
+
+bool DatabaseTool::reviveNpc(int npcInstanceID){
+	string statment = "UPDATE instanceOfNpc SET isAlive = 1 where npcInstanceID = " + to_string(npcInstanceID) + ";";
+	return executeSQLInsert(statment);
+}
 
 string DatabaseTool::getNPCDesc(int npcID){
 	try {

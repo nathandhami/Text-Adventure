@@ -99,7 +99,8 @@ int main(int argc, char* argv[])
       
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
-      updateAttributesTest();
+      //updateAttributesTest();
+      npcInstanceTest();
 
       
    }
@@ -117,11 +118,22 @@ void updateAttributesTest() {
 }
 
 void npcInstanceTest() {
-   DatabaseTool::placeNpcInZone(3000, 3054);
-   vector<int> npcsInZone = DatabaseTool::getAllNpcsInZone(3054);
+   DatabaseTool::createNpcInstance(3000, 3054);
+   vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
-      cout << DatabaseTool::getNPCDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl;
+      cout << DatabaseTool::getNPCDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl << endl;;
    }
+
+   cout << DatabaseTool::isNpcAlive(1) <<  endl;
+   DatabaseTool::murderNpc(1);
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+   DatabaseTool::reviveNpc(1);
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+   DatabaseTool::murderNpc(1);
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+   DatabaseTool::respawnAll();
+   cout << DatabaseTool::isNpcAlive(1) << endl;
+
 }
 
 void charOnlineTest() {

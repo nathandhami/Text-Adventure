@@ -199,11 +199,19 @@ class DatabaseTool{
 
 		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
-		static bool placeNpcInZone(int npcID, int zoneID);
+		static bool createNpcInstance(int npcID, int zoneID);
 
-		static vector<int> getAllNpcsInZone(int zoneID);
+		static vector<int> getAllAliveNpcsInZone(int zoneID);
 
-		static void removeNpcFromZone(int npcID, int zone);
+		static void deleteNpcInstance(int npcInstanceID);
+
+		static bool isNpcAlive(int npcInstanceID);
+
+		static void respawnAll();
+
+		static bool murderNpc(int npcInstanceID);
+
+		static bool reviveNpc(int npcInstanceID);
 
 		static int getNpcIDFromInstanceID(int npcInstanceID);
 
@@ -249,15 +257,14 @@ class DatabaseTool{
 	
 		static bool deleteItem(int instanceID);
 
-				static bool addResetCommand(ResetCommand command);
-	//to implement
+		static bool addResetCommand(ResetCommand command);
+
 		static Attributes getAttributes(int id, Target characterOrNpc);
 
 		static bool updateAttributes(Attributes attributes, Target characterOrNpc);
 
+	//to implement
 		static string look(int charID);
-
-
 
 		static void executeCommands();
 
