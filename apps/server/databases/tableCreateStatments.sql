@@ -62,6 +62,7 @@ CREATE TABLE instanceOfNpc (
   npcInstanceID integer primary key,
   npcID integer,
   zoneID integer,
+  isAlive integer,
   FOREIGN KEY(npcID) REFERENCES npcs(npcID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
 );
@@ -75,4 +76,23 @@ CREATE TABLE resetCommands (
   room integer,
   primary key(action, id, room),
   FOREIGN KEY(room) REFERENCES zones(zoneID)
+);
+
+CREATE TABLE playerAttributes (
+  charID integer primary key,
+  description text,
+  level integer,
+  experience integer,
+  health integer,
+  strength integer, 
+  intelligence integer,
+  dexterity integer,
+  charisma integer,
+  ringSlot integer,
+  headSlot integer,
+  chestSlot integer,
+  greavesSlot integer,
+  feetSlot integer,
+  handSlot integer,
+  weponSlot integer
 );

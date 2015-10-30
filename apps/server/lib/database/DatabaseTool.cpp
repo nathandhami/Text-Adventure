@@ -126,6 +126,20 @@ int DatabaseTool::getCharIDFromName(string name){
 	}
 }
 
+string DatabaseTool::getCharNameFromID(int charID) {
+	try {
+		string name = ""
+		database db(DB_LOCATION);
+		db << "select name from characters where charID = ?;"
+		<< charID
+		>>name;
+		return name;
+	} catch (sqlite_exception e) {
+		return "";
+	}
+
+}
+
 bool DatabaseTool::isCharOnline(int charID){
 	try {
 		int onlineStatus = 0;
@@ -206,14 +220,14 @@ vector<int> DatabaseTool::getAllOnlineCharsInZone(int zoneID){
 }
 
 void DatabaseTool::placeNpcInZone(int npcID, int zoneID){
-	string sqlStatment = "INSERT INTO instanceOfNpc VALUES ( NULL, " + to_string(npcID) + "," + to_string(zoneID) + ");";
+	string sqlStatment = "INSERT INTO instanceOfNpc VALUES ( NULL, " + to_string(npcID) + "," + to_string(zoneID) + ", 1);";
 	executeSQLInsert(sqlStatment);
 }
 
 vector<int> DatabaseTool::getAllNpcsInZone(int zoneID){
 	vector<int> npcsInZone;
 	database db( DB_LOCATION );
-	db << "select npcInstanceID from instanceOfNpc where zoneID=?;"
+	db << "select npcInstanceID from instanceOfNpc where zoneID=? and isAlive = 1;"
 	<< zoneID
 	>>[&](int npcID) {
 		npcsInZone.push_back(npcID);
@@ -225,6 +239,8 @@ void DatabaseTool::removeNpcFromZone(int npcInstanceID, int zoneID){
 	string sqlStatment = "delete from instanceOfNpc where npcID=" + to_string(npcInstanceID) + " and " + "zoneID =" + to_string(zoneID) + ";";
 	executeSQLInsert(sqlStatment);
 }
+
+
 
 string DatabaseTool::getNPCDesc(int npcID){
 	try {
@@ -524,6 +540,19 @@ bool DatabaseTool::addResetCommand(ResetCommand command){
 		+ to_string(command.npcLimit) + ","
 		+ to_string(command.room) + ");";
 	return executeSQLInsert(statment);
+
+}
+
+Attributes DatabaseTool::getAttributes(int id, Target target){
+	database db(DB_LOCATION);
+	db << "select charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?"
+	<< id
+	>>[&](int charID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+		return Attributes(charID, level, experience, health, strength, intelligence, dexterity, charisma )
+	}
+}
+
+bool DatabaseTool::updateAttributes(Attributes attributes, Target target){
 
 }
 
