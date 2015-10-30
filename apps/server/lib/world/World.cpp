@@ -33,9 +33,11 @@ string World::executeCommand(int playerID, Command givenCommand) {
 	string command = givenCommand.type;
 	string arguments = givenCommand.data;
 	cout << command << " " << playerID << " " << arguments << endl;
+	if (Combat::isInCombat(playerID)) {
+		return "You cannot " + command + " while in combat.\n";
+	}
 	if (command == "move") {
-		bool success = movePlayer(playerID, arguments);
-		if (!success) {
+		if (!movePlayer(playerID, arguments)) {
 			return "Unable to move " + arguments + "\n";
 		}
 		return playerLook(playerID, "");
