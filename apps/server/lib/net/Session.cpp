@@ -4,6 +4,7 @@
 #include "GameCode.hpp"
 #include "CommandParser.hpp"
 #include "Server.hpp"
+#include "CarrierPigeon.hpp"
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -186,8 +187,26 @@ void Session::logout( const std::string& credentials ) {
 
 // Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
+	
+	/*
+	
+	int header ::= parser::getheader
+	
+	if header = WORLDHEADER
+		world::dostuff command
+	else if header = MESSAGEHEADER
+		messenger::dostuff command
+	else if header = COMBAtHEADER
+		combater::dostuff command
+	else
+		write invalid
+	
+	*/
+	
 	LOG( "Command happened." );
-	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::CHAT_PRIVATE, "some random stuff" );
+	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::STATUS, "some random stuff" );
+	CarrierPigeon::deliverPackage( 1 );
+	
 //	std::cout << "Command happened." << std::endl;
 	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
 	if ( parserResponse == HEADER_ERROR ) {
@@ -225,13 +244,16 @@ void Session::asyncWrite() {
 
 				// write to server ensuring no disconnects
 				if ( !this->write( message.header ) ) {
-					std::cout << "Write Failed." << std::endl;
+					LOG( "Can't wite: client disconnected." );
+//					std::cout << "Write Failed." << std::endl;
 //					this->gentleShutDown();
 				} else if ( !this->write( formatStream.str() ) ) {
-					std::cout << "Write Failed." << std::endl;
+					LOG( "Can't wite: client disconnected." );
+//					std::cout << "Write Failed." << std::endl;
 //					this->gentleShutDown();
 				} else if ( !this->write( message.body ) ) {
-					std::cout << "Write Failed." << std::endl;
+					LOG( "Can't wite: client disconnected." );
+//					std::cout << "Write Failed." << std::endl;
 //					this->gentleShutDown();
 				}
 				

@@ -17,7 +17,7 @@ Watcher::Watcher() {
 			this->ioService, 
 			tcp::endpoint( tcp::v4(), HOST_PORT ) 
 		);
-//	this->running = true;
+	
 	this->startAccept();
 }
 
@@ -77,26 +77,6 @@ void Watcher::handleAccept(
 		);
 		
 		newSessionThread.detach();
-		/*this->sessionThreads.push_back( std::thread(
-			[ this, newSession, sessionIdString ]() {
-				std::cout << "Session launched." << std::endl;
-				newSession->start( sessionIdString );
-				Server::destroySession( sessionIdString );
-				std::cout << "Thread ended." << std::endl;
-			}
-		) );*/
-		
-		/*std::async(
-			std::launch::async,
-			[ this, newSession, sessionIdString ]() {
-				std::cout << "Session launched." << std::endl;
-				newSession->start( sessionIdString );
-				Server::destroySession( sessionIdString );
-				std::cout << "Thread ended." << std::endl;
-			}
-		);*/
-		
-//		Server::registerNewSession( newSession );
 		this->startAccept();
 	}
 }
