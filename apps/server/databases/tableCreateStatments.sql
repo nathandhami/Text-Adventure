@@ -94,5 +94,25 @@ CREATE TABLE playerAttributes (
   greavesSlot integer,
   feetSlot integer,
   handSlot integer,
-  weponSlot integer
+  weponSlot integer,
+  FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade
+);
+
+CREATE TABLE npcAttributes (
+  npcInstanceID integer primary key,
+  level integer,
+  experience integer,
+  health integer,
+  strength integer, 
+  intelligence integer,
+  dexterity integer,
+  charisma integer,
+  ringSlot integer,
+  headSlot integer,
+  chestSlot integer,
+  greavesSlot integer,
+  feetSlot integer,
+  handSlot integer,
+  weponSlot integer,
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade
 );

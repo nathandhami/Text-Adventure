@@ -12,6 +12,7 @@
 using namespace std;
 
 enum Transfer {toCharacter, toZone, toNpc, toItem};
+enum Target {character, npc};
 
 class Door{
 	public:
@@ -69,6 +70,78 @@ class Item{
 		vector<string> keywords;
 };
 
+class Attributes {
+	public:
+		Attributes() {
+			this->id = 0;
+			this->level = 0;
+			this->experience = 0;
+			this->health = 0;
+			this->strength = 0;
+			this->intelligence = 0;
+			this->dexterity = 0;
+			this->charisma = 0;
+			this->ringSlot = 0;
+			this->headSlot = 0;
+			this->chestSlot = 0;
+			this->greavesSlot = 0;
+			this->feetSlot = 0;
+			this->handSlot = 0;
+			this->weponSlot = 0;
+		}
+		Attributes(int id, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringslot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot){
+			this->id = id;
+			this->level = level;
+			this->experience = experience;
+			this->health = health;
+			this->strength = strength;
+			this->intelligence = intelligence;
+			this->dexterity = dexterity;
+			this->charisma = charisma;
+			this->ringSlot = ringSlot;
+			this->headSlot = headSlot;
+			this->chestSlot = chestSlot;
+			this->greavesSlot = greavesSlot;
+			this->feetSlot = feetSlot;
+			this->handSlot = handSlot;
+			this->weponSlot = weponSlot;
+		};
+		~Attributes(){
+		};
+		int id;
+		int level;
+		int experience;
+		int health;
+		int strength;
+		int intelligence;
+		int dexterity;
+		int charisma;
+		int ringSlot;
+		int headSlot;
+		int chestSlot;
+		int greavesSlot;
+		int feetSlot;
+		int handSlot;
+		int weponSlot;
+		void print() {
+			cout << "id: " << this->id << endl;
+			cout << "level: " << this->level << endl;
+			cout << "experience: " << this->experience << endl;
+			cout << "health: " << this->health << endl;
+			cout << "strength: " << this->strength << endl;
+			cout << "intelligence: " << this->intelligence << endl;
+			cout << "dexterity: " << this->dexterity << endl;
+			cout << "charisma: " << this->charisma << endl;
+			cout << "ringSlot: " << this->ringSlot << endl;
+			cout << "headSlot: " << this->headSlot << endl;
+			cout << "chestSlot: " << this->chestSlot << endl;
+			cout << "greavesSlot: " << this->greavesSlot << endl;
+			cout << "feetSlot: " << this->feetSlot << endl;
+			cout << "handSlot: " << this->handSlot << endl;
+			cout << "weponSlot: " << this->weponSlot << endl;
+		}
+};
+
 class ResetCommand{
 	public:
 		ResetCommand();
@@ -106,7 +179,9 @@ class DatabaseTool{
 
 		static int getCharIDFromName(string name);
 
-		static bool addCharacter(string name, int userID);
+		static string getCharNameFromID(int charID);
+
+		static bool addCharacter(string name, int userID, string description);
 
 		static int getCharID(int userID);
 
@@ -124,7 +199,7 @@ class DatabaseTool{
 
 		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
-		static void placeNpcInZone(int npcID, int zoneID);
+		static bool placeNpcInZone(int npcID, int zoneID);
 
 		static vector<int> getAllNpcsInZone(int zoneID);
 
@@ -173,12 +248,20 @@ class DatabaseTool{
 		static bool moveItem(int instanceID, Transfer where, int toID);
 	
 		static bool deleteItem(int instanceID);
+
+				static bool addResetCommand(ResetCommand command);
 	//to implement
+		static Attributes getAttributes(int id, Target target);
+
+		static bool updateAttributes(Attributes attributes, Target target);
+
 		static string look(int charID);
 
-		static bool addResetCommand(ResetCommand command);
+
 
 		static void executeCommands();
+
+		static bool addDoorToZone(int zoneID, Door door);
 	private:
 		
 		static string quotesql( const string& s );

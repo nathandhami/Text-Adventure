@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
    	// cout << DatabaseTool::getPassword(2) << endl;
     //   cout << DatabaseTool::getPassword(99999) << endl;
 
-   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1) << endl;
-    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909) << endl;
+   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
+    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
 
 
 
@@ -90,16 +90,21 @@ int main(int argc, char* argv[])
 
       // cout << DatabaseTool::getCharIDFromName("testChar1") << endl;
 
-      ResetCommand command("npc", 3068, 0, 2, 3040);
-      ResetCommand command2("npc", 3068, 0, 2, 3001);
-      cout << DatabaseTool::addResetCommand(command) << endl;
-      cout << DatabaseTool::addResetCommand(command2) << endl;
-      cout << DatabaseTool::addResetCommand(command2) << endl;
+      // ResetCommand command("npc", 3068, 0, 2, 3040);
+      // ResetCommand command2("npc", 3068, 0, 2, 3001);
+      // cout << DatabaseTool::addResetCommand(command) << endl;
+      // cout << DatabaseTool::addResetCommand(command2) << endl;
+      // cout << DatabaseTool::addResetCommand(command2) << endl;
 
+      
    }
    catch(runtime_error e){
       cout << e.what() << endl;
    }
+}
+
+void updateAttributesTest() {
+   
 }
 
 void npcInstanceTest() {
