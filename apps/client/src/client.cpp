@@ -58,13 +58,38 @@ static void readCommands() {
 int main( int argc, const char* argv[] ) {
 
 	Gtk::Main kit(argc);
-	Gtk::Window window;
 
-	window.set_title("Text Gale Online");
-	window.set_default_size(900, 500);
-	window.set_position(Gtk::WIN_POS_CENTER);
+	Gtk::ScrolledWindow outputScrollWindow;
+	Gtk::TextView outputTextview;
+	Gtk::Grid uiGrid;
+	Gtk::Entry commandEntry;
+	Gtk::Window window;
+	Gtk::Button button("Click Me");
+	Gtk::Box commandBox(Gtk::ORIENTATION_HORIZONTAL, 5);
+	Gtk::Frame commandFrame("Enter Command");
 	
-	kit.run(window);
+	window.set_default_size(900, 500);
+	window.set_title("Text Gale Online");
+	window.set_position(Gtk::WIN_POS_CENTER);
+	window.set_border_width(10);
+
+	outputScrollWindow.add(outputTextview);
+
+	//window.add(button);
+	uiGrid.set_orientation(Gtk::ORIENTATION_VERTICAL);
+	uiGrid.add(commandFrame);
+	uiGrid.add(commandEntry);
+
+//	commandFrame.add(uiGrid);
+
+	window.add(uiGrid);
+	
+	window.show_all_children();
+	//button.show();
+	//window.add(button);
+	
+	//kit.run(window);
+	Gtk::Main::run(window);
 	/*UIWriter::sendSysStatus( "Connecting to server..." );
 	
 	transceiver = std::make_shared< Transceiver >();
