@@ -3,7 +3,7 @@
 
 // --------Private functions--------
 
-CombatInstance getCombatInstance(int playerID) {
+CombatInstance Combat::getCombatInstance(int playerID) {
 	for (long instanceIndex = 0; instanceIndex < (long)combatInstances.size(); instanceIndex++) {
 		if (combatInstances.at(instanceIndex).isCombatant(playerID) {
 			return combatInstance.at(instanceIndex);
@@ -12,7 +12,7 @@ CombatInstance getCombatInstance(int playerID) {
 	return NULL;
 }
 
-deque<CombatInstance> getCombatInstances(int zoneID) {
+deque<CombatInstance> Combat::getCombatInstances(int zoneID) {
 	deque<CombatInstance> zoneInstances;
 	for (long instanceIndex = 0; instanceIndex < (long)combatInstances.size(); instanceIndex++) {
 		if (combatInstances.at(instanceIndex).inZone(zoneID) {
@@ -22,7 +22,7 @@ deque<CombatInstance> getCombatInstances(int zoneID) {
 	return zoneInstances;
 }
 
-int getLocalIDFromName(int playerID, int characterName, int characterType) {
+int Combat::getLocalIDFromName(int playerID, int characterName, int characterType) {
 	vector<int> idsInZone;
 	if (characterType == PLAYER_ONLY) {
 		idsInZone = DatabaseTool::getAllCharsInZone(DatabaseTool::getCharsLocation(playerID));
