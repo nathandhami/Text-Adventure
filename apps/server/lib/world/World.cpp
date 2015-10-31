@@ -30,7 +30,7 @@ string World::playerLook(int playerID, string keyword) {
 string World::playerPickupItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
-	if (DatabaseTool::pickupItem(item, zoneID)) {
+	if (DatabaseTool::pickUp(playerID, item)) {
 		return "You pick up the " + item + ".\n";
 	}
 	return "The " + item + " is not in the room or cannot be picked up.\n";
