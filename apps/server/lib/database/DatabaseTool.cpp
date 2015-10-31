@@ -702,12 +702,14 @@ bool DatabaseTool::deleteItem(int instanceID){
 }
 
 bool DatabaseTool::addResetCommand(ResetCommand command){
-	string statment = "insert into resetCommands values ((SELECT IFNULL(MAX(resetID), 0) + 1 FROM resetCommands),"
+	string statment = "insert into resetCommands values (NULL,"
 		+ quotesql(command.action) + ","
 		+ to_string(command.id) + ","
 		+ to_string(command.slot) + "," 
 		+ to_string(command.npcLimit) + ","
-		+ to_string(command.room) + ");";
+		+ to_string(command.room) + ","
+		+ quotesql(command.state) + ","
+		+ to_string(command.container) + ");";
 	return executeSQLInsert(statment);
 }
 

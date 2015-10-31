@@ -145,12 +145,14 @@ class Attributes {
 class ResetCommand{
 	public:
 		ResetCommand();
-		ResetCommand(string action, int id, int slot, int npcLimit, int room) {
+		ResetCommand(string action, int id, int slot, int npcLimit, int room, string state, int container) {
 			this->action = action;
 			this->id = id;
 			this->slot = slot;
 			this->npcLimit = npcLimit;
 			this->room = room;
+			this-> state = state;
+			this->container = container;
 		}
 		~ResetCommand(){
 		};
@@ -159,6 +161,8 @@ class ResetCommand{
 		int slot;
 		int npcLimit;
 		int room;
+		string state;
+		int container;
 };
 
 
