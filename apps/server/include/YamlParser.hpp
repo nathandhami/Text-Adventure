@@ -13,7 +13,7 @@
 #include "DatabaseTool.hpp"
 #include <algorithm>
 
-struct ParseRoom {
+struct ParseZone {
 	int zoneID;
 	std::string zoneName;
 	std::string description;
@@ -21,8 +21,7 @@ struct ParseRoom {
     vector<Door> doors;
 };
 
-//Door(string description, string direction, vector<string> keywords, int goesTo)
-struct ParseDoor {
+ struct ParseDoor {
 	std::string description;
 	std::string direction;
 	vector<std::string> keywords;
@@ -30,8 +29,6 @@ struct ParseDoor {
 };
 
 struct ParseItem {
-	// 		Item(int itemID, string longDesc, string shortDesc, 
-	//    vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
 	int itemID;
 	std::string longDesc;
 	std::string shortDesc;
@@ -39,15 +36,6 @@ struct ParseItem {
 	vector<std::string> keywords;
 };
 
-/*
-static bool addNPC(
-		 	int npcID, 
-		 	string description, 
-		 	vector<string> keywords,
-		 	string longdesc,
-		 	string shortdesc
-		 	);
-		 	*/
 struct ParseNPC{
 	int npcID;
 	std::string description;
@@ -69,14 +57,12 @@ struct ParseResetCommand{
 class YamlParser{
 	public:
 	void loadYamlCppFile(std::string fileName);
-	void parseArea(const YAML::Node& config);
-	void parseRooms(const YAML::Node& config);
-	void parseNPC(const YAML::Node& config);
-	void parseItems(const YAML::Node &config);
-	void parseResetCommands(YAML::Node &config);
+	void parseAreaAndAddIntoDatabase(const YAML::Node& config);
+	void parseZonesAndAddIntoDatabase(const YAML::Node& config);
+	void parseNPCAndAddIntoDatabase(const YAML::Node& config);
+	void parseItemsAndAddIntoDatabase(const YAML::Node &config);
+	void parseResetCommandsAndAddIntoDatabase(YAML::Node &config);
 	void resetDatabaseWorld();
-	void addRoomsToDatabase(ParseRoom parsingRoom);
-	void checkDatabaseContent();
 	std::string trimString(std::string string);
 	
 	private:
