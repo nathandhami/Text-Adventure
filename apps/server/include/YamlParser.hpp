@@ -62,6 +62,8 @@ struct ParseResetCommand{
 	int slot;
 	int npcLimit;
 	int room;
+	std::string state;
+	int container;
 };
 
 class YamlParser{

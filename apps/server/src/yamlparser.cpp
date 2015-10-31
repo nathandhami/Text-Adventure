@@ -10,9 +10,6 @@
 
 // choose which world to load into database
 void loadYamlCppFile(std::string fileName) {
-//	 config = YAML::LoadFile(fileName);
-//	 std::ofstream fout(fileName);
-//	 fout << config;
 }
 
 // cleans database before a new world is loaded
@@ -21,34 +18,10 @@ void resetDatabaseWorld() {
 
 // cleans up strings parsed from yaml file
 std::string trimString(std::string string) {
-
 	boost::algorithm::trim(string);
 	boost::erase_all(string, "'");
-// std::string newStringIsSqlReady = boost::replace_all_copy(string, "'", "\\'");
-//	std::cout<< string << std::endl;
-
 	return string;
 }
-
-// int zoneID, string zoneName, string description,
-//string extendedDesc, int northID, string northDesc, int southID,
-//string southDesc, int eastID, string eastDesc, int westID, string westDesc,
-//int upID, string upDesc, int downID, string downDesc
-void addRoomsToDatabase(ParseRoom parsingRoom) {
-	// DatabaseTool::addZone(parsingRoom.zoneID, parsingRoom.zoneName, parsingRoom.description, parsingRoom.extendedDesc,
-	// 		parsingRoom.northID, parsingRoom.northDesc, parsingRoom.southID, parsingRoom.southDesc, parsingRoom.eastID,
-	// 		parsingRoom.eastDesc, parsingRoom.westID, parsingRoom.westDesc, parsingRoom.upID, parsingRoom.upDesc, parsingRoom.downID,
-	// 		parsingRoom.downDesc);
-//	 DatabaseTool::addZone(parsingRoom.zoneID, parsingRoom.zoneName, parsingRoom.description, "",
-//	 			 	 	 	   parsingRoom.northID,  "", parsingRoom.southID, "",
-//	 			 	 	 	   parsingRoom.eastID,"", parsingRoom.westID,"", parsingRoom.upID, "", parsingRoom.downID, "");
-}
-
-// test anything in the database here
-// e.g query statements
-void checkDatabaseContent() {
-}
-
 
 
 void parseRooms(const YAML::Node& config) {
@@ -58,58 +31,38 @@ void parseRooms(const YAML::Node& config) {
 		YAML::Node roomNodes = config["ROOMS"];
 		int numOfRooms = 0;
 
-		for (YAML::iterator it = roomNodes.begin(); it != roomNodes.end();
-				++it) {
+		for (YAML::iterator it = roomNodes.begin(); it != roomNodes.end();++it) {
 
 			const YAML::Node roomNode = *it;
 			ParseRoom parsingRoom;
 
-			// std::cout << "Room # " << ++numOfRooms << std::endl;
-			// std::cout << "------------------------" << std::endl;
-
-			// std::cout << "Room Description: " << std::endl;
-
 			// if there is more than one line of description
 			for (unsigned int i = 0; i < roomNode["desc"].size(); ++i) {
-//				std::cout << roomNode["desc"][i].as<std::string>() << std::endl;
 				parsingRoom.description += " " + roomNode["desc"][i].as<std::string>();
 			}
-
 			parsingRoom.description = trimString(parsingRoom.description);
-			// std::cout << parsingRoom.description << std::endl;
-
-
+	
 			vector<Door> doors;
 			ParseDoor parsingDoor;
-			//Door(string description, string direction, vector<string> keywords, int goesTo)
 
-//
-//			// parsingRoomocesses each door
+			// Parse zone's each door
 			for (unsigned int j = 0; j < roomNode["doors"].size(); ++j) {
-				// std::cout << "Door #" << j + 1 << std::endl;
-				// std::cout << "---------------" << std::endl;
-				// std::cout << "Door Description: " << std::endl;
-				// within each door there are further categories
+	
+				// within each door there are further categories needed to be parsed
 				std::string doorDescription;
-				for (unsigned int k = 0;k < roomNode["doors"][j]["desc"].size(); ++k)
+				for (unsigned int k = 0;k < roomNode["doors"][j]["desc"].size(); ++k){
 					doorDescription += " "  + roomNode["doors"][j]["desc"][k].as<std::string>();
+				}
 
-					doorDescription = trimString(doorDescription);
+				doorDescription = trimString(doorDescription);
+				vector<std::string> doorKeywords;
 
-
-
-//				std::cout << roomNode["doors"][j]["desc"][k] << std::endl;
-//				std::cout << "dir : " << roomNode["doors"][j]["dir"] << std::endl;
-				  parsingDoor.direction = roomNode["doors"][j]["dir"].as<std::string>();
-
-//				std::cout << "keywords: " << std::endl;
-					vector<std::string> doorKeywords;
-				for (unsigned int k = 0;
-						k < roomNode["doors"][j]["keywords"].size(); ++k){
-					// std::cout << roomNode["doors"][j]["keywords"][k];
+				for (unsigned int k = 0; k < roomNode["doors"][j]["keywords"].size(); ++k){
 					doorKeywords.push_back(roomNode["doors"][j]["keywords"][k].as<std::string>());
-			}
+				}
 
+			
+			parsingDoor.direction = roomNode["doors"][j]["dir"].as<std::string>();
 			parsingDoor.keywords = doorKeywords;
 			parsingDoor.goesTo = roomNode["doors"][j]["to"].as<int>();
 			parsingDoor.description = doorDescription;
@@ -120,54 +73,9 @@ void parseRooms(const YAML::Node& config) {
 						 parsingDoor.goesTo);
 
 			parsingRoom.doors.push_back(newDoor);
-//							<< std::endl;
-//				std::cout << "to: " << roomNode["doors"][j]["to"] << std::endl;
 
-
-				// check if door leads to north,south,east,...
-				// if(roomNode["doors"][j]["dir"].as<std::string>().compare("north") == 0){
-				// 	parsingRoom.northID = roomNode["doors"][j]["to"].as<int>();
-				// 	parsingRoom.northDesc = doorDescription;
-				// 	std::cout << parsingRoom.northDesc << std::endl;
-				// 	std::cout << "DOOR ID: " << parsingRoom.southID << std::endl;
-				// }
-
-				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("south") == 0){
-				// 	parsingRoom.southID = roomNode["doors"][j]["to"].as<int>();
-				//     parsingRoom.southDesc = doorDescription;
-				//     std::cout << parsingRoom.southDesc << std::endl;
-				//     std::cout << "DOOR ID: " << parsingRoom.southID << std::endl;
-				// }
-
-				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("west") == 0){
-				// 	parsingRoom.westID = roomNode["doors"][j]["to"].as<int>();
-				// 	parsingRoom.westDesc = doorDescription;
-				// 	std::cout << parsingRoom.westDesc << std::endl;
-				// 	std::cout << "DOOR ID: " << parsingRoom.westID << std::endl;
-				// }
-
-    //            else if(roomNode["doors"][j]["dir"].as<std::string>().compare("east") == 0){
-				// 	parsingRoom.eastID = roomNode["doors"][j]["to"].as<int>();
-				// 	parsingRoom.eastDesc = doorDescription;
-				// 	std::cout << parsingRoom.eastDesc << std::endl;
-				// 	std::cout << "DOOR ID: " << parsingRoom.eastID << std::endl;
-
-				// }
-				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("up") == 0){
-				// 	parsingRoom.upID = roomNode["doors"][j]["to"].as<int>();
-				// 	parsingRoom.upDesc = doorDescription;
-				// 	std::cout << parsingRoom.upDesc << std::endl;
-				// 	  std::cout << "DOOR ID: " << parsingRoom.upID << std::endl;
-				// }
-
-				// else if(roomNode["doors"][j]["dir"].as<std::string>().compare("down") == 0){
-				//    parsingRoom.downID = roomNode["doors"][j]["to"].as<int>();
-				//    parsingRoom.downDesc = doorDescription;
-				//    std::cout << parsingRoom.downDesc << std::endl;
-				//    std::cout << "DOOR ID: " << parsingRoom.downID << std::endl;
-				// }
 			}
-//
+
 //			// if room has more descriptions
 
 			for (unsigned int j = 0;
@@ -308,8 +216,6 @@ void parseNPC(const YAML::Node& config) {
 
 }
 
-int numofextra = 0;
-
 void parseItems(const YAML::Node &config){
 	YAML::Node itemNodes = config["OBJECTS"];
 
@@ -374,37 +280,61 @@ void parseResetCommands(YAML::Node &config){
 			parsingResetCommand.slot = 0;
 			parsingResetCommand.room = 0;
 			parsingResetCommand.npcLimit = 0;
-			
-			parsingResetCommand.action = resetNode["action"].as<std::string>();
-			std::cout<< "action: " << parsingResetCommand.action << std::endl;
-			parsingResetCommand.id = resetNode["id"].as<int>();
-				std::cout<< "id: " << parsingResetCommand.id << std::endl;
-			
-				if(resetNode["limit"]){
-					parsingResetCommand.npcLimit = resetNode["limit"].as<int>();
-					std::cout << "npc Limit: " << parsingResetCommand.npcLimit << std::endl;
-				}
+			parsingResetCommand.state = "";
+			parsingResetCommand.container = 0;
 
-				if(resetNode["room"]){
+			parsingResetCommand.action = resetNode["action"].as<std::string>();
+			// std::cout<< "action: " << parsingResetCommand.action << std::endl;
+			parsingResetCommand.id = resetNode["id"].as<int>();
+				// std::cout<< "id: " << parsingResetCommand.id << std::endl;
+			
+			if(resetNode["limit"]){
+				parsingResetCommand.npcLimit = resetNode["limit"].as<int>();
+				// std::cout << "npc Limit: " << parsingResetCommand.npcLimit << std::endl;
+			}
+
+			if(resetNode["room"]){
 				parsingResetCommand.room = resetNode["room"].as<int>();
-				std::cout<< "room: " <<  parsingResetCommand.room << std::endl;
+				// std::cout<< "room: " <<  parsingResetCommand.room << std::endl;
 			}
 
 			if(resetNode["slot"]){
 				parsingResetCommand.slot = resetNode["slot"].as<int>();
-				std::cout<< "slot: " <<  parsingResetCommand.slot << std::endl;
+				// std::cout<< "slot: " <<  parsingResetCommand.slot << std::endl;
+			}
+
+			if(resetNode["container"]){
+				parsingResetCommand.container = resetNode["container"].as<int>();
+				// std::cout<< "slot: " <<  parsingResetCommand.container << std::endl;
+			}
+
+			if(resetNode["state"]){
+				parsingResetCommand.state = resetNode["state"].as<std::string>();
+				// std::cout<< "slot: " <<  parsingResetCommand.state << std::endl;
 			}
 
 
 			// is the action an npc?
-			if(parsingResetCommand.action.compare("npc") == 0){
-				ResetCommand resetCommand("npc",
+			// if(parsingResetCommand.action.compare("npc") == 0){
+			// 	ResetCommand resetCommand("npc",
+			// 						  parsingResetCommand.id,
+			// 						  0,
+			// 						  parsingResetCommand.npcLimit,
+			// 						  parsingResetCommand.room);
+
+			// 	DatabaseTool::addResetCommand(resetCommand);
+			// }
+
+
+			ResetCommand resetCommand(parsingResetCommand.action,
 									  parsingResetCommand.id,
-									  0,
+									  parsingResetCommand.slot,
 									  parsingResetCommand.npcLimit,
-									  parsingResetCommand.room);
-				DatabaseTool::addResetCommand(resetCommand);
-			}
+									  parsingResetCommand.room,
+									  parsingResetCommand.state,
+									  parsingResetCommand.container);
+				
+			DatabaseTool::addResetCommand(resetCommand);
 
 			// equip?
 			//
@@ -445,7 +375,9 @@ int main() {
 	std::cout << "Parsing Items...................";
 	parseItems(config);
 	std::cout << "DONE" << std::endl;
+	std::cout << "Parsing Reset Commands...................";
 	parseResetCommands(config);
+	std::cout << "DONE" << std::endl;
 
 	checkDatabaseContent();
 
