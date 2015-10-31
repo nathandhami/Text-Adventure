@@ -185,6 +185,8 @@ class DatabaseTool{
 
 		static int getCharIDFromName(string name);
 
+		static int getCharIDInZoneFromName(string name, int zoneID);
+
 		static string getCharNameFromID(int charID);
 
 		static bool addCharacter(string name, int userID, string description);

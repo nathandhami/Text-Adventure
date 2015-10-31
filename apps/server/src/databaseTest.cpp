@@ -124,11 +124,9 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
       // cout << DatabaseTool::setCombatFlag(1, false, Target::npc) << endl;
       // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
-
-      cout << DatabaseTool::getNpcDesc(1) << endl << endl;;
-      
-
-      cout << DatabaseTool::getNpcName(1) << endl;
+      cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3001) << endl;
+      cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3054) << endl;
+        
    }
    catch(runtime_error e){
       cout << e.what() << endl;

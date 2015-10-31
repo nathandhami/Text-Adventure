@@ -140,6 +140,20 @@ int DatabaseTool::getCharIDFromName(string name){
 	}
 }
 
+int DatabaseTool::getCharIDInZoneFromName(string name, int zoneID) {
+	try {
+		int charID = 0;
+		database db( DB_LOCATION );
+		db << "select X.charID from characters X, charactersOnline Y where X.charID = Y.charID and name=? and location = ?"
+		<<name
+		<<zoneID
+		>>charID;
+		return charID;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
+}
+
 string DatabaseTool::getCharNameFromID(int charID) {
 	try {
 		string name = "";
