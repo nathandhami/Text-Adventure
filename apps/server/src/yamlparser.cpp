@@ -30,7 +30,7 @@ void parseAreaAndAddIntoDatabase(const YAML::Node& config) {
 		if (config["AREA"]["name"]) {
 			str = config["AREA"]["name"].as<std::string>();
 			std::cout << "Loaded world: " << str << std::endl;
-			std::cout << "-------------------------------------------------\n";
+			std::cout << "------------------------------------------------\n";
 
 		} else {
 			std::cout << "area does not exist" << std::endl;
