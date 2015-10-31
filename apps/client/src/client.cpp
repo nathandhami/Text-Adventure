@@ -2,6 +2,7 @@
 #include "UIReader.hpp"
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
+#include "MainWindow.hpp"
 
 #include <cstdlib>
 #include <boost/algorithm/string/join.hpp>
@@ -22,6 +23,11 @@ static std::string joinCredentials( std::string userName, std::string password )
     tokens.push_back( password );
 
     return boost::algorithm::join( tokens, ";" );
+}
+
+static void on_enter_pressed()
+{
+	std::cout << "Enter pressed." << std::endl;
 }
 
 
@@ -59,62 +65,21 @@ int main( int argc, const char* argv[] ) {
 
 	Gtk::Main kit(argc);
 
-	Gtk::ScrolledWindow outputScrollWindow;
-	Gtk::TextView outputTextview;
-	Gtk::Grid uiGrid;
-	Gtk::Entry commandEntry;
-	Gtk::Window window;
-	Gtk::Button button("Click Me");
-	Gtk::Box outputBox;
-	Gtk::Frame commandFrame("Enter Command");
-	Gtk::Frame outputFrame("Server");
-
-	outputTextview.set_editable(FALSE);
-	
-	//Initialize main window
-	window.set_default_size(900, 500);
-	window.set_title("Text Gale Online");
-	window.set_position(Gtk::WIN_POS_CENTER);
-	window.set_border_width(10);
-
-	//Adds the output text to scrollwindow parent
-	outputScrollWindow.add(outputTextview);
-
-	//This expands the scrollwindow vertically
-	outputScrollWindow.set_vexpand(true);
-
-	commandEntry.set_width_chars(85);
-	outputBox.set_border_width(5);
-
-	outputBox.pack_start(outputScrollWindow);
-
-	//Adds the entry box child to its own frame
-	commandFrame.add(commandEntry);
-	//Adds the output box child to its own frame
-	outputFrame.add(outputBox);
-
-	uiGrid.set_orientation(Gtk::ORIENTATION_VERTICAL);
-	uiGrid.add(outputFrame);
-	uiGrid.add(commandFrame);
-
-	//Adds the grid to the main window
-	window.add(uiGrid);
-	
-	window.show_all_children();
-
-	//kit.run(window);
-	Gtk::Main::run(window);
-	/*UIWriter::sendSysStatus( "Connecting to server..." );
+	UIWriter::sendSysStatus( "Connecting to server..." );
 	
 	transceiver = std::make_shared< Transceiver >();
 	transceiver->run();
 	
 	UIWriter::sendSysStatus( "Connected." );
 	
-	login();
+	/*login();
 	
 	UIWriter::sendSysStatus( "What would you like to do?" );
 	readCommands();*/
+
+	MainWindow window;
+
+	Gtk::Main::run(window);
 
 	return 0;
 }

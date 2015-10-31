@@ -4,3 +4,6 @@ target_link_libraries ( UIWriter ConsoleWriter )
 
 add_library( UIReader UIReader.cpp )
 target_link_libraries ( UIReader ConsoleReader )
+
+add_library( MainWindow MainWindow.cpp )
+target_link_libraries ( MainWindow )
