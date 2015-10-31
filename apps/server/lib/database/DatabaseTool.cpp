@@ -297,14 +297,27 @@ bool DatabaseTool::reviveNpc(int npcInstanceID){
 	return executeSQLInsert(statment);
 }
 
-string DatabaseTool::getNPCDesc(int npcID){
+string DatabaseTool::getNpcDesc(int npcInstanceID){
 	try {
 		string description;
 		database db( DB_LOCATION );
-		db << "select description from npcs where npcID=?;"
-		<<npcID
+		db << "select description from npcs X, instanceOfNpc Y where X.npcID = Y.npcID and npcInstanceID=?;"
+		<<npcInstanceID
 		>>description;
 		return description;
+	} catch(sqlite_exception e) {
+		return "";
+	}
+}
+
+string DatabaseTool::getNpcName(int npcInstanceID){
+	try {
+		string name;
+		database db( DB_LOCATION );
+		db << "select shortDesc from npcs X, instanceOfNpc Y where X.npcID = Y.npcID and npcInstanceID=?;"
+		<<npcInstanceID
+		>>name;
+		return name;
 	} catch(sqlite_exception e) {
 		return "";
 	}

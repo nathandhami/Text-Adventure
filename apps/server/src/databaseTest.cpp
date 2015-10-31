@@ -112,19 +112,23 @@ int main(int argc, char* argv[])
       //    cout << description << endl;
       // }
 
-      cout << DatabaseTool::inCombat(1, Target::character) << endl;
-      cout << DatabaseTool::setCombatFlag(1, true, Target::character) << endl;
-      cout << DatabaseTool::inCombat(1, Target::character) << endl;
-      cout << DatabaseTool::setCombatFlag(1, false, Target::character) << endl;
-      cout << DatabaseTool::inCombat(1, Target::character) << endl << endl;
+      // cout << DatabaseTool::inCombat(1, Target::character) << endl;
+      // cout << DatabaseTool::setCombatFlag(1, true, Target::character) << endl;
+      // cout << DatabaseTool::inCombat(1, Target::character) << endl;
+      // cout << DatabaseTool::setCombatFlag(1, false, Target::character) << endl;
+      // cout << DatabaseTool::inCombat(1, Target::character) << endl << endl;
       
 
-      cout << DatabaseTool::inCombat(1, Target::npc) << endl;
-      cout << DatabaseTool::setCombatFlag(1, true, Target::npc) << endl;
-      cout << DatabaseTool::inCombat(1, Target::npc) << endl;
-      cout << DatabaseTool::setCombatFlag(1, false, Target::npc) << endl;
-      cout << DatabaseTool::inCombat(1, Target::npc) << endl;
+      // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
+      // cout << DatabaseTool::setCombatFlag(1, true, Target::npc) << endl;
+      // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
+      // cout << DatabaseTool::setCombatFlag(1, false, Target::npc) << endl;
+      // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
+
+      cout << DatabaseTool::getNpcDesc(1) << endl << endl;;
       
+
+      cout << DatabaseTool::getNpcName(1) << endl;
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -154,7 +158,7 @@ void npcInstanceTest() {
    DatabaseTool::createNpcInstance(3000, 3054);
    vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
-      cout << DatabaseTool::getNPCDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl << endl;;
+      cout << DatabaseTool::getNpcDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl << endl;;
    }
 
    cout << DatabaseTool::isNpcAlive(1) <<  endl;
