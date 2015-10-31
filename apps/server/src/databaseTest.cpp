@@ -11,6 +11,7 @@ void spawnItemTest();
 void charOnlineTest();
 void npcInstanceTest();
 void updateAttributesTest();
+void inventoryTest();
 
 int main(int argc, char* argv[])
 {
@@ -87,10 +88,10 @@ int main(int argc, char* argv[])
       //    }
       // }
       //addZoneTest();
-      // addItemTest();
-      // spawnItemTest();
-      //cout << DatabaseTool::moveItem(1, Transfer::toZone, 3054);
-
+      //addItemTest();
+      //spawnItemTest();
+      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 3) << endl;
+      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 4) << endl;
       // cout << DatabaseTool::getCharID(1) << endl;
       // cout << DatabaseTool::getCharID(2) << endl;
       // DatabaseTool::putCharInZone(1, 3054);
@@ -108,8 +109,8 @@ int main(int argc, char* argv[])
 
       // cout << DatabaseTool::getCharIDFromName("testChar1") << endl;
 
-      // ResetCommand command("npc", 3068, 0, 2, 3040);
-      // ResetCommand command2("npc", 3068, 0, 2, 3001);
+      // ResetCommand command("npc", 3068, 0, 2, 3040, "", 0);
+      // ResetCommand command2("npc", 3068, 0, 2, 3001, "", 0);
       // cout << DatabaseTool::addResetCommand(command) << endl;
       // cout << DatabaseTool::addResetCommand(command2) << endl;
       // cout << DatabaseTool::addResetCommand(command2) << endl;
@@ -117,11 +118,31 @@ int main(int argc, char* argv[])
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
       //updateAttributesTest();
-      npcInstanceTest();
+      //npcInstanceTest();
+      //inventoryTest();
+
+      //cout << DatabaseTool::equipItem(1, "sword") << endl;
+
+      cout << DatabaseTool::pickUp(1, "sword") << endl;
+      vector<string> items = DatabaseTool::getItemsInInventory(1);
+      for(auto &description:items) {
+         cout << description << endl;
+      }
 
    }
    catch(runtime_error e){
       cout << e.what() << endl;
+   }
+}
+
+void inventoryTest() {
+   vector<string> itemNames = DatabaseTool::getItemsInInventory(1);
+   vector<int> itemIDs = DatabaseTool::getInstanceIDsOfItemsInInventory(1);
+   for(auto& item: itemNames) {
+      cout << item << endl;
+   }
+   for(auto& item: itemIDs) {
+      cout << item << endl;
    }
 }
 
@@ -172,7 +193,7 @@ void addItemTest() {
 
       ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
       extendedDescriptions.push_back(extendedDesc);
-      Item dagger(3351, longDesc, shortDesc, extendedDescriptions, keywords);
+      Item dagger(9999, longDesc, shortDesc, extendedDescriptions, keywords);
       cout << DatabaseTool::addItem(dagger) << endl;
       cout << DatabaseTool::addItem(dagger) << endl;
 }
@@ -180,12 +201,13 @@ void addItemTest() {
 void spawnItemTest() {
    cout << "spawning items..." << endl;
    cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
-   cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
+   cout << DatabaseTool::spawnItemInZone(9999, 3001) << endl;
    cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInNpcInv(9999, 1) << endl;
    cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(3351, 9) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(9999, 1) << endl;
+   cout << DatabaseTool::spawnItemInItem(3351, 1) << endl;
+   cout << DatabaseTool::spawnItemInItem(3351, 2) << endl;
 }
 
 void addZoneTest() {

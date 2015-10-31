@@ -25,7 +25,10 @@ CREATE TABLE items (
   extendedDesc text,
   keywords text,
   longDesc text,
-  shortDesc text
+  shortDesc text,
+  canPickUp integer,
+  isContainer integer,
+  equipableSlot integer
 );
 
 CREATE TABLE instanceOfItem (
@@ -35,6 +38,7 @@ CREATE TABLE instanceOfItem (
   zoneID integer,
   npcInstanceID integer,
   otherItemInstanceID integer,
+  isEquipped integer,
   FOREIGN KEY(itemID) REFERENCES items(itemID),
   FOREIGN KEY(charID) REFERENCES characters(charID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
@@ -68,14 +72,14 @@ CREATE TABLE instanceOfNpc (
 );
 
 CREATE TABLE resetCommands (
-  resetID integer not null,
+  resetID integer primary key,
   action text,
   id integer,
   slot integer,
   npcLimit integer,
   room integer,
-  primary key(action, id, room),
-  FOREIGN KEY(room) REFERENCES zones(zoneID)
+  state text,
+  container integer
 );
 
 CREATE TABLE playerAttributes (

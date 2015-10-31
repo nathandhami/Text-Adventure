@@ -9,10 +9,12 @@
 #include <fstream>
 #include <vector>
 
+
 using namespace std;
 
 enum Transfer {toCharacter, toZone, toNpc, toItem};
 enum Target {character, npc};
+enum Slot {ring, head, chest, greaves, feet, hands, wepon};
 
 class Door{
 	public:
@@ -145,12 +147,14 @@ class Attributes {
 class ResetCommand{
 	public:
 		ResetCommand();
-		ResetCommand(string action, int id, int slot, int npcLimit, int room) {
+		ResetCommand(string action, int id, int slot, int npcLimit, int room, string state, int container) {
 			this->action = action;
 			this->id = id;
 			this->slot = slot;
 			this->npcLimit = npcLimit;
 			this->room = room;
+			this-> state = state;
+			this->container = container;
 		}
 		~ResetCommand(){
 		};
@@ -159,6 +163,8 @@ class ResetCommand{
 		int slot;
 		int npcLimit;
 		int room;
+		string state;
+		int container;
 };
 
 
@@ -245,6 +251,12 @@ class DatabaseTool{
 
 		static bool addItem(Item item);
 
+		static vector<string> getItemsInInventory(int charID);
+
+		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
+
+		static vector<string> getItemsInZone(int zoneID);
+
 		static bool spawnItemInZone(int itemID, int zoneID);
 
 		static bool spawnItemInNpcInv(int itemID, int zoneID);
@@ -263,6 +275,11 @@ class DatabaseTool{
 
 		static bool updateAttributes(Attributes attributes, Target characterOrNpc);
 
+		static bool equipItem(int charID, string item);
+
+		static bool pickUp(int charID, string item);
+
+
 	//to implement
 		static string look(int charID);
 
@@ -270,7 +287,7 @@ class DatabaseTool{
 
 		static bool addDoorToZone(int zoneID, Door door);
 	private:
-		
+		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);
 		static string parseExtendedDesc(string extendedDesc, string keyword);
