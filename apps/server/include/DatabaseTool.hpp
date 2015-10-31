@@ -9,10 +9,12 @@
 #include <fstream>
 #include <vector>
 
+
 using namespace std;
 
 enum Transfer {toCharacter, toZone, toNpc, toItem};
 enum Target {character, npc};
+enum Slot {ring, head, chest, greaves, feet, hands, wepon};
 
 class Door{
 	public:
@@ -271,6 +273,8 @@ class DatabaseTool{
 
 		static bool updateAttributes(Attributes attributes, Target characterOrNpc);
 
+		static bool equipItem(int charID, string item);
+
 
 	//to implement
 		static string look(int charID);
@@ -279,7 +283,7 @@ class DatabaseTool{
 
 		static bool addDoorToZone(int zoneID, Door door);
 	private:
-		
+		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);
 		static string parseExtendedDesc(string extendedDesc, string keyword);

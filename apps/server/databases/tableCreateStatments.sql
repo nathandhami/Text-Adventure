@@ -38,7 +38,7 @@ CREATE TABLE instanceOfItem (
   zoneID integer,
   npcInstanceID integer,
   otherItemInstanceID integer,
-  isEquiped integer,
+  isEquipped integer,
   FOREIGN KEY(itemID) REFERENCES items(itemID),
   FOREIGN KEY(charID) REFERENCES characters(charID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID),

@@ -559,10 +559,10 @@ vector<int> DatabaseTool::getInstanceIDsOfItemsInInventory(int charID) {
 	vector<int> items;
 	try {
 		database db(DB_LOCATION);
-		db << "select instanceID from instanceOfItem where charID =?"
+		db << "select itemInstanceID from instanceOfItem where charID =?"
 		<<charID
-		>>[&](int instanceID) {
-			items.push_back(instanceID);
+		>>[&](int itemInstanceID) {
+			items.push_back(itemInstanceID);
 		};
 		return items;
 	} catch(sqlite_exception e) {
@@ -624,7 +624,7 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 		<<itemID
 		>>canPickUp;
 
-		db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and instanceID = ?;"
+		db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
 		<<itemInstanceID
 		>> isContainer;
 
@@ -643,46 +643,46 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 }
 
 
-bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
+bool DatabaseTool::moveItem(int itemInstanceID, Transfer where, int toID){
 	try {
 		int canPickUp;
 		int isContainer;
 		database db(DB_LOCATION);
-		db << "select canPickUp from items X, instanceOfItem Y where X.itemID = Y.itemID and instanceID = ?;"
-		<<instanceID
+		db << "select canPickUp from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
+		<<itemInstanceID
 		>>canPickUp;
 		switch(where) {
 			case toCharacter:
 				if(canPickUp > 0) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
+					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE itemInstanceID = ?;"
 					<<toID
-					<<instanceID;
+					<<itemInstanceID;
 					return true;
 				} else {
 					return false;
 				}
 			case toZone:
-				db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = ? WHERE instanceID = ?;"
+				db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = ? WHERE itemInstanceID = ?;"
 				<<toID
-				<<instanceID;
+				<<itemInstanceID;
 				return true;
 			case toNpc:
 				if(canPickUp > 0) {
 					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
 					<<toID
-					<<instanceID;
+					<<itemInstanceID;
 					return true;
 				} else {
 					return false;
 				}
 			case toItem:
-				db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and instanceID = ?;"
+				db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
 				<< toID
 				>> isContainer;
 				if((canPickUp > 0) && (isContainer >0)) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = ? WHERE instanceID = ?;"
+					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = ? WHERE itemInstanceID = ?;"
 					<<toID
-					<<instanceID;
+					<<itemInstanceID;
 					return true;
 				} else {
 					return false;
@@ -696,8 +696,8 @@ bool DatabaseTool::moveItem(int instanceID, Transfer where, int toID){
 
 }
 
-bool DatabaseTool::deleteItem(int instanceID){
-	string statment = "delete from instanceOfItem where instanceID=" + to_string(instanceID) + ";";
+bool DatabaseTool::deleteItem(int itemInstanceID){
+	string statment = "delete from instanceOfItem where itemInstanceID=" + to_string(itemInstanceID) + ";";
 	return executeSQLInsert(statment);
 }
 
@@ -794,6 +794,67 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target target){
 			}
 	}
 }
+
+bool DatabaseTool::equipItem(int charID, string item) {
+	bool foundItem = false;
+	try{
+		database db (DB_LOCATION);
+		db << "select shortDesc, keywords, itemInstanceID, equipableSlot from items X, instanceOfItem Y where X.itemID = Y.itemID and charID = ?;"
+		<<charID
+		>>[&](string shortdesc, string keywords, int itemInstanceID, int equipableSlot) {
+			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
+				int currentlyEquiped;
+				db << "select " + getSlot(equipableSlot) + " from playerAttributes where charID = ?;"
+				<<charID
+				>>currentlyEquiped;
+
+				cout << "equipped: " << currentlyEquiped << endl;
+
+				if(currentlyEquiped != 0) {
+					cout << "testing" << endl;
+					db <<"update instanceOfItem set isEquipped = 0 where itemInstanceID = ?;"
+					<< currentlyEquiped;
+				}
+				db <<"update instanceOfItem set isEquipped = 1 where itemInstanceID = ?;"
+				<<itemInstanceID;
+				
+				string statment = "update playerAttributes set " + getSlot(equipableSlot) + "= ?  where charID = ? ;";
+				db << statment
+				<<itemInstanceID
+				<<charID;
+				foundItem = true;
+			}
+		};
+		return foundItem;
+	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return false;
+	}
+
+}
+
+string DatabaseTool::getSlot(int equiableTo) {
+	switch(equiableTo){
+		case 1:
+			return "ringSlot";
+		case 2:
+			return "headSlot";
+		case 3:
+			return "chestSlot";
+		case 4:
+			return "greavesSlot";
+		case 5:
+			return "feetSlot";
+		case 6:
+			return "handSlot";
+		case 7:
+			return "weponSlot";
+		default:
+			return "";
+	}
+
+}
+
 
 string DatabaseTool::look(int charID) {
 
