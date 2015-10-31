@@ -104,7 +104,13 @@ int main(int argc, char* argv[])
       //npcInstanceTest();
       //inventoryTest();
 
-      cout << DatabaseTool::equipItem(1, "sword") << endl;
+      //cout << DatabaseTool::equipItem(1, "sword") << endl;
+
+      cout << DatabaseTool::pickUp(1, "sword") << endl;
+      vector<string> items = DatabaseTool::getItemsInInventory(1);
+      for(auto &description:items) {
+         cout << description << endl;
+      }
 
       
    }

@@ -555,6 +555,22 @@ vector<string> DatabaseTool::getItemsInInventory(int charID) {
 	}
 }
 
+vector<string> DatabaseTool::getItemsInZone(int zoneID) {
+	vector<string> items;
+	try {
+		database db(DB_LOCATION);
+		db << "select longDesc from items X, instanceOfItem Y where X.itemID = Y.itemID and zoneID =?"
+		<<zoneID
+		>>[&](string desc) {
+			items.push_back(desc);
+		};
+		return items;
+	} catch(sqlite_exception e) {
+		return items;
+	}
+
+}
+
 vector<int> DatabaseTool::getInstanceIDsOfItemsInInventory(int charID) {
 	vector<int> items;
 	try {
@@ -831,6 +847,30 @@ bool DatabaseTool::equipItem(int charID, string item) {
 		return false;
 	}
 
+}
+
+bool DatabaseTool::pickUp(int charID, string item) {
+	bool foundItem = false;
+	int foundItemId;
+	try{
+		database db (DB_LOCATION);
+		db << "select shortDesc, keywords, itemInstanceID from items X, instanceOfItem Y, characters Z where X.itemID = Y.itemID and Z.location = Y.zoneID and Z.charID = ?;"
+		<<charID
+		>>[&](string shortdesc, string keywords, int itemInstanceID) {
+			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
+				foundItem = true;
+				foundItemId = itemInstanceID;
+			}
+		};
+	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return false;
+	}
+	cout << "test" << endl;
+	if(foundItem) {
+		moveItem(foundItemId, Transfer::toCharacter, charID);
+	}
+	return foundItem;
 }
 
 string DatabaseTool::getSlot(int equiableTo) {
