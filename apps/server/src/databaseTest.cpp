@@ -124,9 +124,14 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
       // cout << DatabaseTool::setCombatFlag(1, false, Target::npc) << endl;
       // cout << DatabaseTool::inCombat(1, Target::npc) << endl;
-      cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3001) << endl;
-      cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3054) << endl;
-        
+
+      // cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3001) << endl;
+      // cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3054) << endl;
+
+    
+      cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
+      cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
+      cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
    }
    catch(runtime_error e){
       cout << e.what() << endl;

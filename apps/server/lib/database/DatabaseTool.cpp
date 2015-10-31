@@ -975,6 +975,24 @@ bool DatabaseTool::inCombat(int id, Target characterOrNpc) {
 	}
 }
 
+int DatabaseTool::getNpcInstanceIDFromName(string name, int zoneID) {
+	try {
+		int instanceID = 0;
+		database db(DB_LOCATION);
+		db << "select npcInstanceID, keywords, shortdesc from instanceOfNpc X, npcs Y where X.npcID = Y.npcID and zoneID = ?"
+		<<zoneID
+		>>[&](int npcInstanceID, string keywords, string shortDesc) {
+			if((keywords.find(name) != string::npos) || (shortDesc.find(name) != string::npos)) {
+				instanceID = npcInstanceID;
+			}
+		};
+		return instanceID;
+	} catch(sqlite_exception e) {
+		return 0;
+	}
+
+}
+
 
 string DatabaseTool::look(int charID) {
 

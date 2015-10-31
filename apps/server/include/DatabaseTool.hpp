@@ -223,6 +223,8 @@ class DatabaseTool{
 
 		static int getNpcIDFromInstanceID(int npcInstanceID);
 
+		static int getNpcInstanceIDFromName(string name, int zone);
+
 		static string getNpcDesc(int npcInstanceID);
 
 		static string getNpcName(int npcInstanceID);
