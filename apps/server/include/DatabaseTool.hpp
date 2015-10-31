@@ -279,7 +279,9 @@ class DatabaseTool{
 
 		static bool pickUp(int charID, string item);
 
+		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
+		static bool inCombat(int id, Target characterOrNpc);
 	//to implement
 		static string look(int charID);
 

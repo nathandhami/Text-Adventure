@@ -106,12 +106,24 @@ int main(int argc, char* argv[])
 
       //cout << DatabaseTool::equipItem(1, "sword") << endl;
 
-      cout << DatabaseTool::pickUp(1, "sword") << endl;
-      vector<string> items = DatabaseTool::getItemsInInventory(1);
-      for(auto &description:items) {
-         cout << description << endl;
-      }
+      // cout << DatabaseTool::pickUp(1, "sword") << endl;
+      // vector<string> items = DatabaseTool::getItemsInInventory(1);
+      // for(auto &description:items) {
+      //    cout << description << endl;
+      // }
 
+      cout << DatabaseTool::inCombat(1, Target::character) << endl;
+      cout << DatabaseTool::setCombatFlag(1, true, Target::character) << endl;
+      cout << DatabaseTool::inCombat(1, Target::character) << endl;
+      cout << DatabaseTool::setCombatFlag(1, false, Target::character) << endl;
+      cout << DatabaseTool::inCombat(1, Target::character) << endl << endl;
+      
+
+      cout << DatabaseTool::inCombat(1, Target::npc) << endl;
+      cout << DatabaseTool::setCombatFlag(1, true, Target::npc) << endl;
+      cout << DatabaseTool::inCombat(1, Target::npc) << endl;
+      cout << DatabaseTool::setCombatFlag(1, false, Target::npc) << endl;
+      cout << DatabaseTool::inCombat(1, Target::npc) << endl;
       
    }
    catch(runtime_error e){

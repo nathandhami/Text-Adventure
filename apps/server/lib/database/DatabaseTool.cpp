@@ -168,7 +168,7 @@ bool DatabaseTool::isCharOnline(int charID){
 }
 
 void DatabaseTool::setCharOnline(int charID, string sessionID){
-	string sqlStatment = "INSERT INTO charactersOnline VALUES ( " + to_string(charID) + " , " + quotesql(sessionID) + ");";
+	string sqlStatment = "INSERT INTO charactersOnline VALUES ( " + to_string(charID) + " , " + quotesql(sessionID) + " , 0);";
 	executeSQLInsert(sqlStatment);
 }
 
@@ -237,7 +237,7 @@ bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 	try {
 		database db(DB_LOCATION);
 		db << "PRAGMA foreign_keys = ON;";
-		db << "INSERT INTO instanceOfNpc VALUES ( NULL, ?, ?, 1);"
+		db << "INSERT INTO instanceOfNpc VALUES ( NULL, ?, ?, 1 , 0);"
 		<<npcID
 		<<zoneID;
 
@@ -893,6 +893,59 @@ string DatabaseTool::getSlot(int equiableTo) {
 			return "";
 	}
 
+}
+
+bool DatabaseTool::setCombatFlag(int id, bool inCombat, Target characterOrNpc) {
+	try {
+		database db(DB_LOCATION);
+		switch(characterOrNpc) {
+			case character:
+				if(inCombat) {
+					db << "update charactersOnline set inCombat = 1 where charID =?"
+					<<id;
+				} else {
+					db << "update charactersOnline set inCombat = 0 where charID =?"
+					<<id;					
+				}
+				return true;
+			case npc:
+				if(inCombat) {
+					db << "update instanceOfNpc set inCombat = 1 where npcInstanceID = ?"
+					<< id;
+				} else {
+					db << "update instanceOfNpc set inCombat = 0 where npcInstanceID = ?"
+					<< id;
+					
+				}
+				return true;
+			default:
+				return false;
+		}
+	} catch(sqlite_exception e) {
+		return false;
+	}
+
+}
+
+bool DatabaseTool::inCombat(int id, Target characterOrNpc) {
+	try {
+		database db(DB_LOCATION);
+		int inCombat;
+		switch(characterOrNpc) {
+			case character:
+				db << "select inCombat from charactersOnline where charID = ?"
+				<<id
+				>>inCombat;
+				return inCombat;
+			case npc:
+				db << "select inCombat from instanceOfNpc where npcInstanceID = ?"
+				<<id
+				>>inCombat;
+				return inCombat;
+		}
+	} catch (sqlite_exception e) {
+		return false;
+	}
 }
 
 

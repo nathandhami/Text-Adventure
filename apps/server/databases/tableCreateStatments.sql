@@ -17,6 +17,7 @@ CREATE TABLE characters (
 CREATE TABLE charactersOnline (
   charID integer primary key,
   sessionID text unique,
+  inCombat integer,
   FOREIGN KEY(charID) REFERENCES characters(charID)
 );
 
@@ -32,7 +33,7 @@ CREATE TABLE items (
 );
 
 CREATE TABLE instanceOfItem (
-  instanceID integer primary key,
+  itemInstanceID integer primary key,
   itemID integer,
   charID integer,
   zoneID integer,
@@ -67,6 +68,7 @@ CREATE TABLE instanceOfNpc (
   npcID integer,
   zoneID integer,
   isAlive integer,
+  inCombat integer,
   FOREIGN KEY(npcID) REFERENCES npcs(npcID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
 );
