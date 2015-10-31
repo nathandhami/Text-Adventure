@@ -3,31 +3,32 @@
 
 #include "WorldConstants.hpp"
 #include "DatabaseTool.hpp"
+#include "Server.hpp"
 #include <vector>
 
 using namespace std;
 
 class Zone {
 
-	static vector<int> getNeighbourZones(int);
-	static vector<int> getPlayerIDs(int);
-	static vector<int> getNpcIDs(int);
-	static vector<int> getObjectIDs(int);
+	static vector<int> Zone::getNeighbourZones(int);
+	static vector<int> Zone::getPlayerIDs(int);
+	static vector<int> Zone::getNpcIDs(int);
+	static vector<int> Zone::getObjectIDs(int);
 
 public:
 
-	static void setName(int, string);
-	static string getName(int);
+	static void Zone::setName(int, string);
+	static string Zone::getName(int);
 
-	static void setDescription(int, string);
-	static string getDescription(int, string);
+	static void Zone::setDescription(int, string);
+	static string Zone::getDescription(int, string);
 
-	static void setNeighbourZone(int, string, int);
-	static int getNeighbourZone(int, string);
+	static void Zone::setNeighbourZone(int, string, int);
+	static int Zone::getNeighbourZone(int, string);
 
-	static bool roomForMorePlayers(int);
+	static bool Zone::roomForMorePlayers(int);
 
-	//void playerEnteringZone(int);
+	static void Zone::broadcastMessage(int zoneID, string message);
 };
 
 #endif

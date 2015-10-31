@@ -11,7 +11,7 @@ using namespace std;
 
 class World {
 	
-	static bool World::movePlayer(int, string);
+	static string World::movePlayer(int, string);
 
 	static string World::playerLook(int, string);
 
