@@ -6,6 +6,7 @@
 #include "Command.hpp"
 #include <tuple>
 #include <string>
+#include <DictionaryCmds.hpp>
 
 
 
@@ -16,11 +17,10 @@ public:
 	~CommandParser();
 
 
-	static std::tuple< std::string, Command >  getHeaderAndCommand(std::string command);
-    static std::tuple< std::string, Command > getHeaderAndCommandFromString(std::string commandString);
-
+	static std::tuple< enum CommandHeader, Command >  getHeaderAndCommand( std::string command );
+    static std::tuple< enum CommandHeader, Command > getHeaderAndCommandFromString( std::string commandString );
 
 private:
-
+	static bool checkIfCardinal( std::string token );
 };
 #endif
