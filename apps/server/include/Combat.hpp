@@ -11,9 +11,6 @@
 using namespace std;
 
 class CombatActions {
-	static const int PLAYER_OR_NPC = 0;
-	static const int PLAYER_ONLY = 1;
-	static const int NPC_ONLY = 2;
 	static const string HOW_TO_START_FIGHT = "To start a fight, use one of these commands\n    fight <name>\n    fight player <name>\n    fight npc <name>\n";
 	
 	static deque<CombatInstance> combatInstances;
