@@ -9,6 +9,10 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#define RETREAT_NOTIFICATION "Your opponent turns to flee.\n"
+#define VICTORY_NOTIFICATION "You defeated your opponent!\n"
+#define DEFEAT_NOTIFICATION "You were defeated!\n"
+
 using namespace std;
 
 class CombatInstance {
@@ -18,9 +22,6 @@ class CombatInstance {
 	static const int PLAYER_TWO = 1;
 	static const int ATTACK_ACTION = 0;
 	static const int RETREAT_ACTION = 1;
-	static const string RETREAT_NOTIFICATION = "Your opponent turns to flee.";
-	static const string VICTORY_NOTIFICATION = "You defeated your opponent!\n";
-	static const string DEFEAT_NOTIFICATION = "You were defeated!\n";
 
 	bool challengeAccepted = false;
 	bool keepFighting = true;
@@ -35,33 +36,33 @@ class CombatInstance {
 
 	deque<deque<int>> playersActionQueue;
 
-	void CombatInstance::notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
+	void notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
 	
-	void CombatInstance::executePlayerAttack(int player, int characterType);
+	void executePlayerAttack(int player, int characterType);
 	
-	void CombatInstance::executePlayerRetreat(int player);
+	void executePlayerRetreat(int player);
 
-	void CombatInstance::executePlayerAction(int player, int characterType);
+	void executePlayerAction(int player, int characterType);
 
-	void CombatInstance::removePlayersFromCombat(int playerID, int playerType);
-	void CombatInstance::removePlayersFromCombat();
+	void removePlayersFromCombat(int playerID, int playerType);
+	void removePlayersFromCombat();
 
-	void *CombatInstance::runCombat();
+	void *runCombat();
 
 
 public:
 
-	bool CombatInstance::isCombatant(int playerID);
+	bool isCombatant(int playerID);
 
-	bool CombatInstance::inZone(int zoneID);
+	bool inZone(int zoneID);
 
-	void CombatInstance::acceptChallenge();
+	void acceptChallenge();
 
-	void CombatInstance::endCombat(string message);
+	void endCombat(string message);
 	
-	CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID);
+	CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID);
 
-	CombatInstance::~CombatInstance();
+	~CombatInstance();
 
 };
 
