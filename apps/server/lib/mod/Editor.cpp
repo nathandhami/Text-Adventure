@@ -1,4 +1,5 @@
 #include <mod/Editor.hpp>
+#include <mod/ObjectEditor.hpp>
 #include <mod/WorldEditor.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -18,7 +19,7 @@ bool Editor::judgeAndPerform( int creatorId/*, Command command*/ ) {
 	// Server::sendMessageToCharacter( creatorId, GameCode::ALERT, formattedMessage );
 	// return false;
 		
-	std::string commandType = CMD_DESC_ZONE;
+	std::string commandType = CMD_CREATE_ITEM;
 	
 //	std::string commandString = "Deadman Wonderland >> You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland' >> It's also known as hell, prisoners go here to enjoy their last days in deadly competetive games for food and water.";
 	
@@ -36,7 +37,9 @@ bool Editor::judgeAndPerform( int creatorId/*, Command command*/ ) {
 		WorldEditor::describeZone( 1, commandString );
 	} else if ( commandType == CMD_CREATE_DOOR ) {
 		WorldEditor::addDoorToZone( 1, commandString );
-	} else {
+	} else if ( commandType == CMD_CREATE_ITEM ) {
+		ItemEditor::createItem( 1, commandString );
+	}else {
 		std::cout << "What are we trying to do?\n";
 	}
 }

@@ -276,6 +276,9 @@ class DatabaseTool{
 	
 		static bool moveCharacterToZone( int charID, int zoneID );
 	
+		static int createNewItem( string shrtDesc, string desc, string lngDesc, string keywords );
+		static bool signUserIn( string userName, string password );
+	
 	
 	private:
 		

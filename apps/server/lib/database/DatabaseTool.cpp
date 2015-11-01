@@ -789,6 +789,40 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 }
 
 
+int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, string keywords ) {
+	try {
+		database db(DB_LOCATION);
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO objects_n (shortDescription,description,longDescription,keywords,isPickable,isEquippable,isStackable,isContainer) VALUES (?,?,?,?,1,1,0,0);"
+			<< shrtDesc
+			<< desc
+			<< lngDesc
+			<< keywords;
+		
+		return db.last_insert_rowid();
+	} catch ( exception& e ) {
+		std::cerr << e.what() << std::endl;
+		return 0;
+	}
+}
+
+
+bool DatabaseTool::signUserIn( string userName, string password ){
+	try {
+		database db( DB_LOCATION );
+		int charID;
+		db << "UPDATE users SET signedOn = 1 WHERE userName == ? AND password == ? AND signedOn == 0;"
+		<<userName
+		<<password
+		>>charID;
+		
+		return true;
+	} catch(sqlite_exception e) {
+		return false;
+	}
+}
+
 
 
 

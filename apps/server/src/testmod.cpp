@@ -4,10 +4,10 @@
 
 int main() {
 	
-//	Editor::judgeAndPerform( 1 );
-	std::string direction = "north";
-	std::cout << "Door points to zoneID: " << DatabaseTool::getZoneIDBehindDoorAt( 4, direction ) << std::endl;
-	std::cout << DatabaseTool::getDoorDescriptionAt( 4, direction ) << std::endl;
+	Editor::judgeAndPerform( 1 );
+//	std::string direction = "north";
+//	std::cout << "Door points to zoneID: " << DatabaseTool::getZoneIDBehindDoorAt( 4, direction ) << std::endl;
+//	std::cout << DatabaseTool::getDoorDescriptionAt( 4, direction ) << std::endl;
 	
 //	DatabaseTool::moveCharacterToZone( 1, 4 );
 	
