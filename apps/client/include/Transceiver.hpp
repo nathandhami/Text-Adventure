@@ -41,6 +41,7 @@ public:
 	
 	bool queueEmpty();
 	NetMessage readAndPopQueue();
+	void flushQueue();
 	
 	void asyncReadServerResponses();
 	

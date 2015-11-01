@@ -87,6 +87,17 @@ int main( /*int argc, const char* argv[]*/ ) {
 	Game::logout();
 	
 	std::cout << "Response: " << response.body << std::endl;
+	
+	response = Game::login( "testUser1", "test1" );
+	
+	std::cout << "Got response:" << std::endl;
+	std::cout << "\tHeader: " << response.header << std::endl;
+	std::cout << "\tBody:\n" << response.body << std::endl;
+	
+	Game::logout();
+	
+	std::cout << "Response: " << response.body << std::endl;
+	
 	while( 1 ) {
 		
 		std::cout << "Response: " << Game::getFrontResponse().body << std::endl;

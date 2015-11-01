@@ -58,6 +58,7 @@ void Game::logout() {
 		std::cout << "[Game] Draining for log out" << std::endl;
 	}
 	
+	Game::transceiver->flushQueue();
 	std::cout << "[Game] Logged out successfully." << std::endl;
 }
 

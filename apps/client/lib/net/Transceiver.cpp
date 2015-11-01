@@ -74,6 +74,11 @@ NetMessage Transceiver::readAndPopQueue() {
 }
 
 
+void Transceiver::flushQueue() {
+	this->responseQueue = {};
+}
+
+
 // ------------------- PRIVATE ------------------
 
 void Transceiver::connectToHost() {
