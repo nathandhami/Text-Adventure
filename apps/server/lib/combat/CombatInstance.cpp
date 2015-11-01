@@ -74,7 +74,7 @@ void CombatInstance::notifyAttack(int player, int characterType, int damageDealt
 }
 
 void CombatInstance::executePlayerAttack(int player, int characterType) {
-	int damageDealt = 0;
+	/*int damageDealt = 0;
 	int healthRemaining = 0;
 	if (player == PLAYER_ONE) {
 		damageDealt = // Get player damage
@@ -100,6 +100,9 @@ void CombatInstance::executePlayerAttack(int player, int characterType) {
 		keepFighting = false;
 	}
 	notifyAttack(player, characterType, damageDealt, healthRemaining);
+	*/
+	notifyAttack(player, characterType, 0, 50);
+
 }
 
 void CombatInstance::executePlayerRetreat(int player) {
