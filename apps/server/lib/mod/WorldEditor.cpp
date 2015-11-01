@@ -21,6 +21,14 @@ static std::string addTokenToString( std::string originalString, std::string tok
 }
 
 
+static void parseToTokens( std::vector< std::string >& tokens, boost::regex pattern, std::string parseable ) {
+	boost::algorithm::split_regex( tokens, parseable, pattern );
+	for ( std::string& token: tokens ) {
+		boost::trim( token );
+	}
+}
+
+
 void WorldEditor::createZone( std::string zoneData ) {
 	const int STAGE_NAME = 	0;
 	const int STAGE_DESC = 	1;
@@ -57,28 +65,37 @@ void WorldEditor::createZone( std::string zoneData ) {
 
 
 void WorldEditor::describeZone( int creatorId, std::string zoneData ) {
-	std::vector< std::string > commandTokens;
-	boost::algorithm::split_regex( commandTokens, zoneData, boost::regex( "~as" ) );
-
-	std::vector< std::string > descTokens;
-	boost::algorithm::split_regex( descTokens, commandTokens[ 1 ], boost::regex( "~:" ) );
+	const int EXPECTED_TOKEN_NUM = 3;
+	boost::regex pattern( "(~as)|(~:)" );
 	
-	int zoneId = atoi( commandTokens[ 0 ].c_str() );
+	std::vector< std::string > tokens;
+	parseToTokens( tokens, pattern, zoneData );
 	
-	LOG( "Zone ID: " << commandTokens[ 0 ] );
-	LOG( "Zone ID: " << zoneId );
+	LOG( "Zone ID: " << tokens[0] );
+	LOG( "Desc: " << tokens[1] );
+	LOG( "Keywords: " << tokens[2] );
 	
-	DatabaseTool::addExtendedDescriptionToZone( zoneId, descTokens[ 0 ], descTokens[ 1 ] );
+//	std::vector< std::string > commandTokens;
+//	boost::algorithm::split_regex( commandTokens, zoneData, boost::regex( "~as" ) );
+//
+//	std::vector< std::string > descTokens;
+//	boost::algorithm::split_regex( descTokens, commandTokens[ 1 ], boost::regex( "~:" ) );
+//	
+//	int zoneId = atoi( commandTokens[ 0 ].c_str() );
+//	
+//	LOG( "Zone ID: " << commandTokens[ 0 ] );
+//	LOG( "Zone ID: " << zoneId );
+//	
+	DatabaseTool::addExtendedDescriptionToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 1 ], tokens[ 2 ] );
 }
 
 
 void WorldEditor::addDoorToZone( int creatorId, std::string doorData ) {
 	const int EXPECTED_TOKEN_NUM = 5;
-	
 	boost::regex pattern( "(~at)|(~to)|(~:)" );
 	
 	std::vector< std::string > tokens;
-	boost::algorithm::split_regex( tokens, doorData, pattern );
+	parseToTokens( tokens, pattern, doorData );
 	
 	//TO-DO: check size, inform user if invalid format
 	
@@ -87,12 +104,6 @@ void WorldEditor::addDoorToZone( int creatorId, std::string doorData ) {
 	LOG( "Destination: " << tokens[2] );
 	LOG( "Description: " << tokens[3] );
 	LOG( "Keywords: " << tokens[4] );
-	
-	boost::trim( tokens[ 0 ] );
-	boost::trim( tokens[ 1 ] );
-	boost::trim( tokens[ 2 ] );
-	boost::trim( tokens[ 3 ] );
-	boost::trim( tokens[ 4 ] );
 	
 	DatabaseTool::addDoorToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 3 ], tokens[ 1 ], atoi( tokens[ 2 ].c_str() ), tokens[ 4 ] );
 }

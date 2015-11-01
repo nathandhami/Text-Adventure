@@ -684,6 +684,24 @@ int DatabaseTool::createNewZone( string zoneName, string zoneDesc ) {
 }
 
 
+int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO zones_n (zoneID,zoneName,zoneDescription) VALUES (?,?,?);"
+			<< zoneID
+			<< zoneName
+			<< zoneDesc;
+
+		return db.last_insert_rowid();
+	} catch ( exception& e ) {
+		return 0;
+	}
+}
+
+
 bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string keywords ) {
 	try {
 		database db(DB_LOCATION);
@@ -722,7 +740,7 @@ bool DatabaseTool::addDoorToZone( int zoneID, string description, string directi
 }
 
 
-string DatabaseTool::getDoorDescription( int zoneID, string direction ) {
+string DatabaseTool::getDoorDescriptionAt( int zoneID, string direction ) {
 	try {
 		database db(DB_LOCATION);
 

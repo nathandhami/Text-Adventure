@@ -144,6 +144,40 @@ CREATE TABLE doors_n(
 	FOREIGN KEY(linksTo) REFERENCES zones_n(zoneID) on delete cascade
 );
 
+CREATE TABLE items_n(
+	itemID integer primary key autoincrement,
+	shortDescription text,
+	description text,
+	longDescription text,
+	isPickable integer,
+	isEquippable integer,
+	isStackable integer,
+	isContainer integer
+);
+
+CREATE TABLE player_inventory(
+	owndershipID integer primary key autoincrement,
+	charID integer,
+	itemID integer,
+	quantity integer,
+	isEquipped integer
+	FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
+	FOREIGN KEY(itemID) REFERENCES items_n(itemID) on delete cascade
+);
+
+CREATE TABLE item_instances (
+	instanceID integer primary key,
+	itemID integer,
+	zoneID integer,
+	containerID integer,
+	otherItemInstanceID integer,
+	FOREIGN KEY(itemID) REFERENCES items(itemID),
+	FOREIGN KEY(charID) REFERENCES characters(charID),
+	FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
+	FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID),
+	FOREIGN KEY(otherItemInstanceID) REFERENCES instanceOfItem(instanceID)
+);
+
 ############################### END ###############################
 
 

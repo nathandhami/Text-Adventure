@@ -267,10 +267,11 @@ class DatabaseTool{
 		// TMP NEW THINGS ----------------------------------------------
 	
 		static int createNewZone( string zoneName, string zoneDesc );
+		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
 		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );
 	
 		static bool addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );
-		static string getDoorDescription( int zoneID, string direction );
+		static string getDoorDescriptionAt( int zoneID, string direction );
 		static int getZoneIDBehindDoorAt( int zoneID, string direction );
 	
 		static bool moveCharacterToZone( int charID, int zoneID );
