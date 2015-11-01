@@ -53,7 +53,7 @@ std::map< std::string, enum CommandHeader > DictionaryCmds::COMMAND_DICTIONARY =
 	{ "create"			, INCOMPLETE },
 	{ "describe"		, INCOMPLETE },
 	{ "create door"		, INCOMPLETE },
-	{ "accept"			, INCOMPLETE }
+	{ "accept"			, INCOMPLETE },
 
 	{ "equip"			, CHARACTER },
 	{ "pick up"			, CHARACTER },

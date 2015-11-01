@@ -5,7 +5,7 @@
 
 int main() {
 	//DatabaseTool::putCharInZone(1, 3054);
-	std::tuple<enum CommandHeader, Command> output = (CommandParser::getHeaderAndCommand("northeast"));
+	std::tuple<enum CommandHeader, Command> output = (CommandParser::getHeaderAndCommand(" fight "));
 	enum CommandHeader header = get<0>(output);
 	std::string strheader;
 	if(header == WORLD){
