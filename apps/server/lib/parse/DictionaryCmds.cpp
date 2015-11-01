@@ -14,34 +14,47 @@
 
 using namespace std;
 
-//struct Command{
+const enum CommandHeader DictionaryCmds::INVALID_COMMAND = INVALID;
 
-// std::string type;
-// std::string data;
-//};
+std::map< std::string, enum CommandHeader > DictionaryCmds::COMMAND_DICTIONARY = {
+	//World header 
+	{ "move"			 , WORLD },
+	{ "north"			 , WORLD },
+	{ "south"			 , WORLD },
+	{ "east"			 , WORLD },
+	{ "west"		   	 , WORLD },
+	{ "go"	 			 , WORLD },
+	{ "northeast"	 	 , WORLD },
+	{ "northwest"		 , WORLD },
+	{ "southeast"		 , WORLD },
+	{ "southwest"   	 , WORLD },
+	{ "look"		     , WORLD },
+	{ "look at"			 , WORLD },
+	{ "pick up" 		 , WORLD },
+	//Combat Header 
+	{ "fight"			 , COMBAT },
+	{ "attack"			 , COMBAT },
+	{ "retreat"			 , COMBAT },
+	{ "accept challenge" , COMBAT },
+	// EDITOR header
+	{ "create zone" 	 , CHARACTER },
+	{ "describe zone" 	 , CHARACTER },	
+	{ "create door in" 	 , CHARACTER },
+	{ "create item" 	 , CHARACTER },
+	{ "create doodad" 	 , CHARACTER },
+	// Character header
+	{ "equip" 		     , CHARACTER },
+	{ "pick up" 		 , CHARACTER },
+	// Incomplete header
+	{ "accept" 			 , INCOMPLETE },
+	{ "pick" 			 , INCOMPLETE },
+	{ "describe" 		 , INCOMPLETE },
+	{ "create door" 	 , INCOMPLETE },
+	{ "create" 			 , INCOMPLETE },
 
-
-
-const std::string DictionaryCmds::INVALID_COMMAND = "invstr";
-
-std::map< std::string, std::string > DictionaryCmds::COMMAND_DICTIONARY = {
-	//Movement commands
-	{ "move"		, "move;any" },
-	{ "north"		, "move;north" },
-	{ "south"		, "move;south" },
-	{ "east"		, "move;east" },
-	{ "west"		, "move;west" },
-	{ "move north"	, "move;north" },
-	{ "move south"	, "move;south" },
-	{ "move east"	, "move;east" },
-	{ "move west"	, "move;west" },
-
-	//Observatory commands
-	{ "look"		, "look;" },
-	{ "look north"	, "look;north" },
-	{ "look south"	, "look;south" },
-	{ "look east"	, "look;east" },
-	{ "look west"	, "look;west" }
+	// Messenger header
+	{ "@"				 , MESSENGER },
+	{ "#"  				 , MESSENGER },
 };
 
 
@@ -81,12 +94,12 @@ std::map<std::string, std::string> DictionaryCmds::getDictionary() const {
     return commandsInDictionary;
 }*/
 
-std::string DictionaryCmds::getParsableFromInput( std::string inputString ) {
+enum CommandHeader DictionaryCmds::getParsableFromInput( std::string inputString ) {
 	if ( !DictionaryCmds::COMMAND_DICTIONARY.count( inputString ) ) {
 		return DictionaryCmds::INVALID_COMMAND;
 	}
 	std::cout << "Parsable: " << DictionaryCmds::COMMAND_DICTIONARY[ inputString ] << std::endl;
-	return DictionaryCmds::COMMAND_DICTIONARY[ inputString ];
+	return DictionaryCmds::COMMAND_DICTIONARY[ inputString ]; // must return enum here
 }
 
 

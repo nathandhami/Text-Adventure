@@ -36,7 +36,7 @@ public:
                                                        // exists in the dictionary
     //getter function for commandsInDictionary map
 //    static std::map<std::string, std::string> getDictionary() const;
-
+  enum CommandHeader {WORLD, COMBAT, MESSENGER, INCOMPLETE, INVALID, CHARACTER, COMBAT};
 
 private:
     static std::map <std::string, std::string> COMMAND_DICTIONARY;
