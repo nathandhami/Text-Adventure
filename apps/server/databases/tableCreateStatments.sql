@@ -144,11 +144,12 @@ CREATE TABLE doors_n(
 	FOREIGN KEY(linksTo) REFERENCES zones_n(zoneID) on delete cascade
 );
 
-CREATE TABLE items_n(
+CREATE TABLE objects_n(
 	itemID integer primary key autoincrement,
 	shortDescription text,
 	description text,
 	longDescription text,
+	keywords text,
 	isPickable integer,
 	isEquippable integer,
 	isStackable integer,
