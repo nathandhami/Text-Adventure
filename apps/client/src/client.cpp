@@ -3,6 +3,7 @@
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
 #include "MainWindow.hpp"
+#include "Game.hpp"
 
 #include <cstdlib>
 #include <boost/algorithm/string/join.hpp>
@@ -15,7 +16,7 @@
 
 //NOTE: all the static classes will be placed in a wrapper with the Transceiver later on
 
-static std::shared_ptr< Transceiver > transceiver; 
+/*static std::shared_ptr< Transceiver > transceiver; 
 
 static std::string joinCredentials( std::string userName, std::string password ) {
 	std::vector<std::string> tokens;
@@ -53,33 +54,27 @@ static void readCommands() {
 		transceiver->write( HEADER_LOGOUT, command );
 		UIWriter::sendSysStatus( std::get< 1 >( transceiver->read() ) );
 	} else {
-		transceiver->write( HEADER_COMMAND, command );
+//		transceiver->write( HEADER_COMMAND, command );
+		transceiver->write( HEADER_MESSAGE, command );
 		UIWriter::sendSysStatus( std::get< 1 >( transceiver->read() ) );
 		readCommands();	
 	}
-}
-
-
+}*/
 
 int main( int argc, const char* argv[] ) {
 
 	Gtk::Main kit(argc);
-
-	UIWriter::sendSysStatus( "Connecting to server..." );
-	
-	transceiver = std::make_shared< Transceiver >();
-	transceiver->run();
-	
-	UIWriter::sendSysStatus( "Connected." );
-	
-	/*login();
-	
-	UIWriter::sendSysStatus( "What would you like to do?" );
-	readCommands();*/
-
 	MainWindow window;
 
+	Game::initialize();
+	Game::start();
+
+	std::cout << Game::login( "devon", "test" ).body << std::endl;
+	//Game::getFrontResponse().body;
+
 	Gtk::Main::run(window);
+	
+	Game::stop();
 
 	return 0;
 }

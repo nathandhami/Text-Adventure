@@ -2,8 +2,14 @@
 #include "Authenticator.hpp"
 #include "NetConfig.hpp"
 #include "CommandParser.hpp"
+#include "Server.hpp"
 
+#include <future>
 #include <boost/asio/socket_base.hpp>
+
+// Error read/write string codes
+#define CODE_ERROR_READ		"rerr"
+#define CODE_ERROR_WRITE	"werr"
 
 // Server-side messages
 #define MESSAGE_CONNECT 	"A user has connected."
@@ -33,8 +39,31 @@ void Session::start() {
 	// Initial connection established
 	std::string address( this->getIP( Session::IPType::v4 ) );
 	std::cout << MESSAGE_CONNECT << " IPv4: " << address << std::endl;
+	
+	// Initialize the user
+	this->currentUser.userId = 0;
+	this->currentUser.authorized = false;
+	this->currentUser.characterId = 0;
+	
 	// Start listening to the client
-	this->readHeader();
+//	this->readHeader(); // v
+	this->asyncReadUserRequest();
+}
+
+
+void Session::writeToClient( std::string header, std::string body ) {
+	NetMessage responseMessage( header, body );
+//	responseMessage.saveHeaderString( header );
+//	responseMessage.saveBodyString( body );
+
+	this->messageQueueLock.lock();
+	this->responseMessageQueue.push( responseMessage );
+	this->messageQueueLock.unlock();
+
+	if ( !writeInProgress ) {
+		this->writeInProgress = true;
+		this->asyncWrite();
+	}
 }
 
 
@@ -45,82 +74,130 @@ std::string Session::getIP( IPType type ) {
 }
 
 
-void Session::readHeader() {
-	this->socket.async_read_some(
-		boost::asio::buffer( this->bufferHeader, NetMessage::MaxLength::HEADER ),
-		[ this ]( boost::system::error_code ec, std::size_t /*length*/ ) {
-			if ( !ec ) {
-				this->request.saveHeaderBuffer( this->bufferHeader );
-				std::cout << "Received header: " << this->request.getHeader() << std::endl;
-				this->readBody();
-			} else {
-				Authenticator::logout( this->userId );
-				std::cout << MESSAGE_DISCONNECT << std::endl;
+// new function for 'better' async reading
+void Session::asyncReadUserRequest() {
+	this->readerThread = std::thread(
+		[ this ]() {
+			bool running = true;
+			while ( running ) {
+				// while user connected
+				// string = do read header;
+				std::string header = this->read( NetMessage::MaxLength::HEADER );
+				// string = do read body;
+				std::string body = this->read( NetMessage::MaxLength::BODY );
+				
+				if ( header == CODE_ERROR_READ || body == CODE_ERROR_READ ) {
+					// handle user disconnect
+					running = false;
+				} else {
+					this->handleRequest( header, body );
+				}
 			}
 		}
 	);
 }
 
 
-void Session::readBody() {
-	this->socket.async_read_some(
-		boost::asio::buffer( this->bufferBody, NetMessage::MaxLength::BODY ),
-		[ this ]( boost::system::error_code ec, std::size_t length ) {
-			if ( !ec ) {
-				this->request.saveBodyBuffer( this->bufferBody, length );
-				std::cout << "Received body: " << this->request.getBody() << std::endl;
-				this->handleRequest();
-			} else {
-				Authenticator::logout( this->userId );
-				std::cout << MESSAGE_DISCONNECT << std::endl;
-			}
-		}
+// new read function for the improved async
+std::string Session::read( const int maxBufferLength ) {
+	std::cout << "Waiting for client write..." << std::endl;
+	
+	std::vector< char > buffer( maxBufferLength );
+	boost::system::error_code error;
+	
+	size_t bufferLength = this->socket.read_some(
+		boost::asio::buffer( buffer ),
+		error
 	);
-}
-
-
-void Session::handleRequest() {
-	if ( this->request.getHeader() == HEADER_LOGIN ) {
-		if ( this-> authorized ) {
-			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_LOGGED_IN );
-		}
-		
-		int userId = Authenticator::login( this->request.getBody() );
-		if ( userId ) {
-			this->authorized = true;
-			this->userId = userId;
-			this->writeToClient( HEADER_OK, "Log in successful." );
-		} else {
-			this->writeToClient( HEADER_ERROR, "Incorrect username or password." );
-		}
-		
-	} else if ( this->request.getHeader() == HEADER_LOGOUT ) {
-		if ( !( this->authorized ) ) {
-			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
-		}
-		
-		Authenticator::logout( this->userId );
-		this->authorized = false;
-		this->userId = 0;
-		this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
-	} else if ( this->request.getHeader() == HEADER_COMMAND ) {
-		if ( !( this->authorized ) ) {
-			this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_NOT_LOGGED_IN );
-		}
-		
-		std::string parserResponse = CommandParser::handleIDandCommand( this->userId, this->request.getBody() );
-		if ( parserResponse == HEADER_ERROR ) {
-			this->writeToClient( HEADER_ERROR, "Invalid Command." );
-		} else {
-			this->writeToClient( HEADER_OK, parserResponse );
-		}
-	} else {
-		this->writeToClient( HEADER_ERROR, "Incorrect request." );
+	
+	if ( error ) {
+		return CODE_ERROR_READ;
 	}
+	
+	return std::string( buffer.begin(), buffer.begin() + bufferLength );
+}
+
+
+// new handle request function for improved async
+void Session::handleRequest( const std::string header, const std::string body ) {
+	std::cout << "Processing client's request..." << std::endl;
+	
+	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
+	if ( iterator == funcMap.end() ) {
+		// not found
+		this->writeToClient( HEADER_ERROR, "Server error: incorrect request." );
+	}
+	Session::ExecuteFunction func = iterator->second;
+	( this->*func )( body );
+}
+
+
+// ------------- De-headed functions
+
+void Session::login( const std::string& credentials ) {
+	std::cout << "Login happened." << std::endl;
+	this->currentUser.userId = Authenticator::login( credentials );
+	if ( !this->currentUser.userId ) {
+		this->writeToClient( HEADER_ERROR, MESSAGE_ERROR_WRONG_CREDENTIALS );
+	} else {
+		std::cout << "Login success." << std::endl;
+		this->currentUser.authorized = true;
+		this->writeToClient( HEADER_OK, "a list\nof various\ncharacters" );
+	}
+}
+
+void Session::logout( const std::string& credentials ) {
+	std::cout << "Logout happened." << std::endl;
+	Authenticator::logout( this->currentUser.userId );
+	this->currentUser.userId = 0;
+	this->currentUser.authorized = false;
+	this->currentUser.characterId = 0;
+	this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
+
+}
+
+void Session::doGameCommand( const std::string& commandString ) {
+	std::cout << "Command happened." << std::endl;
+	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.userId, commandString );
+	if ( parserResponse == HEADER_ERROR ) {
+		this->writeToClient( HEADER_ERROR, "Invalid Command." );
+	} else {
+		this->writeToClient( HEADER_OK, parserResponse );
+	}
+}
+
+void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {
+	// split char id and message
+	Server::sendMessageToClient( "sdf-dsfsd-dsfs", charNameAndMessage );
+}
+
+// ------------ End 
+
+void Session::asyncWrite() {
+	this->writerThread = std::thread(
+		[ this ]() {
+			while ( this->writeInProgress ) {
+				this->messageQueueLock.lock();
+				NetMessage message = this->responseMessageQueue.front();
+				this->responseMessageQueue.pop();
+				this->messageQueueLock.unlock();
+				
+				this->write( message.header );
+				this->write( message.body );
+				
+				if ( this->responseMessageQueue.empty() ) {
+					this->writeInProgress = false;
+					this->writerThread.detach();
+				}
+				std::cout << "Done writing." << std::endl;
+			}
+		}
+	);
 }
 
 
 bool Session::write( std::string message ) {
+	std::cout << "Write called: " << message << std::endl;
 	boost::system::error_code error;
 	boost::asio::write(
 		this->socket,
@@ -128,7 +205,7 @@ bool Session::write( std::string message ) {
 		error
 	);
 	if ( error ) { 
-		Authenticator::logout( this->userId );
+		//		Authenticator::logout( this->userId );
 		std::cout << MESSAGE_DISCONNECT << std::endl;
 		return false;
 	}
@@ -136,7 +213,35 @@ bool Session::write( std::string message ) {
 }
 
 
-void Session::writeToClient( std::string header, std::string body ) {
-	if ( !( this->write( header ) && this->write( body ) ) ) return;
-	this->readHeader();
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

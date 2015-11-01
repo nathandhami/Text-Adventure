@@ -17,4 +17,9 @@ namespace Authenticator {
 	void logout( int userId );
 }
 
+typedef struct {
+	int id;
+	int selectedCharacterId;
+} User;
+
 #endif
