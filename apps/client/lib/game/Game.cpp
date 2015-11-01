@@ -51,7 +51,14 @@ NetMessage Game::login( std::string userName, std::string password ) {
 // TO-DO: wait for logout or DC response, implement queue flushing, reset reading and writing
 void Game::logout() {
 	Game::transceiver->writeToServer( GameCode::LOGOUT, "arbitrary string" );
-	std::cout << "- Tried to log out." << std::endl;
+	std::cout << "[Game] Tried to log out." << std::endl;
+	
+	NetMessage nmIter;
+	while ( Game::getFrontResponse().header != GameCode::OK ) {
+		std::cout << "[Game] Draining for log out" << std::endl;
+	}
+	
+	std::cout << "[Game] Logged out successfully." << std::endl;
 }
 
 

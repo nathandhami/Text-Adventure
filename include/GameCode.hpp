@@ -33,6 +33,7 @@ namespace GameCode {
 	const std::string DISCONNECTED 	= "dsc";
 	const std::string NONE		 	= "non";
 	const std::string FAUX_HEADER	= "fhd";
+	const std::string OK			= "okk";
 
 }
 

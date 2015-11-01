@@ -38,7 +38,7 @@ bool Editor::judgeAndPerform( int creatorId/*, Command command*/ ) {
 	} else if ( commandType == CMD_CREATE_DOOR ) {
 		WorldEditor::addDoorToZone( 1, commandString );
 	} else if ( commandType == CMD_CREATE_ITEM ) {
-		ItemEditor::createItem( 1, commandString );
+		ObjectEditor::createItem( 1, commandString );
 	}else {
 		std::cout << "What are we trying to do?\n";
 	}

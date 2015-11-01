@@ -81,7 +81,7 @@ int main( /*int argc, const char* argv[]*/ ) {
 	std::cout << "\tHeader: " << response.header << std::endl;
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
-	Game::enact( "look" );
+//	Game::enact( "look" );
 //	Game::enact( "move north" );
 	
 	Game::logout();

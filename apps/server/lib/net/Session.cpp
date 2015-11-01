@@ -185,7 +185,8 @@ void Session::logout( const std::string& credentials ) {
 		return;
 	}
 	
-	this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
+	
+	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
 }
 
 

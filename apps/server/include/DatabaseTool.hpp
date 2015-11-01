@@ -278,6 +278,7 @@ class DatabaseTool{
 	
 		static int createNewItem( string shrtDesc, string desc, string lngDesc, string keywords );
 		static bool signUserIn( string userName, string password );
+		static bool signUserOut( int userID );
 	
 	
 	private:

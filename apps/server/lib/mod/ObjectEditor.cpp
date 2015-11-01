@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-#define LOG( msg ) std::cout << "[ItemEditor] " << msg << std::endl
+#define LOG( msg ) std::cout << "[ObjectEditor] " << msg << std::endl
 
 
 static void parseToTokens( std::vector< std::string >& tokens, boost::regex pattern, std::string parseable ) {

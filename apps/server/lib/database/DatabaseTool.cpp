@@ -811,20 +811,43 @@ int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, s
 bool DatabaseTool::signUserIn( string userName, string password ){
 	try {
 		database db( DB_LOCATION );
-		int charID;
-		db << "UPDATE users SET signedOn = 1 WHERE userName == ? AND password == ? AND signedOn == 0;"
-		<<userName
-		<<password
-		>>charID;
 		
-		return true;
+		int loggedIn = 0;
+		db	<< "SELECT EXISTS(SELECT 1 FROM users WHERE userName == ? AND password == ? AND signedOn == 0 LIMIT 1);"
+			<< userName
+			<< password
+			>> loggedIn;
+		
+		db 	<<	"UPDATE users SET signedOn = 1 WHERE userName == ? AND password == ? AND signedOn == 0;"
+			<<	userName
+			<<	password;
+		
+		return loggedIn;
 	} catch(sqlite_exception e) {
+		std::cerr << e.what() << std::endl;
 		return false;
 	}
 }
 
 
-
+bool DatabaseTool::signUserOut( int userID ){
+	try {
+		database db( DB_LOCATION );
+		
+		int loggedOut = 0;
+		db	<< "SELECT EXISTS(SELECT 1 FROM users WHERE userID == ? AND signedOn == 1 LIMIT 1);"
+			<< userID
+			>> loggedOut;
+		
+		db 	<<	"UPDATE users SET signedOn = 0 WHERE userID == ? AND signedOn == 1;"
+			<<	userID;
+		
+		return loggedOut;
+	} catch(sqlite_exception e) {
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
 
 
 
