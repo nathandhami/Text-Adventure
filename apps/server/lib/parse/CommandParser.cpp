@@ -11,7 +11,6 @@
 #include <iostream>
 #include "CommandParser.hpp"
 #include "NetConfig.hpp"
-#include "DictionaryCmds.hpp"
 
 std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommand( std::string command ){
 
@@ -43,13 +42,20 @@ std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommandFrom
 	for( int i =0; i<tokens.size();i++ ){//testing
 		cout << tokens[i] << endl;
 	}
+	std::string lowerCaseToken;
+	lowerCaseToken = tokens[0];
+	boost::to_lower(lowerCaseToken);
+	if(lowerCaseToken == "go"){
+		tokens[0] = "move";
+	}
+
 
 	enum CommandHeader header;
 	int startOfCommandData;
 	int i = 0;
 	bool isACardinal;
 	bool incompleteCommand;
-	std::string lowerCaseToken;
+	
 
 	while ( header != INVALID ){
 		lowerCaseToken = tokens[0];
@@ -62,6 +68,9 @@ std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommandFrom
 		if( header != INVALID ){ //valid (possibly incomplete) command
 			if( isACardinal ){ 
 				parsedCommand.type = "move"; //set the command type to move if only (inter)cardinal entered
+				parsedCommand.data = tokens[0];
+				commandHeader = header;
+				break;
 			}else{
 				parsedCommand.type = tokens[0];
 				if( i+1 < tokens.size() ){//checks to make sure it is not out of bounds
@@ -81,6 +90,9 @@ std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommandFrom
 			startOfCommandData = tokens.size();//invalid command so data becomes as small as possible since it wont be used
 		}
 		i++;
+	}
+	if(commandHeader == INCOMPLETE){
+		commandHeader = INVALID;
 	}
 	for ( int i = startOfCommandData; i<tokens.size();i++ ){ // concatinates data fields into one space seperated string
 		if( parsedCommand.data.empty() ){

@@ -6,7 +6,7 @@
 #include "Command.hpp"
 #include <tuple>
 #include <string>
-#include <DictionaryCmds.hpp>
+#include "DictionaryCmds.hpp"
 
 
 
