@@ -659,3 +659,124 @@ string DatabaseTool::look(int charID) {
 }
 
 
+
+
+
+
+
+
+// NEW STUFF by pavel
+
+int DatabaseTool::createNewZone( string zoneName, string zoneDesc ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO zones_n (zoneName,zoneDescription) VALUES (?,?);"
+			<< zoneName
+			<< zoneDesc;
+
+		return db.last_insert_rowid();
+	} catch ( exception& e ) {
+		return 0;
+	}
+}
+
+
+bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string keywords ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO zone_ext_descriptions (zoneID,description,keywords) VALUES (?,?,?);"
+			<< zoneID
+			<< desc
+			<< keywords;
+
+		return true;
+	} catch ( exception& e ) {
+		return false;
+	}
+}
+
+
+bool DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO doors_n (zoneID,description,keywords,direction,linksTo) VALUES (?,?,?,?,?);"
+			<< zoneID
+			<< description
+			<< keywords
+			<< direction
+			<< pointer;
+
+		return true;
+	} catch ( exception& e ) {
+		return false;
+	}
+}
+
+
+string DatabaseTool::getDoorDescription( int zoneID, string direction ) {
+	try {
+		database db(DB_LOCATION);
+
+		string fetchedDesc;
+		db 	<< "SELECT description FROM doors_n WHERE zoneID == ? AND direction == ?;"
+			<< zoneID
+			<< direction
+			>> fetchedDesc;
+
+		return fetchedDesc;
+	} catch ( exception& e ) {
+		return "There is nothing there.";
+	}
+}
+
+
+int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
+	try {
+		database db(DB_LOCATION);
+
+		int fetchedZoneID;
+		db 	<< "SELECT linksTo FROM doors_n WHERE zoneID == ? AND direction == ?;"
+			<< zoneID
+			<< direction
+			>> fetchedZoneID;
+
+		return fetchedZoneID;
+	} catch ( exception& e ) {
+		return 0;
+	}
+}
+
+
+bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db 	<< "UPDATE characters SET location = ? WHERE charID == ?;"
+			<< zoneID
+			<< charID;
+
+		return true;
+	} catch ( exception& e ) {
+		return false;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+

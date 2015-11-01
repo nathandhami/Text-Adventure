@@ -2,6 +2,7 @@
 #define DATABASE
 
 
+
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -262,6 +263,19 @@ class DatabaseTool{
 		static void executeCommands();
 
 		static bool addDoorToZone(int zoneID, Door door);
+	
+		// TMP NEW THINGS ----------------------------------------------
+	
+		static int createNewZone( string zoneName, string zoneDesc );
+		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );
+	
+		static bool addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );
+		static string getDoorDescription( int zoneID, string direction );
+		static int getZoneIDBehindDoorAt( int zoneID, string direction );
+	
+		static bool moveCharacterToZone( int charID, int zoneID );
+	
+	
 	private:
 		
 		static string quotesql( const string& s );

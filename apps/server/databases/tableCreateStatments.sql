@@ -116,3 +116,56 @@ CREATE TABLE npcAttributes (
   weponSlot integer,
   FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade
 );
+
+################## New revised tables ############################
+
+CREATE TABLE zones_n(
+	zoneID integer primary key autoincrement,
+	zoneName varchar(30),
+	zoneDescription text
+);
+
+CREATE TABLE zone_ext_descriptions(
+	descriptionID integer primary key autoincrement,
+	zoneID integer,
+	description text,
+	keywords text
+	FOREIGN KEY(zoneID) REFERENCES zones_n(zoneID) on delete cascade
+);
+
+CREATE TABLE doors_n(
+	doorID integer primary key,
+	zoneID integer,
+	description text,
+	keywords text,
+	direction varchar(30),
+	linksTo integer,
+	FOREIGN KEY(zoneID) REFERENCES zones_n(zoneID) on delete cascade,
+	FOREIGN KEY(linksTo) REFERENCES zones_n(zoneID) on delete cascade
+);
+
+############################### END ###############################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

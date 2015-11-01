@@ -94,6 +94,7 @@ private:
 	
 	void login( const std::string& credentials );
 	void logout( const std::string& placeholder );
+	
 	void selectCharacter( const std::string& characterName );
 	void deselectCurrentCharacter( const std::string& placeholder );
 	void doGameCommand( const std::string& commandString );
