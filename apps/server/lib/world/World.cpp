@@ -17,6 +17,7 @@ bool World::movePlayer(int playerID, string destination) {
 	if ( destinationZoneID == 0 ) {
 		return false;
 	}
+	Combat::endCombat(playerID, DatabaseTool::getCharNameFromID(playerID) + " left the zone.\n");
 	DatabaseTool::putCharInZone(playerID, destinationZoneID);
 	return true;
 }

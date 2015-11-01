@@ -4,6 +4,7 @@
 #include "CombatConstants.hpp"
 #include "DatabaseTool.hpp"
 #include "Server.hpp"
+#include "Zone.hpp"
 #include <deque>
 #include <unistd.h>
 #include <pthread.h>
@@ -11,6 +12,9 @@
 using namespace std;
 
 class CombatInstance {
+	static const int PLAYER_OR_NPC = 0;
+	static const int PLAYER_ONLY = 1;
+	static const int NPC_ONLY = 2;
 	static const int HEARTBEAT_SECONDS = 1;
 	static const int CHALLENGE_TIMEOUT = 30;
 	static const int PLAYER_ONE = 0;
@@ -25,6 +29,7 @@ class CombatInstance {
 	bool keepFighting = true;
 	bool readyForCleanup = false;
 
+	int combatZoneID = 0;
 	int enemytype = 0;
 	int playerOneID = 0;
 	int playerTwoID = 0;
@@ -49,11 +54,15 @@ class CombatInstance {
 
 public:
 
+	bool CombatInstance::isCombatant(int playerID);
+
+	bool CombatInstance::inZone(int zoneID);
+
 	void CombatInstance::acceptChallenge();
 
 	void CombatInstance::endCombat(string message);
 	
-	CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType);
+	CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID);
 
 	CombatInstance::~CombatInstance();
 

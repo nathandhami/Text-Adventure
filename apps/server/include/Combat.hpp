@@ -18,11 +18,8 @@ class CombatActions {
 	
 	static deque<CombatInstance> combatInstances;
 
-	static CombatInstance Combat::getCombatInstance(int playerID);
 
-	static deque<CombatInstance> Combat::getCombatInstances(int zoneID);
-
-	static int Combat::getLocalIDFromName(int playerID, int characterName, int characterType);
+	static CombatInstance *Combat::getCombatInstance(int playerID);
 
 	static string Combat::startCombat(int playerID, string arguments);
 
@@ -32,15 +29,20 @@ class CombatActions {
 
 	static string Combat::acceptChallenge(int playerID, string arguments);
 
+	static bool Combat::isInCombat(int characterID, int characterType);
+
 public:
 
 	static string Combat::executeCommand(int playerID, Command givenCommand);
-
-	static bool Combat::isInCombat(int characterID, int characterType);
+	
 	static bool Combat::isInCombat(int playerID);
+
+	static void Combat::endCombat(int playerID, string message);
+	static void Combat::endCombat(int playerID);
 
 	static void Combat::endAllCombat(string message);
 	static void Combat::endAllCombat();
+	
 	static void Combat::endAllCombat(int zoneID, string message);
 	static void Combat::endAllCombat(int zoneID);
 };

@@ -3,6 +3,49 @@
 
 // --------Private functions--------
 
+void CombatInstance::removePlayersFromCombat(int playerID, int playerType) {
+	if (playerType == PLAYER_ONLY) {
+		DatabaseTool::setCombatFlag(playerID, false, DatabaseTool::Target.character);
+	}
+	else if (playerType == NPC_ONLY) {
+		DatabaseTool::setCombatFlag(playerID, false, DatabaseTool::Target.npc);
+	}
+}
+
+void CombatInstance::removePlayersFromCombat() {
+	removePlayersFromCombat(playerOneID, PLAYER_ONLY);
+	removePlayersFromCombat(playerTwoID, enemyType);
+}
+
+void waitForChallengeAccept() {
+	string challengerName = DatabaseTool::getCharNameFromID(playerOneID);
+	string challengeeName = DatabaseTool::getCharNameFromID(playerTwoID);
+	Server::sendMessageToCharacter(playerTwoID, GameCode::Combat, challengerName + " has challenged you to a fight!\nTo accept their challenge, use the following command\n    acceptChallenge " + challengerName + "\n");
+	int timeoutCounter = 0;
+
+	while (!challengeAccepted && timeoutCounter < CHALLENGE_TIMEOUT && keepFighting) {
+		if ((timeoutCounter % 5) == 0) {
+			Server::sendMessageToCharacter(playerOneID, GameCode::Combat, "Waiting for " + challengeeName + " to accept challenge...\n");
+		}
+		sleep(HEARTBEAT_SECONDS);
+		timeoutCounter++;
+	}
+
+	if (challengeAccepted) {
+		DatabaseTool::setCombatFlag(playerID, true, DatabaseTool::Target.character);
+		Server::sendMessageToCharacter(playerOneID, GameCode::Combat, challengeeName + " accepted your challenge!\nYou each bow respectfully and combat begins!\n");
+		Server::sendMessageToCharacter(playerTwoID, GameCode::Combat, "You each bow respectfully and combat begins!\n");
+		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + " and " + challengeeName + " have started fighting each other!\n");
+	}
+	else if (keepFighting) {
+		Server::sendMessageToCharacter(playerOneID, GameCode::Combat, challengeeName + " did not accept your challenge.\n");
+		removePlayersFromCombat(playerOneID, PLAYER_ONLY);
+		keepFighting = false;
+		readyForCleanup = true;
+		pthread_exit(NULL);
+	}
+}
+
 void CombatInstance::notifyAttack(int player, int characterType, int damageDealt, int healthRemaining) {
 	if (player == PLAYER_ONE) {
 		Server::sendMessageToCharacter(playerOneID, GameCode::Combat, "You deal " + damageDealt + " damage.\n");
@@ -82,45 +125,15 @@ void CombatInstance::executePlayerAction(int player, int characterType) {
 	}
 }
 
-void CombatInstance::removePlayersFromCombat(int playerID, int playerType) {
-	if (playerType == PLAYER_ONLY) {
-		// Set playerID inCombat to false
-	}
-}
-
-void CombatInstance::removePlayersFromCombat() {
-	removePlayersFromCombat(playerOneID, PLAYER_ONLY);
-	removePlayersFromCombat(playerTwoID, enemyType);
-}
-
 void *CombatInstance::runCombat() {
 	if (enemyType == PLAYER_ONLY) {
-		// Let's be polite and ask them if they want to fight
-		string challengerName = DatabaseTool::getCharName(playerOneID);
-		Server::sendMessageToCharacter(playerTwoID, GameCode::Combat, challengerName + " has challenged you to a fight!\nTo accept their challenge, use the following command\n    acceptChallenge " + challengerName + "\n");
-		int timeoutCounter = 0;
-		while (!challengeAccepted && timeoutCounter < CHALLENGE_TIMEOUT) {
-			if ((timeoutCounter % 5) == 0) {
-				Server::sendMessageToCharacter(playerOneID, GameCode::Combat, "Waiting for opponent to accept challenge...\n");
-			}
-			sleep(HEARTBEAT_SECONDS);
-			timeoutCounter++;
-		}
-		if (challengeAccepted) {
-			// Set playerTwo inCombat
-			Server::sendMessageToCharacter(playerOneID, GameCode::Combat, "Your challenge was accepted!\nYou each bow respectfully and combat begins!\n");
-			Server::sendMessageToCharacter(playerTwoID, GameCode::Combat, "You each bow respectfully and combat begins!\n");
-		}
-		else {
-			Server::sendMessageToCharacter(playerOneID, GameCode::Combat, "Your opponent did not accept your challenge.\n");
-			removePlayersFromCombat(playerOneID);
-			keepFighting = false;
-			readyForCleanup = true;
-			pthread_exit(NULL);
-		}
+		waitForChallengeAccept();
 	}
 	else {
-		challengeAccepted = true; // Unnecessary, but it would annoy me if we were fighting with challengeAccepted being false =P
+		DatabaseTool::setCombatFlag(playerID, true, DatabaseTool::Target.npc);
+		challengeAccepted = true;   // Unnecessary, but it would annoy me if we were fighting with challengeAccepted being false =P
+		string npcName = DatabaseTool::getNpcName(playerTwoID);
+		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + "has started fighting " + npcName + "!\n");
 	}
 
 	playersActionQueue.push_back(deque<int> (1, ATTACK_ACTION));
@@ -140,6 +153,20 @@ void *CombatInstance::runCombat() {
 
 // --------Public functions--------
 
+bool CombatInstance::isCombatant(int playerID) {
+	if ((playerOneID == playerID) || ((enemyType == PLAYER_ONLY) && (playerTwoID == playerID))) {
+		return true;
+	}
+	return false;
+}
+
+bool CombatInstance::inZone(int zoneID) {
+	if (zoneID == combatZoneID) {
+		return true;
+	}
+	return false;
+}
+
 void CombatInstance::acceptChallenge() {
 	challengeAccepted = true;
 }
@@ -148,6 +175,8 @@ void CombatInstance::endCombat(string message) {
 	if (keepFighting) {
 		keepFighting = false;
 		pthread_join(combatThread);
+		removePlayersFromCombat(playerOneID, PLAYER_ONLY);
+		removePlayersFromCombat(playerTwoID, enemyType);
 		Server::sendMessageToCharacter(playerOneID, GameCode::Combat, message);
 		if (enemyType == PLAYER_ONLY) {
 			Server::sendMessageToCharacter(playerTwoID, GameCode::Combat, message);
@@ -156,14 +185,19 @@ void CombatInstance::endCombat(string message) {
 	readyForCleanup = true;
 }
 
-CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType) {
-	// Set playerOne inCombat to true
+CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID) {
+	DatabaseTool::setCombatFlag(playerID, true, DatabaseTool::Target.character);
 
+	combatZoneID = zoneID;
 	enemyType = givenEnemyType;
 	playerOneID = playerID;
 	playerTwoID = enemyID;
 
 	int errorStartingThread = pthread_create(&combatThread, NULL, runCombat, NULL);
+	if (errorStartingThread) {
+		cout << "Failed to create combat thread: " + errorStartingThread + "\n";
+		exit(-1);
+	}
 
 	pthread_exit(NULL);
 }
