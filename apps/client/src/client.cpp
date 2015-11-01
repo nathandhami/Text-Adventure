@@ -88,7 +88,7 @@ int main( /*int argc, const char* argv[]*/ ) {
 	
 	std::cout << "Response: " << response.body << std::endl;
 	
-	response = Game::login( "testUser1", "test1" );
+	response = Game::login( "testUser2", "test2" );
 	
 	std::cout << "Got response:" << std::endl;
 	std::cout << "\tHeader: " << response.header << std::endl;
