@@ -72,11 +72,9 @@ bool Zone::roomForMorePlayers(int zoneID) {
 	return true;
 }
 
-/*     
-void playerEnteringZone(int playerName) {
-	vector<int> playersInZone = getPlayerIDs();
+void Zone::broadcastMessage(int zoneID, string message) {
+	vector<int> playersInZone = DatabaseTool::getAllCharsInZone(zoneID);
 	for (int i = 0; i < playersInZone.size(); i++) {
-		// Notify playersInZone[i] that playerName entered the zone
+		Server::sendMessageToCharacter(playersInZone[i], GameCode::None, message);
 	}
 }
-*/

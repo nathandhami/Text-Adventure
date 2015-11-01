@@ -28,7 +28,7 @@ class CombatInstance {
 	bool readyForCleanup = false;
 
 	int combatZoneID = 0;
-	int enemytype = 0;
+	int enemyType = 0;
 	int playerOneID = 0;
 	int playerTwoID = 0;
 
@@ -47,7 +47,7 @@ class CombatInstance {
 	void removePlayersFromCombat(int playerID, int playerType);
 	void removePlayersFromCombat();
 
-	void *runCombat();
+	void *runCombat(void*);
 
 
 public:

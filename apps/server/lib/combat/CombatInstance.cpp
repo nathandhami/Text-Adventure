@@ -128,13 +128,14 @@ void CombatInstance::executePlayerAction(int player, int characterType) {
 	}
 }
 
-void *CombatInstance::runCombat() {
+void *CombatInstance::runCombat(void* args) {
 	if (enemyType == PLAYER_ONLY) {
 		waitForChallengeAccept();
 	}
 	else {
 		DatabaseTool::setCombatFlag(playerID, true, DatabaseTool::Target.npc);
 		challengeAccepted = true;   // Unnecessary, but it would annoy me if we were fighting with challengeAccepted being false =P
+		string challengerName = DatabaseTool::getCharNameFromID(playerOneID);
 		string npcName = DatabaseTool::getNpcName(playerTwoID);
 		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + "has started fighting " + npcName + "!\n");
 	}
@@ -198,7 +199,7 @@ CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, in
 
 	int errorStartingThread = pthread_create(&combatThread, NULL, runCombat, NULL);
 	if (errorStartingThread) {
-		cout << "Failed to create combat thread: " + errorStartingThread + "\n";
+		cout << "Failed to create combat thread: " << errorStartingThread << "\n";
 		exit(-1);
 	}
 
