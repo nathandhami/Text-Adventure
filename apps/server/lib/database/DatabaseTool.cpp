@@ -1036,17 +1036,12 @@ string DatabaseTool::look(int charID, string word) {
 		return description;
 	}
 
-	description = findPlayerDescription(charID, word);
+	description = findPlayerDescription(charID, zoneID, word);
 	if(!description.empty()) {
 		return description;
 	}
 
 	description = findNpcDescription(zoneID, word);
-	if(!description.empty()) {
-		return description;
-	}
-
-	description = findItemDescription(charID, zoneID, word);
 	if(!description.empty()) {
 		return description;
 	}
@@ -1059,9 +1054,10 @@ string DatabaseTool::findNpcDescription(int zoneID, string word) {
 	try {
 		database db(DB_LOCATION);
 		string foundDescription = "";
-		db << "select description, longDescription, keywords, shortDesc from npcs N, instanceOfNpc I where N.npcID == I.npcID and zoneID == ?;"
+		db << "select description, longDesc, keywords, shortDesc from npcs N, instanceOfNpc I where N.npcID == I.npcID and zoneID == ?;"
 		<<zoneID
 		>>[&] (string description, string longDescription, string keywords, string shortDesc) {
+
 			if(shortDesc.find(word) != string::npos) {
 				foundDescription = longDescription;
 			}
@@ -1071,24 +1067,20 @@ string DatabaseTool::findNpcDescription(int zoneID, string word) {
 		};
 		return foundDescription;
 	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return "";
 	}
 
 }
 
-string DatabaseTool::findPlayerDescription(int lookerID, string name) {
+string DatabaseTool::findPlayerDescription(int lookerID, int zoneID, string name) {
 	try {
 		database db(DB_LOCATION);
-
-		int lookerZoneID;
-		db << "select location from characters where charID == ?;"
-		<< "lookerID"
-		>>lookerZoneID;
 
 		string description;
 		db << "select description from playerAttributes A, charactersOnline O, characters C where C.name == ? and C.charID == O.charID  and A.charID = C.charID and C.location = ?;"
 		<<name
-		<<lookerID
+		<<zoneID
 		>>description;
 
 		return description;
@@ -1103,7 +1095,7 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 		database db(DB_LOCATION);
 		string foundDescription = "";
 
-		db << "select description, shortDesc, keywords from items I, player_inventory P where I.itemID == P.itemID and P.charID == ?"
+		db << "select description, shortDescription, keywords from items I, player_inventory P where I.itemID == P.itemID and P.charID == ?"
 		<<charID
 		>>[&] (string description, string shortDesc, string keywords) {
 			if(keywords.find(word) != string::npos) {
@@ -1116,11 +1108,12 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 		};
 
 
+
 		if(foundDescription == "") {
-			db << "select longDesc, keywords from items X, instanceOfItem Y where X.itemID == Y.itemID and itemInstanceID == ?"
-			<<"zoneID"
-			>>[&](string longDesc, string keywords) {
-				if(keywords.find(word) != string::npos) {
+			db << "select longDescription, keywords, shortDescription from items X, instanceOfItem Y where X.itemID == Y.itemID and zoneID == ?"
+			<<zoneID
+			>>[&](string longDesc, string keywords, string shortDesc) {
+				if((keywords.find(word) != string::npos) || (shortDesc.find(word) != string::npos)) {
 					foundDescription = longDesc;
 				}
 			};
@@ -1128,6 +1121,7 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 		return foundDescription;
 
 	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return "";
 	}
 }

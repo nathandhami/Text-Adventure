@@ -314,7 +314,7 @@ class DatabaseTool{
 	
 	
 	private:
-		static string findPlayerDescription(int lookerID, string name);
+		static string findPlayerDescription(int lookerID, int zoneID, string name);
 		static string findNpcDescription(int zoneID, string word);
 		static string findItemDescription(int charID, int zoneID, string word);
 		static string getSlot(int equiableTo);

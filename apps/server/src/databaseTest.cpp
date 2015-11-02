@@ -121,7 +121,9 @@ int main(int argc, char* argv[])
 }
 
 void lookTest() {
-   cout << DatabaseTool::look(1, "people") << endl;
+
+   cout << DatabaseTool::look(1, "wizard") << endl << endl;
+   // cout << DatabaseTool::look(1, "testChar1") << endl;
 }
 
 void inventoryTest() {
