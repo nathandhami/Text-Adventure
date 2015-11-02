@@ -338,7 +338,11 @@ void Session::gentleShutDown() {
 	LOG( "The client has disconnected. Terminating..." );
 	this->writing = false;
 	this->reading = false;
-	
+	LOG( "Force logout." );
+	bool loggedOut = Authenticator::logout( this->currentUser );
+	if ( !loggedOut ) {
+		LOG( "Already logged out." );
+	}
 	LOG( "SESSION SAFELY ENDED." );
 	
 }
