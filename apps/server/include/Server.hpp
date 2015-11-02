@@ -21,9 +21,10 @@ public:
 	
 	static void waitUntilDone();
 	
-	static void registerNewSession( SessionPtr newSession );
+	static std::string registerNewSession( SessionPtr newSession );
+	static void destroySession( std::string identifierString );
 	
-	static void sendMessageToClient( std::string sessionId, std::string message );
+	static bool sendMessageToCharacter( int characterId, std::string header, std::string body );
 	
 	
 private:

@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "DatabaseTool.hpp"
 
 #include <iostream>
 #include <boost/uuid/uuid.hpp>
@@ -24,7 +25,7 @@ void Server::waitUntilDone() {
 }
 
 
-void Server::registerNewSession( Server::SessionPtr newSession ) {
+std::string Server::registerNewSession( Server::SessionPtr newSession ) {
 	std::string identifierString;
 	bool inserted = false;
 	
@@ -37,13 +38,37 @@ void Server::registerNewSession( Server::SessionPtr newSession ) {
 	} while ( !inserted );
 	
 	std::cout << "Registered a session with ID: " << identifierString << std::endl;
+	return identifierString;
+}
+
+void Server::destroySession( std::string identifierString ) {
+	if ( !Server::sessions.count( identifierString ) ) {
+		std::cout << "COULD NOT DELETE THE SESSION." << std::endl;
+		return;
+	}
+	
+	Server::sessions.erase( identifierString );
 }
 
 
-void Server::sendMessageToClient( std::string sessionId, std::string message ) {
-	std::cout << "Contatcted Server Service Locator." << std::endl;
-	std::string id = Server::sessions.begin()->first;
-	Server::sessions[ id ]->writeToClient( HEADER_OK, message );
+bool Server::sendMessageToCharacter( int characterId, std::string header, std::string body ) {
+	std::cout << "Contacted Server Service Locator." << std::endl;
+	
+	std::string sessionIdString = DatabaseTool::getSessionID( characterId );
+	std::cout << "[Server] got ID: " << sessionIdString << std::endl;
+	if ( sessionIdString == "" ) {
+		return false;
+	}
+	
+	if ( !Server::sessions.count( sessionIdString ) ) {
+		std::cout << "[Server] No process associated with this session." << std::endl;
+		return false;
+	}
+	
+	std::cout << "[Server] Sending message to " << characterId << ": ok." << std::endl;
+	Server::sessions[ sessionIdString ]->writeToClient( header, body );
+	
+	return true;
 }
 
 

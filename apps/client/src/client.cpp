@@ -63,16 +63,50 @@ static void readCommands() {
 
 int main( int argc, const char* argv[] ) {
 
-	Gtk::Main kit(argc);
-	MainWindow window;
+//	Gtk::Main kit(argc);
+//	MainWindow window;
 
 	Game::initialize();
 	Game::start();
 
-	std::cout << Game::login( "devon", "test" ).body << std::endl;
-	//Game::getFrontResponse().body;
-
-	Gtk::Main::run(window);
+	NetMessage response = Game::login( "testUser1", "test1" );
+	
+	//std::cout << "Got response:" << std::endl;
+	//std::cout << "\tHeader: " << response.header << std::endl;
+	//std::cout << "\tBody:\n" << response.body << std::endl;
+	
+//	Game::enact( "" );
+//	Game::enact( "look north" );
+//	Game::enact( "fight sadas" );
+//	Game::enact( "@ leeeroooyjeeenkins wolololo." );
+//	Game::enact( "# this is a zone message." );
+	
+	
+	
+//	std::cout << "Response: " << response.body << std::endl;
+	
+	/*response = Game::login( "testUser2", "test2" );
+	
+	std::cout << "Got response:" << std::endl;
+	std::cout << "\tHeader: " << response.header << std::endl;
+	std::cout << "\tBody:\n" << response.body << std::endl;
+	
+	Game::logout();
+	
+	std::cout << "Response: " << response.body << std::endl;*/
+	/*int i = 10;
+	
+	while( i > 0 ) {
+		
+		std::cout << "Response: " << Game::getFrontResponse().body << std::endl;
+		std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+		
+		i--;
+	}*/
+	
+	//Gtk::Main::run(window);
+	
+	Game::logout();
 	
 	Game::stop();
 

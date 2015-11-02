@@ -7,9 +7,16 @@ set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib" )
 
 find_package( PkgConfig REQUIRED )
 pkg_check_modules( GTKMM REQUIRED gtkmm-3.0 )
+find_package( Boost COMPONENTS system filesystem thread regex REQUIRED )
 
-find_package( Boost COMPONENTS system filesystem thread REQUIRED )
-include_directories ( ${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${GTKMM_INCLUDE_DIRS} )
+
+include_directories ( 
+	${Boost_INCLUDE_DIR} 
+	${CMAKE_SOURCE_DIR}/include
+	${CMAKE_SOURCE_DIR}/include/msqlite
+	${GTKMM_INCLUDE_DIRS}
+)
+
 link_directories( ${Boost_LIBRARY_DIR} ${GTKMM_LIBRARY_DIRS} )
 
 add_subdirectory ( apps )

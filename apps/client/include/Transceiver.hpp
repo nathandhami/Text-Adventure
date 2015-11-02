@@ -16,6 +16,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 #include "ServerConnection.hpp"
 #include "NetMessage.hpp"
@@ -36,10 +37,11 @@ public:
 //	void write( std::string header, std::string body );
 //	std::tuple< std::string, std::string > read();
 	
-	bool writeToServer( std::string header, std::string body );
+	void writeToServer( std::string header, std::string body );
 	
 	bool queueEmpty();
 	NetMessage readAndPopQueue();
+	void flushQueue();
 	
 	void asyncReadServerResponses();
 	
@@ -52,19 +54,24 @@ private:
 	
 	// Read/write threads
 	std::thread readerThread;
-	bool reading;
+	std::mutex readQueueMutex;
+	std::atomic< bool > reading;
 	
 	// Response queue
 	std::queue< NetMessage > responseQueue;
 	std::mutex responseQueueLock;
 	
 	
-	NetMessage response;
+//	NetMessage response;
 	
+	// Server interaction
+	void connectToHost();
 	bool write( std::string dataString );
 	std::string read( const int maxBufferLength );
+	
+	// Queue wrapper
+	void pushToReadQueue( std::string header, std::string body );
 
-	void connectToHost();
 //	
 //	void readHeaderFromHost();
 //	void readBodyFromHost();

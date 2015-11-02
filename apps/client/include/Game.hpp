@@ -20,6 +20,7 @@ public:
 	static NetMessage getFrontResponse();
 	static NetMessage login( std::string userName, std::string password );
 	static void logout();
+	static void enact( std::string userInputString );
 	
 	
 private:

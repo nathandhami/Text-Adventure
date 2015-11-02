@@ -47,8 +47,7 @@ private:
 
 struct NetMessage {
 	
-	enum MaxLength { HEADER = 3, BODY = 512 };
-//	static const 
+	enum MaxLength { HEADER = 3, BODY = 1024, BODY_LENGTH = 4 };
 	
 	NetMessage() {}
 	NetMessage( std::string header, std::string body ): header( header ), body( body ) {}

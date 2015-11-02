@@ -14,6 +14,7 @@
 
 #include <queue>
 #include <mutex>
+#include <atomic>
 #include <thread>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -21,7 +22,9 @@
 #include <boost/shared_ptr.hpp>
 
 #include "NetConfig.hpp"
+#include "GameCode.hpp"
 #include "NetMessage.hpp"
+#include "User.hpp"
 
 
 using boost::asio::ip::tcp;
@@ -32,9 +35,10 @@ public:
 	enum IPType { v4, v6 };
 	
 	Session( boost::asio::io_service& ioService ): socket( ioService ) {}
+	~Session();
 	
 	tcp::socket& getSocket();
-	void start();
+	void start( std::string identifierString );
 	
 	void writeToClient( std::string header, std::string body );
 	
@@ -44,10 +48,15 @@ private:
 	// Session state members
 	tcp::socket socket;
 	std::string clientIP_v4;
+	std::string identifierString;
+	bool terminating = false;
 	
 	// theads
 	std::thread readerThread;
 	std::thread writerThread;
+	
+	std::atomic< bool > writing { false };
+	std::atomic< bool > reading { false };
 	
 	// Session write queue members
 	std::queue< NetMessage > responseMessageQueue;
@@ -55,11 +64,11 @@ private:
 	bool writeInProgress = false;
 	
 	//Autherization data
-	typedef struct {
-		bool authorized;
-		int userId;
-		int characterId;
-	} User;
+//	typedef struct {
+//		bool authorized;
+//		int userId;
+//		int characterId;
+//	} User;
 	User currentUser;
 	
 	// Client interactors
@@ -75,9 +84,9 @@ private:
 	typedef std::map< std::string, ExecuteFunction > ExecFuncMap;
 	
 	ExecFuncMap funcMap = {
-		{ HEADER_LOGIN		, &Session::login },
-		{ HEADER_LOGOUT		, &Session::logout },
-		{ HEADER_COMMAND	, &Session::doGameCommand },
+		{ GameCode::LOGIN		, &Session::login },
+		{ GameCode::LOGOUT		, &Session::logout },
+		{ GameCode::COMMAND		, &Session::doGameCommand },
 		{ HEADER_MESSAGE	, &Session::sendMessageToCharacter }
 	};
 	
@@ -85,6 +94,7 @@ private:
 	
 	void login( const std::string& credentials );
 	void logout( const std::string& placeholder );
+	
 	void selectCharacter( const std::string& characterName );
 	void deselectCurrentCharacter( const std::string& placeholder );
 	void doGameCommand( const std::string& commandString );
@@ -92,6 +102,7 @@ private:
 	
 	
 	std::string getIP( IPType type );
+	void gentleShutDown();
 };
 
 #endif

@@ -40,7 +40,7 @@ MainWindow::MainWindow()
 	add(uiGrid);	
 
   	outputTextBuffer = Gtk::TextBuffer::create();
-	outputTextBuffer->set_text("What would you like to do?");
+	//outputTextBuffer->set_text("What would you like to do?");
 	outputTextview.set_buffer(outputTextBuffer);
 
 	commandEntry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_enter_pressed));
@@ -56,15 +56,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_enter_pressed()
 {
+	std::string command = commandEntry.get_text();
+	Game::enact(command);
+	
 	m_adjustment = outputScrollWindow.get_vadjustment();
 	m_adjustment->set_value(m_adjustment->get_upper()); 
 
-	//outputTextBuffer->set_text(commandEntry.get_text());
-	outputTextBuffer->insert(outputTextBuffer->end(), ">>" + commandEntry.get_text() + "\n");
+	outputTextBuffer->insert(outputTextBuffer->end(), "Response: " + Game::getFrontResponse().body + "\n");
 	outputTextview.set_buffer(outputTextBuffer);
-
-	std::string command = commandEntry.get_text();
-	std::cout << command << std::endl;
 
 	commandEntry.set_text("");
 }

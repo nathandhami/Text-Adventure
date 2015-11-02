@@ -17,7 +17,7 @@ Watcher::Watcher() {
 			this->ioService, 
 			tcp::endpoint( tcp::v4(), HOST_PORT ) 
 		);
-//	this->running = true;
+	
 	this->startAccept();
 }
 
@@ -65,15 +65,18 @@ void Watcher::handleAccept(
 	const boost::system::error_code& error 
 ) {
 	if ( !error ) {
-		std::async(
-			std::launch::async,
-			[ this, newSession ]() {
+		std::string sessionIdString = Server::registerNewSession( newSession );
+		
+		std::thread newSessionThread(
+			[ this, newSession, sessionIdString ]() {
 				std::cout << "Session launched." << std::endl;
-				newSession->start();
+				newSession->start( sessionIdString );
+				Server::destroySession( sessionIdString );
+				std::cout << "Thread ended." << std::endl;
 			}
 		);
 		
-		Server::registerNewSession( newSession );
+		newSessionThread.detach();
 		this->startAccept();
 	}
 }

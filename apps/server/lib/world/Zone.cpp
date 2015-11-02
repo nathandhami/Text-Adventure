@@ -8,7 +8,7 @@ vector<int> Zone::getNeighbourZones(int zoneID) {
 }
 
 vector<int> Zone::getPlayerIDs(int zoneID) {
-	return DatabaseTool::getAllCharsInZone(zoneID);
+	return DatabaseTool::getAllOnlineCharsInZone(zoneID);
 }
 
 vector<int> Zone::getNpcIDs(int zoneID) {
