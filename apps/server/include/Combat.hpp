@@ -5,15 +5,16 @@
 #include "CombatConstants.hpp"
 #include "DatabaseTool.hpp"
 #include "Server.hpp"
+#include "Command.hpp"
 #include <deque>
 #include <boost/algorithm/string.hpp>
 
-#define HOW_TO_START_FIGHT "To start a fight, use one of these commands\n    fight <name>\n    fight player <name>\n    fight npc <name>\n"
 
 using namespace std;
 
-class CombatActions {
-	static deque<CombatInstance> combatInstances;
+class Combat {
+
+	
 
 
 	static CombatInstance *getCombatInstance(int playerID);
