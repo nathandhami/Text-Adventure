@@ -28,7 +28,7 @@ public:
 
 	static bool roomForMorePlayers(int);
 
-	static void Zone::broadcastMessage(int, string);
+	static void broadcastMessage(int, string);
 };
 
 #endif
