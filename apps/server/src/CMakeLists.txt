@@ -12,7 +12,6 @@ target_link_libraries (yamltest DatabaseTool ${Boost_LIBRARIES} ${CMAKE_SOURCE_D
 
 target_link_libraries ( servertest ${Boost_LIBRARIES} Watcher Session Authenticator DatabaseTool )
 
-=======
 add_executable ( runServer main.cpp )
 target_link_libraries ( runServer Watcher Server )
 
@@ -20,4 +19,4 @@ target_link_libraries ( dbtest DatabaseTool )
 target_link_libraries ( servertest ${Boost_LIBRARIES} Watcher Session Authenticator DatabaseTool )
 target_link_libraries ( testStuff CommandParser DatabaseTool World )
 target_link_libraries ( testmod Editor DatabaseTool )
->>>>>>> origin/DB_DEV
+
