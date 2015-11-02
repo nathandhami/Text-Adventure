@@ -1,15 +1,14 @@
 #include "CombatInstance.hpp"
-#include "DatabaseTool.hpp"
 
 
 // --------Private functions--------
 
 void CombatInstance::removePlayersFromCombat(int playerID, int playerType) {
 	if (playerType == PLAYER_ONLY) {
-		DatabaseTool::setCombatFlag(playerID, false, DatabaseTool::Target.character);
+		DatabaseTool::setCombatFlag(playerID, false, Target::character);
 	}
 	else if (playerType == NPC_ONLY) {
-		DatabaseTool::setCombatFlag(playerID, false, DatabaseTool::Target.npc);
+		DatabaseTool::setCombatFlag(playerID, false, Target::npc);
 	}
 }
 
