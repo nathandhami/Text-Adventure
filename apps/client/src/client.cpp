@@ -63,8 +63,11 @@ static void readCommands() {
 
 int main( int argc, const char* argv[] ) {
 
-//	Gtk::Main kit(argc);
-//	MainWindow window;
+	if(!Glib::thread_supported()) {
+		Glib::thread_init();
+	}
+	Gtk::Main kit(argc);
+	MainWindow window;
 
 	Game::initialize();
 	Game::start();
@@ -80,7 +83,7 @@ int main( int argc, const char* argv[] ) {
 //	Game::enact( "fight sadas" );
 //	Game::enact( "@ leeeroooyjeeenkins wolololo." );
 //	Game::enact( "# this is a zone message." );
-	Game::enact( "move" );	
+//	Game::enact( "move" );	
 	
 //	std::cout << "Response: " << response.body << std::endl;
 	
@@ -103,7 +106,7 @@ int main( int argc, const char* argv[] ) {
 		i--;
 	}*/
 	
-	//Gtk::Main::run(window);
+	Gtk::Main::run(window);
 	
 	Game::logout();
 	
