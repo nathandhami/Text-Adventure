@@ -17,7 +17,7 @@ class Combat {
 	
 
 
-	static CombatInstance *getCombatInstance(int playerID);
+	static std::shared_ptr<CombatInstance> getCombatInstance(int playerID);
 
 	static string startCombat(int playerID, string arguments);
 

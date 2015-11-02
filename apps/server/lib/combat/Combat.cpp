@@ -3,15 +3,15 @@
 
 // --------Private variables--------
 
-static deque<CombatInstance> combatInstances;
+static vector<std::shared_ptr<CombatInstance>> combatInstances;
 
 
 // --------Private functions--------
 
-CombatInstance *Combat::getCombatInstance(int playerID) {
+std::shared_ptr<CombatInstance> Combat::getCombatInstance(int playerID) {
 	for (long instanceIndex = 0; instanceIndex < combatInstances.size(); instanceIndex++) {
-		if (combatInstances.at(instanceIndex).isCombatant(playerID)) {
-			return &combatInstances.at(instanceIndex);
+		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
+			return combatInstances[instanceIndex];
 		}
 	}
 	return NULL;
@@ -65,13 +65,13 @@ string Combat::startCombat(int playerID, string arguments) {
 		if (Combat::isInCombat(enemyPlayerID, PLAYER_ONLY)) {
 			return enemyName + " is already in combat.\n";
 		}
-		combatInstances.push_back(CombatInstance(playerID, enemyPlayerID, PLAYER_ONLY, DatabaseTool::getCharsLocation(playerID)));
+		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyPlayerID, PLAYER_ONLY, DatabaseTool::getCharsLocation(playerID)));
 	}
 	else if (enemyNpcID > 0) {
 		if (Combat::isInCombat(enemyNpcID, NPC_ONLY)) {
 			return enemyName + " is already in combat.\n";
 		}
-		combatInstances.push_back(CombatInstance(playerID, enemyNpcID, NPC_ONLY, DatabaseTool::getCharsLocation(playerID)));
+		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyNpcID, NPC_ONLY, DatabaseTool::getCharsLocation(playerID)));
 	}
 	else {
 		return "There is no " + enemyName + " in your zone.\n";
@@ -84,7 +84,7 @@ string Combat::queueAttack(int playerID) {
 	if (!Combat::isInCombat(playerID)) {
 		return "Calm down, you're not even in combat.\n" + HOW_TO_START_FIGHT;
 	}
-	CombatInstance *instance = Combat::getCombatInstance(playerID);
+	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(playerID);
 	if (instance == NULL) {
 		cout << "PlayerID " << playerID << "'s CombatInstance does not exist even though they are in combat." << endl;
 		DatabaseTool::setCombatFlag(playerID, false, Target::character);
@@ -98,7 +98,7 @@ string Combat::retreat(int playerID) {
 	if (!Combat::isInCombat(playerID)) {
 		return "Calm down, you're not even in combat.\n";
 	}
-	CombatInstance *instance = Combat::getCombatInstance(playerID);
+	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(playerID);
 	if (instance == NULL) {
 		cout << "PlayerID " << playerID << "'s CombatInstance does not exist even though they are in combat." << endl;
 		DatabaseTool::setCombatFlag(playerID, false, Target::character);
@@ -126,7 +126,7 @@ string Combat::acceptChallenge(int playerID, string arguments) {
 		}
 	}
 	
-	CombatInstance *instance = Combat::getCombatInstance(DatabaseTool::getCharIDFromName(enemyName));
+	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(DatabaseTool::getCharIDFromName(enemyName));
 	if (instance == NULL) {
 		return "The challenge timed out.\n";
 	}
@@ -175,8 +175,8 @@ bool Combat::isInCombat(int playerID) {
 
 void Combat::endCombat(int playerID, string message) {	
 	for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
-		if (combatInstances.at(instanceIndex).isCombatant(playerID)) {
-			combatInstances.at(instanceIndex).endCombat(message);
+		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
+			combatInstances[instanceIndex]->endCombat(message);
 			combatInstances.erase(combatInstances.begin() + instanceIndex);
 			break;
 		}
@@ -189,7 +189,7 @@ void Combat::endCombat(int playerID) {
 
 void Combat::endAllCombat(string message) {
 	while (!combatInstances.empty()) {
-		combatInstances.back().endCombat(message);
+		combatInstances.back()->endCombat(message);
 		combatInstances.pop_back();
 	}
 }
@@ -203,8 +203,8 @@ void Combat::endAllCombat(int zoneID, string message) {
 	bool keepGoing = true;
 	while (keepGoing) {
 		for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
-			if (combatInstances.at(instanceIndex).inZone(zoneID)) {
-				combatInstances.at(instanceIndex).endCombat(message);
+			if (combatInstances[instanceIndex]->inZone(zoneID)) {
+				combatInstances[instanceIndex]->endCombat(message);
 				combatInstances.erase(combatInstances.begin() + instanceIndex);
 				if (instanceIndex == 0) {
 					keepGoing = false;
