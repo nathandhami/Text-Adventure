@@ -151,7 +151,7 @@ void parseNPCAndAddIntoDatabase(const YAML::Node& config) {
 			parsingNPC.longDesc = longDesc;
 			parsingNPC.shortDesc = npcNode["shortdesc"].as<std::string>();
  
-			DatabaseTool::addNPC(parsingNPC.npcID,
+			DatabaseTool::addNpc(parsingNPC.npcID,
 								 parsingNPC.description,
 								 parsingNPC.keywords,
 								 parsingNPC.longDesc,
@@ -173,7 +173,7 @@ void parseItemsAndAddIntoDatabase(const YAML::Node &config){
 	if(config["OBJECTS"]){
 	
 		vector<std::string> parsingZoneac;
-		vector<ExtendedDescription> extendedDescriptions;
+		std::string description;
         vector<string> keywords;
 
 		for(YAML::iterator it = itemNodes.begin(); it!= itemNodes.end(); ++it){
@@ -189,11 +189,13 @@ void parseItemsAndAddIntoDatabase(const YAML::Node &config){
 
 				//extra
 				YAML::Node extraNodeForItemNode =  itemNode["extra"];
-				std::string edesc;
+				std::string description;
 
 				for(unsigned int i = 0; i < extraNodeForItemNode[0]["desc"].size(); ++i){
-				   edesc += trimString(extraNodeForItemNode[0]["desc"][i].as<std::string>()) + " ";
+				   description += trimString(extraNodeForItemNode[0]["desc"][i].as<std::string>()) + " ";
 				}
+
+				parsingItem.description = description;
 
 				vector<std::string> extraKeywords;
 
@@ -201,13 +203,11 @@ void parseItemsAndAddIntoDatabase(const YAML::Node &config){
 					extraKeywords.push_back(extraNodeForItemNode[0]["keywords"][i].as<std::string>());
 				}
 
-				ExtendedDescription extendedDesc(edesc,extraKeywords);
-				parsingItem.extendedDescriptions.push_back(extendedDesc);
-
+		
 			Item newItem (parsingItem.itemID,
 						  parsingItem.longDesc,
 						  parsingItem.shortDesc,
-						  parsingItem.extendedDescriptions,
+						  parsingItem.description,
 						  parsingItem.keywords);
 
 			DatabaseTool::addItem(newItem);

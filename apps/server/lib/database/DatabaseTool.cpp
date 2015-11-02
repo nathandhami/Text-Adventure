@@ -553,63 +553,8 @@ vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 
 }
 
-bool DatabaseTool::addItem(Item item) {
-	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.longDesc) + "," + quotesql(item.shortDesc) + ", 0, 0, 0);";
-	return executeSQLInsert(sqlStatment);	
-}
-
-
-vector<string> DatabaseTool::getItemsInInventory(int charID) {
-	vector<string> items;
-	try {
-		database db(DB_LOCATION);
-		db << "select shortDesc from items X, instanceOfItem Y where X.itemID = Y.itemID and charID =?"
-		<<charID
-		>>[&](string desc) {
-			items.push_back(desc);
-		};
-		return items;
-	} catch(sqlite_exception e) {
-		return items;
-	}
-}
-
-vector<string> DatabaseTool::getItemsInZone(int zoneID) {
-	vector<string> items;
-	try {
-		database db(DB_LOCATION);
-		db << "select longDesc from items X, instanceOfItem Y where X.itemID = Y.itemID and zoneID =?"
-		<<zoneID
-		>>[&](string desc) {
-			items.push_back(desc);
-		};
-		return items;
-	} catch(sqlite_exception e) {
-		return items;
-	}
-
-}
-
-vector<int> DatabaseTool::getInstanceIDsOfItemsInInventory(int charID) {
-	vector<int> items;
-	try {
-		database db(DB_LOCATION);
-		db << "select itemInstanceID from instanceOfItem where charID =?"
-		<<charID
-		>>[&](int itemInstanceID) {
-			items.push_back(itemInstanceID);
-		};
-		return items;
-	} catch(sqlite_exception e) {
-		return items;
-	}
-}
 
 bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
-
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL, NULL, 0);";
-	return executeSQLInsert(sqlStatment);
-
 	try {
 		database db(DB_LOCATION);
 		db << "PRAGMA foreign_keys = ON;";
@@ -627,15 +572,6 @@ bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
 	try {
 		int canPickUp;
 		database db (DB_LOCATION);
-
-		db << "select canPickUp from items where itemID = ?;"
-		<<itemID
-		>>canPickUp;
-		if(canPickUp > 0) {
-			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , NULL , NULL, ?, NULL, 0);"
-			<<itemID
-			<<npcInstanceID;
-
 		db << "PRAGMA foreign_keys = ON;";
 		db << "select isPickable from items where itemID = ?;"
 		<<itemID
@@ -644,14 +580,11 @@ bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
 			db << "INSERT INTO npc_inventory VALUES ( NULL, ?, ?, 0, 0);"
 			<<npcInstanceID
 			<<itemID;
-
 			return true;
 		} else {
 			return false;
 		}
 	}catch(sqlite_exception e) {
-
-
 		cout << e.what() << endl;
 		return 0;
 	}
@@ -661,13 +594,6 @@ bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
 	try {
 		int canPickUp;
 		database db (DB_LOCATION);
-		db << "select canPickUp from items where itemID = ?;"
-		<<itemID
-		>>canPickUp;
-		if(canPickUp > 0) {
-			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , ? , NULL, NULL, NULL, 0);"
-			<<itemID
-			<<charID;
 		db << "PRAGMA foreign_keys = ON;";
 		db << "select isPickable from items where itemID = ?;"
 		<<itemID
@@ -690,79 +616,6 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 	try {
 		int canPickUp;
 		int isContainer;
-		database db (DB_LOCATION);
-		db << "select canPickUp from items where itemID = ?;"
-		<<itemID
-		>>canPickUp;
-
-		db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
-		<<itemInstanceID
-		>> isContainer;
-
-		if((canPickUp > 0) && (isContainer > 0)) {
-			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , NULL , NULL, NULL, ? , 0);"
-			<<itemID
-			<<itemInstanceID;
-			return true;
-		} else {
-			return false;
-		}
-	}catch(sqlite_exception e) {
-		cout << e.what() << endl;
-		return 0;
-	}
-}
-
-
-bool DatabaseTool::moveItem(int itemInstanceID, Transfer where, int toID){
-	try {
-		int canPickUp;
-		int isContainer;
-		database db(DB_LOCATION);
-		db << "select canPickUp from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
-		<<itemInstanceID
-		>>canPickUp;
-		switch(where) {
-			case toCharacter:
-				if(canPickUp > 0) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE itemInstanceID = ?;"
-					<<toID
-					<<itemInstanceID;
-					return true;
-				} else {
-					return false;
-				}
-			case toZone:
-				db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = ? WHERE itemInstanceID = ?;"
-				<<toID
-				<<itemInstanceID;
-				return true;
-			case toNpc:
-				if(canPickUp > 0) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
-					<<toID
-					<<itemInstanceID;
-					return true;
-				} else {
-					return false;
-				}
-			case toItem:
-				db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
-				<< toID
-				>> isContainer;
-				if((canPickUp > 0) && (isContainer >0)) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = ? WHERE itemInstanceID = ?;"
-					<<toID
-					<<itemInstanceID;
-					return true;
-				} else {
-					return false;
-				}
-			default:
-				return false;
-		}
-	} catch(sqlite_exception e) {
-		return false;
 		int zoneID;
 		database db (DB_LOCATION);
 		db << "PRAGMA foreign_keys = ON;";
@@ -790,11 +643,6 @@ bool DatabaseTool::moveItem(int itemInstanceID, Transfer where, int toID){
 		cout << e.what() << endl;
 		return 0;
 	}
-}
-
-bool DatabaseTool::deleteItem(int itemInstanceID){
-	string statment = "delete from instanceOfItem where itemInstanceID=" + to_string(itemInstanceID) + ";";
-	return executeSQLInsert(statment);
 }
 
 //!!!!!!!!!!!!!! depreciated function
@@ -954,26 +802,6 @@ bool DatabaseTool::equipItem(int charID, string item) {
 	bool foundItem = false;
 	try{
 		database db (DB_LOCATION);
-		db << "select shortDesc, keywords, itemInstanceID, equipableSlot from items X, instanceOfItem Y where X.itemID = Y.itemID and charID = ?;"
-		<<charID
-		>>[&](string shortdesc, string keywords, int itemInstanceID, int equipableSlot) {
-			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
-				int currentlyEquiped;
-				db << "select " + getSlot(equipableSlot) + " from playerAttributes where charID = ?;"
-				<<charID
-				>>currentlyEquiped;
-
-				cout << "equipped: " << currentlyEquiped << endl;
-
-				if(currentlyEquiped != 0) {
-					cout << "testing" << endl;
-					db <<"update instanceOfItem set isEquipped = 0 where itemInstanceID = ?;"
-					<< currentlyEquiped;
-				}
-				db <<"update instanceOfItem set isEquipped = 1 where itemInstanceID = ?;"
-				<<itemInstanceID;
-				
-				string statment = "update playerAttributes set " + getSlot(equipableSlot) + "= ?  where charID = ? ;";
 		db << "select shortDescription, keywords, ownershipID, isEquippable from items X, player_inventory Y where X.itemID = Y.itemID and charID = ?;"
 		<<charID
 		>>[&](string shortdesc, string keywords, int itemInstanceID, int equippableSlot) {
@@ -1006,18 +834,6 @@ bool DatabaseTool::equipItem(int charID, string item) {
 }
 
 bool DatabaseTool::pickUp(int charID, string item) {
-	bool foundItem = false;
-	int foundItemId;
-	try{
-		database db (DB_LOCATION);
-		db << "select shortDesc, keywords, itemInstanceID from items X, instanceOfItem Y, characters Z where X.itemID = Y.itemID and Z.location = Y.zoneID and Z.charID = ?;"
-		<<charID
-		>>[&](string shortdesc, string keywords, int itemInstanceID) {
-			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
-				foundItem = true;
-				foundItemId = itemInstanceID;
-			}
-		};
 	int foundItemID;
 	int foundInstanceID;
 	int canPickUp;
@@ -1047,12 +863,6 @@ bool DatabaseTool::pickUp(int charID, string item) {
 		cout << e.what() << endl;
 		return false;
 	}
- 
-	cout << "test" << endl;
-	if(foundItem) {
-		moveItem(foundItemId, Transfer::toCharacter, charID);
-	}
-	return foundItem;
 }
 
 string DatabaseTool::getSlot(int equiableTo) {
@@ -1077,8 +887,6 @@ string DatabaseTool::getSlot(int equiableTo) {
 
 }
 
-
-string DatabaseTool::look(int charID) {
 bool DatabaseTool::setCombatFlag(int id, bool inCombat, Target characterOrNpc) {
 	try {
 		database db(DB_LOCATION);
@@ -1275,14 +1083,3 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 		return false;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

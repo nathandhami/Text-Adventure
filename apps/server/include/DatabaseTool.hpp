@@ -299,7 +299,7 @@ class DatabaseTool{
 	//to implement
 		static string look(int charID);
 
-		static bool dropItem(charID, string item);
+		static bool dropItem(int charID, string item);
 
 		static void executeCommands();
 	

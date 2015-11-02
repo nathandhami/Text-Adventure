@@ -3,7 +3,6 @@ add_executable ( dbtest databaseTest.cpp )
 add_executable ( testStuff testStuff.cpp )
 add_executable ( testmod testmod.cpp )
 
-<<<<<<< HEAD
 target_link_libraries (dbtest DatabaseTool)
 
 add_executable(yamltest yamlparser.cpp)

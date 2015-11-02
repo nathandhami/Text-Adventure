@@ -32,7 +32,7 @@ struct ParseItem {
 	int itemID;
 	std::string longDesc;
 	std::string shortDesc;
-	vector<ExtendedDescription> extendedDescriptions;
+	std::string description;
 	vector<std::string> keywords;
 };
 

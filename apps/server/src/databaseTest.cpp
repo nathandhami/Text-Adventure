@@ -16,54 +16,33 @@ void inventoryTest();
 int main(int argc, char* argv[])
 {
    try {
-
-
-      cout << "running database tests" << endl;
-//   	DatabaseTool::addUser("devon2", "tesaeft");
-
-   	 cout << DatabaseTool::getUserID("devon", "test") << endl;
-   	 cout << DatabaseTool::getUserID("devon2", "tesaeft") << endl;
-   	 cout << DatabaseTool::getUserID("devon", "wrong password") << endl;
-      // cout << DatabaseTool::addUser("test99", "testing") << endl;
-
-      // cout << "running database tests" << endl;
-      // cout << DatabaseTool::addUser("testUser1", "test1") << endl;
-
       cout << "running database tests" << endl;
       //cout << DatabaseTool::addUser("testUser1", "test1") << endl;
-
 
       // cout << DatabaseTool::getUserAuthencationLevel(1) << endl;
       // cout << DatabaseTool::setUserAuthencationLevel(1, 99) << endl;
       // cout << DatabaseTool::getUserAuthencationLevel(1) << endl;
 
-   	// cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
-   	// cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
-   	// cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
+      // cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
+      // cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
+      // cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
 
-   	// cout << DatabaseTool::getPassword(1) << endl;
-   	// cout << DatabaseTool::getPassword(2) << endl;
+      // cout << DatabaseTool::getPassword(1) << endl;
+      // cout << DatabaseTool::getPassword(2) << endl;
     //   cout << DatabaseTool::getPassword(99999) << endl;
 
-   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
     //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
 
 
 
       //cout << DatabaseTool::getDirectionDesc(3054, "temple") << endl; 
-   	// cout << DatabaseTool::getCharsLocation(99) << endl;
+      // cout << DatabaseTool::getCharsLocation(99) << endl;
 
-      //  cout << DatabaseTool::getZoneName(3001) << endl;
-      //  cout << DatabaseTool::getZoneDesc(3001) << endl;
-      // // //cout << DatabaseTool::getZoneExtendedDesc(3001) << endl;
-      //  cout << DatabaseTool::getDirectionID(3001, "NORTH") << endl;
-      //  cout << DatabaseTool::getDirectionDesc(3001, "NORTH") << endl;
-      //  cout << DatabaseTool::getDirectionID(3001, "SOUTH") << endl;
-      //  cout << DatabaseTool::getDirectionDesc(3001, "SOUTH") << endl;
-      //  cout << DatabaseTool::getDirectionID(3001, "EAST") << endl;
-      //  cout << DatabaseTool::getDirectionDesc(3001, "EAST") << endl;
-      //  cout << DatabaseTool::getDirectionID(3001, "WEST") << endl;
-      //  cout << DatabaseTool::getDirectionDesc(3001, "WEST") << endl;
+
+      // cout << DatabaseTool::getZoneName(3001) << endl;
+      // cout << DatabaseTool::getZoneDesc(3001) << endl;
+      // cout << DatabaseTool::getDirectionID(3054, "south") << endl;
 
 
       // vector<int> charsinzone = DatabaseTool::getAllCharsInZone(8888);
@@ -71,23 +50,12 @@ int main(int argc, char* argv[])
       //    cout << charsinzone[i] << endl;
       // }
 
-
       // for(int i = 0; i < extendedDescs.size(); i++) {
       //    cout << extendedDescs[i].size() << endl;
       //    for(int x = 0; x < extendedDescs[i].size();  x++) {
       //       cout << extendedDescs[i][x] << endl << endl;
       //    }
       // }
-
-      //addZoneTest();
-      //addItemTest();
-      //spawnItemTest();
-      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 3) << endl;
-      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 4) << endl;
-      // cout << DatabaseTool::getCharID(1) << endl;
-      // cout << DatabaseTool::getCharID(2) << endl;
-      // DatabaseTool::putCharInZone(1, 3054);
-      // cout << DatabaseTool::getCharsLocation(1) << endl;
 
       //addZoneTest();
       //addItemTest();
@@ -116,16 +84,6 @@ int main(int argc, char* argv[])
       //updateAttributesTest();
       //npcInstanceTest();
       //inventoryTest();
-
-
-      //cout << DatabaseTool::equipItem(1, "sword") << endl;
-
-      cout << DatabaseTool::pickUp(1, "sword") << endl;
-      vector<string> items = DatabaseTool::getItemsInInventory(1);
-      for(auto &description:items) {
-         cout << description << endl;
-      }
-
 
       cout << DatabaseTool::equipItem(1, "sword") << endl;
 
@@ -160,14 +118,6 @@ int main(int argc, char* argv[])
 }
 
 void inventoryTest() {
-   vector<string> itemNames = DatabaseTool::getItemsInInventory(1);
-   vector<int> itemIDs = DatabaseTool::getInstanceIDsOfItemsInInventory(1);
-   for(auto& item: itemNames) {
-      cout << item << endl;
-   }
-   for(auto& item: itemIDs) {
-      cout << item << endl;
-   }
    vector<string> itemNames = DatabaseTool::getItemsInZone(3054);
    for(auto& item: itemNames) {
       cout << item << endl;
@@ -181,7 +131,6 @@ void updateAttributesTest() {
    DatabaseTool::updateAttributes(attributes, Target::npc);
 
 }
-
 
 void npcInstanceTest() {
    vector<string> keywords;
@@ -226,28 +175,15 @@ void addItemTest() {
       vector<string> keywords;
       keywords.push_back("dagger");
 
-      ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
-      extendedDescriptions.push_back(extendedDesc);
-      Item dagger(9999, longDesc, shortDesc, extendedDescriptions, keywords);
-
       string desc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries");
 
       Item dagger(9999, longDesc, shortDesc, desc, keywords);
-
       cout << DatabaseTool::addItem(dagger) << endl;
       cout << DatabaseTool::addItem(dagger) << endl;
 }
 
 void spawnItemTest() {
    cout << "spawning items..." << endl;
-   cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
-   cout << DatabaseTool::spawnItemInZone(9999, 3001) << endl;
-   cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInNpcInv(9999, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(9999, 1) << endl;
-   cout << DatabaseTool::spawnItemInItem(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInItem(3351, 2) << endl;
    cout << DatabaseTool::spawnItemInZone(1, 3054) << endl;
    cout << DatabaseTool::spawnItemInZone(2, 3054) << endl;
    cout << DatabaseTool::spawnItemInNpcInv(1, 1) << endl;
@@ -302,4 +238,3 @@ void addZoneTest() {
    cout << DatabaseTool::getDirectionDesc(3054, "blue") << endl << endl;
 
 }
-
