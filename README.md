@@ -54,6 +54,4 @@ To start the server, run: `./server-start.sh`
 To start the game, run: `./play.sh`
 
 ### Two accounts available to login to:
-Username: `devon`, password: `test`
-
-Username: `devon2`, password: `tesaeft` (currently not in a zone)
+Undecided for now
