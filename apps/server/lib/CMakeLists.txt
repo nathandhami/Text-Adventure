@@ -2,6 +2,7 @@ add_subdirectory ( net )
 add_subdirectory ( world )
 add_subdirectory ( parse )
 add_subdirectory ( database )
+
 add_subdirectory ( auth )
 add_subdirectory ( server )
 add_subdirectory ( msg )

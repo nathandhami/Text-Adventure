@@ -1255,6 +1255,7 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 	} catch ( exception& e ) {
 		return false;
 	}
+<<<<<<< HEAD
 }
 
 
@@ -1268,3 +1269,6 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 
 
 
+=======
+}
+>>>>>>> YamlParser2.5

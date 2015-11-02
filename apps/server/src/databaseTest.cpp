@@ -24,21 +24,21 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::setUserAuthencationLevel(1, 99) << endl;
       // cout << DatabaseTool::getUserAuthencationLevel(1) << endl;
 
-   	// cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
-   	// cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
-   	// cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
+      // cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
+      // cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
+      // cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
 
-   	// cout << DatabaseTool::getPassword(1) << endl;
-   	// cout << DatabaseTool::getPassword(2) << endl;
+      // cout << DatabaseTool::getPassword(1) << endl;
+      // cout << DatabaseTool::getPassword(2) << endl;
     //   cout << DatabaseTool::getPassword(99999) << endl;
 
-   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
     //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
 
 
 
       //cout << DatabaseTool::getDirectionDesc(3054, "temple") << endl; 
-   	// cout << DatabaseTool::getCharsLocation(99) << endl;
+      // cout << DatabaseTool::getCharsLocation(99) << endl;
 
 
       // cout << DatabaseTool::getZoneName(3001) << endl;

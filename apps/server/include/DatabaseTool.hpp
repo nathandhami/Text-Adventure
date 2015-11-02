@@ -268,6 +268,8 @@ class DatabaseTool{
 
 		static vector<string> getItemsInInventory(int charID);
 
+		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
+
 		static vector<string> getItemsInZone(int zoneID);
 
 		static bool spawnItemInZone(int itemID, int zoneID);
@@ -289,6 +291,7 @@ class DatabaseTool{
 		static bool equipItem(int charID, string item);
 
 		static bool pickUp(int charID, string item);
+
 
 		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
