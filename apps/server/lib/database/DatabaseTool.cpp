@@ -355,14 +355,14 @@ bool DatabaseTool::addNpc(
 		 	string description, 
 		 	vector<string> keywords,
 		 	string longdesc,
-		 	string shortdesc
+		 	string shortDesc
 		 	){
 	string sqlStatment = "INSERT INTO npcs VALUES (" 
 		+ to_string(npcID) 
 		+ ", " + quotesql(description)
 		+ ", " + quotesql(concatKeywords(keywords))
 		+ ", " + quotesql(longdesc)
-		+ ", " + quotesql(shortdesc) 
+		+ ", " + quotesql(shortDesc) 
 		+ ");";
 	return executeSQLInsert(sqlStatment);
 
@@ -537,16 +537,14 @@ vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 	vector<string> items;
 	try {
 		database db(DB_LOCATION);
-		db << "select longDescription, containerID from items X, instanceOfItem Y where X.itemID = Y.itemID and zoneID =?"
+
+		db << "select shortDescription from items X, instanceOfItem Y where X.itemID == Y.itemID and containerID is null and Y.zoneID ==?"
 		<<zoneID
-		>>[&](string desc, int containerID) {
-			if(containerID == 0) {
-				items.push_back(desc);
-			}
+		>>[&](string desc) {
+			items.push_back(desc);
 		};
 		return items;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
 		return items;
 
 	}
@@ -958,6 +956,187 @@ int DatabaseTool::getNpcInstanceIDFromName(string name, int zoneID) {
 
 }
 
+string DatabaseTool::look(int charID, string word) {
+	int zoneID = getCharsLocation(charID);
+	if(word == "") {
+		string description = getZoneDesc(zoneID);
+		return description;
+	} else if(word == "inventory") {
+		vector<string> itemsInIneventory = getItemsInInventory(charID);
+		string items = "In your inventory you have: ";
+		for(auto& item: itemsInIneventory) {
+			items = items + item + ", ";
+		}
+
+		if(items == "You see ") {
+			items = "You have no items in your inventory.  ";
+		}
+
+		return items.substr(0, items.size()-2);
+
+	} else  if(word == "objects") {
+		vector<string> itemsInZone = getItemsInZone(zoneID);
+		string items = "You see ";
+		for(auto& item: itemsInZone) {
+			items = items + item + ", ";
+		}
+
+		if(items == "You see ") {
+			items = "You see no objects.  ";
+		}
+
+		return items.substr(0, items.size()-2);
+
+	} else if(word == "players") {
+		string players = "You see ";
+		database db(DB_LOCATION);
+		db<<"select name from characters C, charactersOnline O where C.charID == O.charID and C.charID <> ? and C.location = ?"
+		<<charID
+		<<zoneID
+		>>[&](string name) {
+			players = players + name + ", ";
+		};
+
+		if(players == "You see ") {
+			players = "You see no players.  ";
+		}
+		return players.substr(0, players.size()-2);
+
+	} else if(word == "people") {
+		string npcs = "You see ";
+		database db(DB_LOCATION);
+		db<<"select shortDesc from npcs N, instanceOfNpc I where N.npcID == I.npcID and I.zoneID = ?"
+		<<zoneID
+		>>[&](string npc) {
+			npcs = npcs + npc + ", ";
+		};
+
+		if(npcs == "You see ") {
+			npcs = "You see no people.  ";
+		}
+
+		return npcs.substr(0, npcs.size()-2);
+	}
+
+	string description = "";
+
+	description = getZoneExtendedDesc(zoneID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+
+	description = getDirectionDesc(zoneID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+	description = findItemDescription(charID, zoneID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+	description = findPlayerDescription(charID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+	description = findNpcDescription(zoneID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+	description = findItemDescription(charID, zoneID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+	return "You see nothing related to " + word;
+
+}
+
+string DatabaseTool::findNpcDescription(int zoneID, string word) {
+	try {
+		database db(DB_LOCATION);
+		string foundDescription = "";
+		db << "select description, longDescription, keywords, shortDesc from npcs N, instanceOfNpc I where N.npcID == I.npcID and zoneID == ?;"
+		<<zoneID
+		>>[&] (string description, string longDescription, string keywords, string shortDesc) {
+			if(shortDesc.find(word) != string::npos) {
+				foundDescription = longDescription;
+			}
+			if(keywords.find(word) != string::npos) {
+				foundDescription = description;
+			}
+		};
+		return foundDescription;
+	} catch(sqlite_exception e) {
+		return "";
+	}
+
+}
+
+string DatabaseTool::findPlayerDescription(int lookerID, string name) {
+	try {
+		database db(DB_LOCATION);
+
+		int lookerZoneID;
+		db << "select location from characters where charID == ?;"
+		<< "lookerID"
+		>>lookerZoneID;
+
+		string description;
+		db << "select description from playerAttributes A, charactersOnline O, characters C where C.name == ? and C.charID == O.charID  and A.charID = C.charID and C.location = ?;"
+		<<name
+		<<lookerID
+		>>description;
+
+		return description;
+	} catch(sqlite_exception e) {
+		return "";
+	}
+
+}
+
+string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
+	try {
+		database db(DB_LOCATION);
+		string foundDescription = "";
+
+		db << "select description, shortDesc, keywords from items I, player_inventory P where I.itemID == P.itemID and P.charID == ?"
+		<<charID
+		>>[&] (string description, string shortDesc, string keywords) {
+			if(keywords.find(word) != string::npos) {
+				if(description == "") {
+					foundDescription = shortDesc;
+				} else {
+					foundDescription = description;
+				}
+			}
+		};
+
+
+		if(foundDescription == "") {
+			db << "select longDesc, keywords from items X, instanceOfItem Y where X.itemID == Y.itemID and itemInstanceID == ?"
+			<<"zoneID"
+			>>[&](string longDesc, string keywords) {
+				if(keywords.find(word) != string::npos) {
+					foundDescription = longDesc;
+				}
+			};
+		}
+		return foundDescription;
+
+	} catch(sqlite_exception e) {
+		return "";
+	}
+}
+
+
+
+
+
+
 
 
 
@@ -1083,6 +1262,7 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 		return false;
 	}
 }
+
 
 
 

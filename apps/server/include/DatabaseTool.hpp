@@ -294,9 +294,9 @@ class DatabaseTool{
 
 		static bool inCombat(int id, Target characterOrNpc);
 	//to implement
-		static string look(int charID);
+		static string look(int charID, string word);
 
-		static bool dropItem(charID, string item);
+		static bool dropItem(int charID, string item);
 
 		static void executeCommands();
 	
@@ -314,6 +314,9 @@ class DatabaseTool{
 	
 	
 	private:
+		static string findPlayerDescription(int lookerID, string name);
+		static string findNpcDescription(int zoneID, string word);
+		static string findItemDescription(int charID, int zoneID, string word);
 		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);

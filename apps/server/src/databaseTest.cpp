@@ -12,6 +12,7 @@ void charOnlineTest();
 void npcInstanceTest();
 void updateAttributesTest();
 void inventoryTest();
+void lookTest();
 
 int main(int argc, char* argv[])
 {
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
       //npcInstanceTest();
       //inventoryTest();
 
-      cout << DatabaseTool::equipItem(1, "sword") << endl;
+      //cout << DatabaseTool::equipItem(1, "sword") << endl;
 
       // cout << DatabaseTool::pickUp(1, "dagger") << endl;
       // cout << DatabaseTool::pickUp(1, "sword") << endl;
@@ -111,10 +112,16 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
+  
+      lookTest();
    }
    catch(runtime_error e){
       cout << e.what() << endl;
    }
+}
+
+void lookTest() {
+   cout << DatabaseTool::look(1, "people") << endl;
 }
 
 void inventoryTest() {
