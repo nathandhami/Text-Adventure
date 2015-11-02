@@ -10,10 +10,12 @@
 #include <fstream>
 #include <vector>
 
+
 using namespace std;
 
 enum Transfer {toCharacter, toZone, toNpc, toItem};
 enum Target {character, npc};
+enum Slot {ring, head, chest, greaves, feet, hands, wepon};
 
 class Door{
 	public:
@@ -53,13 +55,17 @@ class ExtendedDescription{
 class Item{
 	public:
 		Item();
-		Item(int itemID, string longDesc, string shortDesc, vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+		Item(int itemID, string longDesc, string shortDesc, string description, vector<string> keywords) {
 			this->itemID = itemID;
 			this->longDesc = longDesc;
 			this->shortDesc = shortDesc;
-			this->extendedDescriptions = extendedDescriptions;
+			this->description = description;
 			this->keywords = keywords;
 			this->instanceID = 0;
+			this->isPickable = 0;
+			this->isEquippable = 0;
+			this->isStackable = 0;
+			this->isContainer = 0;
 		};
 		~Item(){
 		};
@@ -67,8 +73,12 @@ class Item{
 		int instanceID;
 		string shortDesc;
 		string longDesc;
-		vector<ExtendedDescription> extendedDescriptions;
+		string description;
 		vector<string> keywords;
+		int isPickable;
+		int isEquippable;
+		int isStackable;
+		int isContainer;
 };
 
 class Attributes {
@@ -146,12 +156,14 @@ class Attributes {
 class ResetCommand{
 	public:
 		ResetCommand();
-		ResetCommand(string action, int id, int slot, int npcLimit, int room) {
+		ResetCommand(string action, int id, int slot, int npcLimit, int room, string state, int container) {
 			this->action = action;
 			this->id = id;
 			this->slot = slot;
 			this->npcLimit = npcLimit;
 			this->room = room;
+			this-> state = state;
+			this->container = container;
 		}
 		~ResetCommand(){
 		};
@@ -160,6 +172,8 @@ class ResetCommand{
 		int slot;
 		int npcLimit;
 		int room;
+		string state;
+		int container;
 };
 
 
@@ -179,6 +193,8 @@ class DatabaseTool{
 		static vector<string> getCharactersNames(int userID);
 
 		static int getCharIDFromName(string name);
+
+		static int getCharIDInZoneFromName(string name, int zoneID);
 
 		static string getCharNameFromID(int charID);
 
@@ -200,17 +216,29 @@ class DatabaseTool{
 
 		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
-		static bool placeNpcInZone(int npcID, int zoneID);
+		static bool createNpcInstance(int npcID, int zoneID);
 
-		static vector<int> getAllNpcsInZone(int zoneID);
+		static vector<int> getAllAliveNpcsInZone(int zoneID);
 
-		static void removeNpcFromZone(int npcID, int zone);
+		static void deleteNpcInstance(int npcInstanceID);
+
+		static bool isNpcAlive(int npcInstanceID);
+
+		static void respawnAll();
+
+		static bool murderNpc(int npcInstanceID);
+
+		static bool reviveNpc(int npcInstanceID);
 
 		static int getNpcIDFromInstanceID(int npcInstanceID);
 
-		static string getNPCDesc(int npcID);
+		static int getNpcInstanceIDFromName(string name, int zone);
 
-		static bool addNPC(
+		static string getNpcDesc(int npcInstanceID);
+
+		static string getNpcName(int npcInstanceID);
+
+		static bool addNpc(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -238,6 +266,10 @@ class DatabaseTool{
 
 		static bool addItem(Item item);
 
+		static vector<string> getItemsInInventory(int charID);
+
+		static vector<string> getItemsInZone(int zoneID);
+
 		static bool spawnItemInZone(int itemID, int zoneID);
 
 		static bool spawnItemInNpcInv(int itemID, int zoneID);
@@ -245,24 +277,28 @@ class DatabaseTool{
 		static bool spawnItemInCharacterInv(int itemID, int zoneID);
 
 		static bool spawnItemInItem(int itemId, int itemInstanceID);
-		 
-		static bool moveItem(int instanceID, Transfer where, int toID);
 	
 		static bool deleteItem(int instanceID);
 
-				static bool addResetCommand(ResetCommand command);
+		static bool addResetCommand(ResetCommand command);
+
+		static Attributes getAttributes(int id, Target characterOrNpc);
+
+		static bool updateAttributes(Attributes attributes, Target characterOrNpc);
+
+		static bool equipItem(int charID, string item);
+
+		static bool pickUp(int charID, string item);
+
+		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
+
+		static bool inCombat(int id, Target characterOrNpc);
 	//to implement
-		static Attributes getAttributes(int id, Target target);
+		static string look(int charID, string word);
 
-		static bool updateAttributes(Attributes attributes, Target target);
-
-		static string look(int charID);
-
-
+		static bool dropItem(int charID, string item);
 
 		static void executeCommands();
-
-		static bool addDoorToZone(int zoneID, Door door);
 	
 		// TMP NEW THINGS ----------------------------------------------
 	
@@ -282,7 +318,10 @@ class DatabaseTool{
 	
 	
 	private:
-		
+		static string findPlayerDescription(int lookerID, string name);
+		static string findNpcDescription(int zoneID, string word);
+		static string findItemDescription(int charID, int zoneID, string word);
+		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);
 		static string parseExtendedDesc(string extendedDesc, string keyword);

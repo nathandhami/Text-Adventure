@@ -8,7 +8,7 @@ CREATE TABLE users (
 
 CREATE TABLE characters (
   charID integer primary key,
-  name varchar(30) NOT NULL,
+  name varchar(30) unique,
   userID integer,
   location integer,
   FOREIGN KEY(userID) REFERENCES users(userID),
@@ -18,37 +18,8 @@ CREATE TABLE characters (
 CREATE TABLE charactersOnline (
   charID integer primary key,
   sessionID text unique,
+  inCombat integer,
   FOREIGN KEY(charID) REFERENCES characters(charID)
-);
-
-CREATE TABLE items (
-  itemID integer primary key,
-  extendedDesc text,
-  keywords text,
-  longDesc text,
-  shortDesc text
-);
-
-CREATE TABLE instanceOfItem (
-  instanceID integer primary key,
-  itemID integer,
-  charID integer,
-  zoneID integer,
-  npcInstanceID integer,
-  otherItemInstanceID integer,
-  FOREIGN KEY(itemID) REFERENCES items(itemID),
-  FOREIGN KEY(charID) REFERENCES characters(charID),
-  FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
-  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID),
-  FOREIGN KEY(otherItemInstanceID) REFERENCES instanceOfItem(instanceID)
-);
-
-CREATE TABLE zones(
-  zoneID integer primary key,
-  zoneName varchar(30),
-  description text,
-  extendedDesc text,
-  doors text
 );
 
 CREATE TABLE npcs (
@@ -64,19 +35,20 @@ CREATE TABLE instanceOfNpc (
   npcID integer,
   zoneID integer,
   isAlive integer,
+  inCombat integer,
   FOREIGN KEY(npcID) REFERENCES npcs(npcID),
   FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
 );
 
 CREATE TABLE resetCommands (
-  resetID integer not null,
+  resetID integer primary key,
   action text,
   id integer,
   slot integer,
   npcLimit integer,
   room integer,
-  primary key(action, id, room),
-  FOREIGN KEY(room) REFERENCES zones(zoneID)
+  state text,
+  container integer
 );
 
 CREATE TABLE playerAttributes (
@@ -118,9 +90,7 @@ CREATE TABLE npcAttributes (
   FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade
 );
 
-################## New revised tables ############################
-
-CREATE TABLE zones_n(
+CREATE TABLE zones(
 	zoneID integer primary key autoincrement,
 	zoneName varchar(30),
 	zoneDescription text
@@ -130,11 +100,11 @@ CREATE TABLE zone_ext_descriptions(
 	descriptionID integer primary key autoincrement,
 	zoneID integer,
 	description text,
-	keywords text
-	FOREIGN KEY(zoneID) REFERENCES zones_n(zoneID) on delete cascade
+	keywords text,
+	FOREIGN KEY(zoneID) REFERENCES zones(zoneID) on delete cascade
 );
 
-CREATE TABLE doors_n(
+CREATE TABLE doors(
 	doorID integer primary key,
 	zoneID integer,
 	description text,
@@ -145,7 +115,7 @@ CREATE TABLE doors_n(
 	FOREIGN KEY(linksTo) REFERENCES zones_n(zoneID) on delete cascade
 );
 
-CREATE TABLE objects_n(
+CREATE TABLE items(
 	itemID integer primary key autoincrement,
 	shortDescription text,
 	description text,
@@ -158,29 +128,35 @@ CREATE TABLE objects_n(
 );
 
 CREATE TABLE player_inventory(
-	owndershipID integer primary key autoincrement,
+	ownershipID integer primary key,
 	charID integer,
 	itemID integer,
 	quantity integer,
-	isEquipped integer
+	isEquipped integer,
 	FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
-	FOREIGN KEY(itemID) REFERENCES items_n(itemID) on delete cascade
+	FOREIGN KEY(itemID) REFERENCES items(itemID) on delete cascade
 );
 
-CREATE TABLE item_instances (
-	instanceID integer primary key,
+CREATE TABLE npc_inventory(
+  ownershipID integer primary key,
+  npcInstanceID integer,
+  itemID integer,
+  quantity integer,
+  isEquipped integer,
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade,
+  FOREIGN KEY(itemID) REFERENCES items(itemID) on delete cascade
+);
+
+
+CREATE TABLE instanceOfItem (
+	itemInstanceID integer primary key,
 	itemID integer,
 	zoneID integer,
 	containerID integer,
-	otherItemInstanceID integer,
 	FOREIGN KEY(itemID) REFERENCES items(itemID),
-	FOREIGN KEY(charID) REFERENCES characters(charID),
 	FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
-	FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID),
-	FOREIGN KEY(otherItemInstanceID) REFERENCES instanceOfItem(instanceID)
+  FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
 );
-
-############################### END ###############################
 
 
 
