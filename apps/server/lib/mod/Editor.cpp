@@ -18,8 +18,10 @@ bool Editor::judgeAndPerform( int creatorId/*, Command command*/ ) {
 	//TO-DO: confirm user is a creator
 	// Server::sendMessageToCharacter( creatorId, GameCode::ALERT, formattedMessage );
 	// return false;
-		
+	
 	std::string commandType = CMD_CREATE_ITEM;
+//	std::string commandType = command.type;
+//	std::string commandString = command.data;
 	
 //	std::string commandString = "Deadman Wonderland >> You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland' >> It's also known as hell, prisoners go here to enjoy their last days in deadly competetive games for food and water.";
 	
@@ -34,11 +36,11 @@ bool Editor::judgeAndPerform( int creatorId/*, Command command*/ ) {
 	if ( commandType == CMD_CREATE_ZONE ) {
 		WorldEditor::createZone( commandString );
 	} else if ( commandType == CMD_DESC_ZONE ) {
-		WorldEditor::describeZone( 1, commandString );
+		WorldEditor::describeZone( creatorId, commandString );
 	} else if ( commandType == CMD_CREATE_DOOR ) {
-		WorldEditor::addDoorToZone( 1, commandString );
+		WorldEditor::addDoorToZone( creatorId, commandString );
 	} else if ( commandType == CMD_CREATE_ITEM ) {
-		ObjectEditor::createItem( 1, commandString );
+		ObjectEditor::createItem( creatorId, commandString );
 	}else {
 		std::cout << "What are we trying to do?\n";
 	}
