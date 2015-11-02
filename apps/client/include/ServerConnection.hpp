@@ -1,6 +1,15 @@
 #ifndef SERVERCONNECTION_HPP
 #define SERVERCONNECTION_HPP
 
+//********************************************************************** 
+// SERVER CONNECTION
+// 
+// A simplified version of server's session adapted to the client side
+// Serves as a long life-span container for the socket.
+//
+// Author: Pavel Kozlovsky (pkozlovs@sfu.ca)
+//**********************************************************************
+
 
 using boost::asio::ip::tcp;
 
