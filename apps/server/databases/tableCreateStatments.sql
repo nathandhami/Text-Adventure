@@ -7,7 +7,7 @@ CREATE TABLE users (
 
 CREATE TABLE characters (
   charID integer primary key,
-  name varchar(30) NOT NULL,
+  name varchar(30) unique,
   userID integer,
   location integer,
   FOREIGN KEY(userID) REFERENCES users(userID),
@@ -19,40 +19,6 @@ CREATE TABLE charactersOnline (
   sessionID text unique,
   inCombat integer,
   FOREIGN KEY(charID) REFERENCES characters(charID)
-);
-
-CREATE TABLE items (
-  itemID integer primary key,
-  extendedDesc text,
-  keywords text,
-  longDesc text,
-  shortDesc text,
-  canPickUp integer,
-  isContainer integer,
-  equipableSlot integer
-);
-
-CREATE TABLE instanceOfItem (
-  itemInstanceID integer primary key,
-  itemID integer,
-  charID integer,
-  zoneID integer,
-  npcInstanceID integer,
-  otherItemInstanceID integer,
-  isEquipped integer,
-  FOREIGN KEY(itemID) REFERENCES items(itemID),
-  FOREIGN KEY(charID) REFERENCES characters(charID),
-  FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
-  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID),
-  FOREIGN KEY(otherItemInstanceID) REFERENCES instanceOfItem(instanceID)
-);
-
-CREATE TABLE zones(
-  zoneID integer primary key,
-  zoneName varchar(30),
-  description text,
-  extendedDesc text,
-  doors text
 );
 
 CREATE TABLE npcs (
@@ -122,3 +88,95 @@ CREATE TABLE npcAttributes (
   weponSlot integer,
   FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade
 );
+
+CREATE TABLE zones(
+	zoneID integer primary key autoincrement,
+	zoneName varchar(30),
+	zoneDescription text
+);
+
+CREATE TABLE zone_ext_descriptions(
+	descriptionID integer primary key autoincrement,
+	zoneID integer,
+	description text,
+	keywords text,
+	FOREIGN KEY(zoneID) REFERENCES zones(zoneID) on delete cascade
+);
+
+CREATE TABLE doors(
+	doorID integer primary key,
+	zoneID integer,
+	description text,
+	keywords text,
+	direction varchar(30),
+	linksTo integer,
+	FOREIGN KEY(zoneID) REFERENCES zones_n(zoneID) on delete cascade,
+	FOREIGN KEY(linksTo) REFERENCES zones_n(zoneID) on delete cascade
+);
+
+CREATE TABLE items(
+	itemID integer primary key autoincrement,
+	shortDescription text,
+	description text,
+	longDescription text,
+	keywords text,
+	isPickable integer,
+	isEquippable integer,
+	isStackable integer,
+	isContainer integer
+);
+
+CREATE TABLE player_inventory(
+	ownershipID integer primary key,
+	charID integer,
+	itemID integer,
+	quantity integer,
+	isEquipped integer,
+	FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
+	FOREIGN KEY(itemID) REFERENCES items(itemID) on delete cascade
+);
+
+CREATE TABLE npc_inventory(
+  ownershipID integer primary key,
+  npcInstanceID integer,
+  itemID integer,
+  quantity integer,
+  isEquipped integer,
+  FOREIGN KEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade,
+  FOREIGN KEY(itemID) REFERENCES items(itemID) on delete cascade
+);
+
+
+CREATE TABLE instanceOfItem (
+	itemInstanceID integer primary key,
+	itemID integer,
+	zoneID integer,
+	containerID integer,
+	FOREIGN KEY(itemID) REFERENCES items(itemID),
+	FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
+  FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

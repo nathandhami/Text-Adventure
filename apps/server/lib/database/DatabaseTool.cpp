@@ -11,7 +11,7 @@
 #include <boost/regex.hpp>
 
 const string DB_LOCATION = "apps/server/databases/adventureDB";
-const string INITIAL_ZONE = "3001";
+const string INITIAL_ZONE = "3054";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
 
@@ -350,7 +350,7 @@ int DatabaseTool::getNpcIDFromInstanceID(int npcInstanceID) {
 	}
 }
 
-bool DatabaseTool::addNPC(
+bool DatabaseTool::addNpc(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -375,13 +375,32 @@ bool DatabaseTool::addZone(
 		 	vector<ExtendedDescription> extendedDescriptions,
 		 	vector<Door> doors
 		 	){
-	string sqlStatment = "INSERT INTO zones VALUES (" + to_string(zoneID) 
-			+ ", " + quotesql(zoneName) 
-			+ ", " + quotesql(description) 
-			+ ", " + quotesql(concatExtendedDescriptions(extendedDescriptions))
-			+ ", " + quotesql(concatDoors(doors))
-			+ ");";
-	return executeSQLInsert(sqlStatment);
+	try {
+		database db(DB_LOCATION);
+		db << "insert into zones (zoneID, zoneName, zoneDescription) values (?,?,?)"
+		<<zoneID
+		<<zoneName
+		<<description;
+
+		for(auto& extendedDesc: extendedDescriptions) {
+			db << "insert into zone_ext_descriptions values (NULL, ?, ?, ?)"
+			<<zoneID
+			<<extendedDesc.description
+			<<concatKeywords(extendedDesc.keywords);
+		}
+
+		for(auto& door: doors) {
+			db << "insert into doors values (NULL, ?, ?, ?, ?, ?)"
+			<<zoneID
+			<<door.description
+			<<concatKeywords(door.keywords)
+			<<door.direction
+			<<door.goesTo;
+		}
+		return true;
+	} catch(sqlite_exception e) {
+		return false;
+	}
 }
 
 string DatabaseTool::getZoneName(int zoneID){
@@ -401,7 +420,7 @@ string DatabaseTool::getZoneDesc(int zoneID){
 	try {
 		string description = "";
 		database db( DB_LOCATION );
-		db << "select description from zones where zoneID=?;"
+		db << "select zoneDescription from zones where zoneID=?;"
 		<<zoneID
 		>>description;
 		return description;
@@ -414,10 +433,14 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 	try {
 		string extendedDesc = "";
 		database db( DB_LOCATION );
-		db << "select extendedDesc from zones where zoneID=?;"
+		db << "select keywords, description from zone_ext_descriptions where zoneID=?;"
 		<<zoneID
-		>>extendedDesc;
-		return parseExtendedDesc(extendedDesc, keyword);
+		>>[&](string keywords, string description) {
+			if(keywords.find(keyword) != string::npos) {
+				extendedDesc = description;
+			}
+		};
+		return extendedDesc;
 	} catch(sqlite_exception e) {
 		return "";
 	}
@@ -426,131 +449,40 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 
 int DatabaseTool::getDirectionID(int zoneID, string direction){
 	try {
-		string doors = "";
+		int linksTo  = 0;
 		database db( DB_LOCATION );
 		boost::to_lower(direction);
-		db << "select doors from zones where zoneID=?;"
+		db << "select keywords, direction, linksTo from doors where zoneID=?;"
 		<<zoneID
-		>>doors;
-		return parseDirectionID(doors, direction);
+		>>[&](string keywords, string doorDirection, int linksToID) {
+			if((keywords.find(direction) != string::npos) || (direction == doorDirection)) {
+				linksTo = linksToID;
+			}
+		};
+		return linksTo;
 	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return 0;
 	}
 }
 
 string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	try {
-		string doors = "";
+		string doorDescription = "";
 		database db( DB_LOCATION );
 		boost::to_lower(direction);
-		db << "select doors from zones where zoneID=?;"
+		db << "select direction, keywords, description from doors where zoneID=?;"
 		<<zoneID
-		>>doors;
-		return parseDirectionDesc(doors, direction);
+		>>[&](string doorDirection, string keywords, string description) {
+			if((keywords.find(direction) != string::npos) || (doorDirection == direction)) {
+				doorDescription = description;
+			}		
+		};
+		return doorDescription;
 	} catch (sqlite_exception e) {
+		cout << e.what() << endl;
 		return "";
 	}
-}
-
-string DatabaseTool::parseExtendedDesc(string extendedDesc, string keyword){
-	string findThis = "desc:";
-
-	vector<string> singleChunk;
-	size_t found = extendedDesc.find(findThis);
-	while(found != string::npos) {
-		size_t secondFound = extendedDesc.find(findThis, found + 1);
-		string singleExtendedDesc = extendedDesc.substr(found, secondFound);
-		boost::erase_all(singleExtendedDesc, findThis);
-		singleChunk.push_back(singleExtendedDesc);
-		found = secondFound;
-	}
-
-	int descIndex = -1;
-	for(int i = 0; i < singleChunk.size(); i++) {
-		if(singleChunk[i].find(keyword) != string::npos) {
-			descIndex = i;
-		}
-	}
-	if(descIndex == -1) {
-		return "";
-	} else {
-		return singleChunk[descIndex].substr(0, singleChunk[descIndex].find("keywords:"));
-	}
-}
-
-int DatabaseTool::parseDirectionID(string doors, string direction) {
-	string findThis = "desc:";
-
-	vector<string> singleDoor;
-	size_t found = doors.find(findThis);
-	while(found != string::npos) {
-		size_t secondFound = doors.find(findThis, found + 1);
-		string singleExtendedDesc = doors.substr(found, secondFound);
-		boost::erase_all(singleExtendedDesc, findThis);
-		singleDoor.push_back(singleExtendedDesc);
-		found = secondFound;
-	}
-
-	int doorIndex = -1;
-	for(int i = 0; i < singleDoor.size(); i++) {
-		if(singleDoor[i].find(direction) != string::npos){
-			doorIndex = i;
-		}
-	}
-	
-	if(doorIndex == -1) {
-		return 0;
-	} else {
-		string directionID = singleDoor[doorIndex].substr(singleDoor[doorIndex].find("to:"));
-		boost::erase_all(directionID, "to: ");
-		return atoi(directionID.c_str());
-	}
-}
-
-string DatabaseTool::parseDirectionDesc(string doors, string direction) {
-	string findThis = "desc:";
-
-	vector<string> singleDoor;
-	size_t found = doors.find(findThis);
-	while(found != string::npos) {
-		size_t secondFound = doors.find(findThis, found + 1);
-		string singleExtendedDesc = doors.substr(found, secondFound);
-		boost::erase_all(singleExtendedDesc, findThis);
-		singleDoor.push_back(singleExtendedDesc);
-		found = secondFound;
-	}
-
-	int doorIndex = -1;
-	for(int i = 0; i < singleDoor.size(); i++) {
-		if(singleDoor[i].find(direction) != string::npos){
-			doorIndex = i;
-		}
-	}
-	
-	if(doorIndex == -1) {
-		return "";
-	} else {
-		string directionDesc = singleDoor[doorIndex].substr(0, singleDoor[doorIndex].find("dir:"));
-		boost::erase_all(directionDesc, "- ");
-		boost::algorithm::trim( directionDesc );
-		return directionDesc;
-	}
-}
-
-string DatabaseTool::concatDoors(vector<Door> doors) {
-	string combinedDoors = "";
-	for(auto& door: doors) {
-		combinedDoors = combinedDoors + " desc: " + door.description + " dir: " + door.direction + " keywords: " + concatKeywords(door.keywords) + "to: " + to_string(door.goesTo);
-	}
-	return combinedDoors;
-}
-
-string DatabaseTool::concatExtendedDescriptions(vector<ExtendedDescription> extendedDescriptions) {
-	string combinedDescriptions = "";
-	for(auto& extendedDescription: extendedDescriptions) {
-		combinedDescriptions = combinedDescriptions + " desc: " + extendedDescription.description + " keywords: " + concatKeywords(extendedDescription.keywords);
-	}
-	return combinedDescriptions;
 }
 
 string DatabaseTool::concatKeywords(vector<string> keywords) {
@@ -563,21 +495,40 @@ string DatabaseTool::concatKeywords(vector<string> keywords) {
 }
 
 bool DatabaseTool::addItem(Item item) {
-	string sqlStatment = "INSERT INTO items VALUES ( " + to_string(item.itemID) + "," + quotesql(concatExtendedDescriptions(item.extendedDescriptions)) + "," + quotesql(concatKeywords(item.keywords)) + "," + quotesql(item.longDesc) + "," + quotesql(item.shortDesc) + ", 0, 0, 0);";
-	return executeSQLInsert(sqlStatment);	
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db << "insert into items (itemID, shortDescription, description, longDescription, keywords, isPickable, isEquippable, isStackable, isContainer) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		<<item.itemID
+		<<item.shortDesc
+		<<item.description
+		<<item.longDesc
+		<<concatKeywords(item.keywords)
+		<<item.isPickable
+		<<item.isEquippable
+		<<item.isStackable
+		<<item.isContainer;
+		return true;
+
+	} catch(sqlite_exception e) {
+		return false;
+	}
 }
 
 vector<string> DatabaseTool::getItemsInInventory(int charID) {
 	vector<string> items;
 	try {
 		database db(DB_LOCATION);
-		db << "select shortDesc from items X, instanceOfItem Y where X.itemID = Y.itemID and charID =?"
+		db << "select shortDescription from items X, player_inventory Y where X.itemID = Y.itemID and charID =?"
 		<<charID
 		>>[&](string desc) {
 			items.push_back(desc);
 		};
 		return items;
 	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return items;
 	}
 }
@@ -586,54 +537,55 @@ vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 	vector<string> items;
 	try {
 		database db(DB_LOCATION);
-		db << "select longDesc from items X, instanceOfItem Y where X.itemID = Y.itemID and zoneID =?"
+		db << "select longDescription, containerID from items X, instanceOfItem Y where X.itemID = Y.itemID and zoneID =?"
 		<<zoneID
-		>>[&](string desc) {
-			items.push_back(desc);
+		>>[&](string desc, int containerID) {
+			if(containerID == 0) {
+				items.push_back(desc);
+			}
 		};
 		return items;
 	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return items;
+
 	}
 
 }
 
-vector<int> DatabaseTool::getInstanceIDsOfItemsInInventory(int charID) {
-	vector<int> items;
-	try {
-		database db(DB_LOCATION);
-		db << "select itemInstanceID from instanceOfItem where charID =?"
-		<<charID
-		>>[&](int itemInstanceID) {
-			items.push_back(itemInstanceID);
-		};
-		return items;
-	} catch(sqlite_exception e) {
-		return items;
-	}
-}
 
 bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
-	string sqlStatment = "INSERT INTO instanceOfItem VALUES ( NULL, " + to_string(itemID) + " , NULL , " + to_string(zoneID) + ", NULL, NULL, 0);";
-	return executeSQLInsert(sqlStatment);
+	try {
+		database db(DB_LOCATION);
+		db << "PRAGMA foreign_keys = ON;";
+		db << "insert into instanceOfItem values (NULL, ?, ?, NULL)"
+		<<itemID
+		<<zoneID;
+		return true;
+	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return false;
+	}
 }
 
 bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
 	try {
 		int canPickUp;
 		database db (DB_LOCATION);
-		db << "select canPickUp from items where itemID = ?;"
+		db << "PRAGMA foreign_keys = ON;";
+		db << "select isPickable from items where itemID = ?;"
 		<<itemID
 		>>canPickUp;
 		if(canPickUp > 0) {
-			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , NULL , NULL, ?, NULL, 0);"
-			<<itemID
-			<<npcInstanceID;
+			db << "INSERT INTO npc_inventory VALUES ( NULL, ?, ?, 0, 0);"
+			<<npcInstanceID
+			<<itemID;
 			return true;
 		} else {
 			return false;
 		}
 	}catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return 0;
 	}
 }
@@ -642,18 +594,20 @@ bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
 	try {
 		int canPickUp;
 		database db (DB_LOCATION);
-		db << "select canPickUp from items where itemID = ?;"
+		db << "PRAGMA foreign_keys = ON;";
+		db << "select isPickable from items where itemID = ?;"
 		<<itemID
 		>>canPickUp;
 		if(canPickUp > 0) {
-			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , ? , NULL, NULL, NULL, 0);"
-			<<itemID
-			<<charID;
+			db << "INSERT INTO player_inventory VALUES ( NULL, ?, ?, 1, 0);"
+			<<charID
+			<<itemID;
 			return true;
 		} else {
 			return false;
 		}
 	}catch(sqlite_exception e) {
+		cout << e.what() << endl;
 		return 0;
 	}
 }
@@ -662,18 +616,24 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 	try {
 		int canPickUp;
 		int isContainer;
+		int zoneID;
 		database db (DB_LOCATION);
-		db << "select canPickUp from items where itemID = ?;"
+		db << "PRAGMA foreign_keys = ON;";
+		db << "select isPickable from items where itemID = ?;"
 		<<itemID
 		>>canPickUp;
 
-		db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
+		db << "select isContainer, Y.zoneID from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
 		<<itemInstanceID
-		>> isContainer;
+		>> [&](int container, int zone) {
+			isContainer = container;
+			zoneID = zone;
+		};
 
 		if((canPickUp > 0) && (isContainer > 0)) {
-			db << "INSERT INTO instanceOfItem VALUES ( NULL, ? , NULL , NULL, NULL, ? , 0);"
+			db << "INSERT INTO instanceOfItem VALUES ( NULL, ?, ?, ? );"
 			<<itemID
+			<<zoneID
 			<<itemInstanceID;
 			return true;
 		} else {
@@ -685,64 +645,64 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 	}
 }
 
+//!!!!!!!!!!!!!! depreciated function
+// bool DatabaseTool::moveItem(int itemInstanceID, Transfer where, int toID){
+// 	try {
+// 		int canPickUp;
+// 		int isContainer;
+// 		database db(DB_LOCATION);
+// 		db << "select canPickUp from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
+// 		<<itemInstanceID
+// 		>>canPickUp;
+// 		switch(where) {
+// 			case toCharacter:
+// 				if(canPickUp > 0) {
+// 					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE itemInstanceID = ?;"
+// 					<<toID
+// 					<<itemInstanceID;
+// 					return true;
+// 				} else {
+// 					return false;
+// 				}
+// 			case toZone:
+// 				db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = ? WHERE itemInstanceID = ?;"
+// 				<<toID
+// 				<<itemInstanceID;
+// 				return true;
+// 			case toNpc:
+// 				if(canPickUp > 0) {
+// 					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
+// 					<<toID
+// 					<<itemInstanceID;
+// 					return true;
+// 				} else {
+// 					return false;
+// 				}
+// 			case toItem:
+// 				db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
+// 				<< toID
+// 				>> isContainer;
+// 				if((canPickUp > 0) && (isContainer >0)) {
+// 					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = ? WHERE itemInstanceID = ?;"
+// 					<<toID
+// 					<<itemInstanceID;
+// 					return true;
+// 				} else {
+// 					return false;
+// 				}
+// 			default:
+// 				return false;
+// 		}
+// 	} catch(sqlite_exception e) {
+// 		return false;
+// 	}
 
-bool DatabaseTool::moveItem(int itemInstanceID, Transfer where, int toID){
-	try {
-		int canPickUp;
-		int isContainer;
-		database db(DB_LOCATION);
-		db << "select canPickUp from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
-		<<itemInstanceID
-		>>canPickUp;
-		switch(where) {
-			case toCharacter:
-				if(canPickUp > 0) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE itemInstanceID = ?;"
-					<<toID
-					<<itemInstanceID;
-					return true;
-				} else {
-					return false;
-				}
-			case toZone:
-				db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, npcInstanceID = NULL, zoneID = ? WHERE itemInstanceID = ?;"
-				<<toID
-				<<itemInstanceID;
-				return true;
-			case toNpc:
-				if(canPickUp > 0) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, zoneID = NULL, npcInstanceID = NULL, charID = ? WHERE instanceID = ?;"
-					<<toID
-					<<itemInstanceID;
-					return true;
-				} else {
-					return false;
-				}
-			case toItem:
-				db << "select isContainer from items X, instanceOfItem Y where X.itemID = Y.itemID and itemInstanceID = ?;"
-				<< toID
-				>> isContainer;
-				if((canPickUp > 0) && (isContainer >0)) {
-					db << "UPDATE instanceOfItem SET otherItemInstanceID = NULL, charID = NULL, zoneID = NULL, npcInstanceID = NULL, otherItemInstanceID = ? WHERE itemInstanceID = ?;"
-					<<toID
-					<<itemInstanceID;
-					return true;
-				} else {
-					return false;
-				}
-			default:
-				return false;
-		}
-	} catch(sqlite_exception e) {
-		return false;
-	}
+// }
 
-}
-
-bool DatabaseTool::deleteItem(int itemInstanceID){
-	string statment = "delete from instanceOfItem where itemInstanceID=" + to_string(itemInstanceID) + ";";
-	return executeSQLInsert(statment);
-}
+// bool DatabaseTool::deleteItem(int itemInstanceID){
+// 	string statment = "delete from instanceOfItem where itemInstanceID=" + to_string(itemInstanceID) + ";";
+// 	return executeSQLInsert(statment);
+// }
 
 bool DatabaseTool::addResetCommand(ResetCommand command){
 	string statment = "insert into resetCommands values (NULL,"
@@ -842,26 +802,23 @@ bool DatabaseTool::equipItem(int charID, string item) {
 	bool foundItem = false;
 	try{
 		database db (DB_LOCATION);
-		db << "select shortDesc, keywords, itemInstanceID, equipableSlot from items X, instanceOfItem Y where X.itemID = Y.itemID and charID = ?;"
+		db << "select shortDescription, keywords, ownershipID, isEquippable from items X, player_inventory Y where X.itemID = Y.itemID and charID = ?;"
 		<<charID
-		>>[&](string shortdesc, string keywords, int itemInstanceID, int equipableSlot) {
+		>>[&](string shortdesc, string keywords, int itemInstanceID, int equippableSlot) {
 			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
 				int currentlyEquiped;
-				db << "select " + getSlot(equipableSlot) + " from playerAttributes where charID = ?;"
+				db << "select " + getSlot(equippableSlot) + " from playerAttributes where charID = ?;"
 				<<charID
 				>>currentlyEquiped;
 
-				cout << "equipped: " << currentlyEquiped << endl;
-
 				if(currentlyEquiped != 0) {
-					cout << "testing" << endl;
-					db <<"update instanceOfItem set isEquipped = 0 where itemInstanceID = ?;"
+					db <<"update player_inventory set isEquipped = 0 where ownershipID = ?;"
 					<< currentlyEquiped;
 				}
-				db <<"update instanceOfItem set isEquipped = 1 where itemInstanceID = ?;"
+				db <<"update player_inventory set isEquipped = 1 where ownershipID = ?;"
 				<<itemInstanceID;
 				
-				string statment = "update playerAttributes set " + getSlot(equipableSlot) + "= ?  where charID = ? ;";
+				string statment = "update playerAttributes set " + getSlot(equippableSlot) + "= ?  where charID = ? ;";
 				db << statment
 				<<itemInstanceID
 				<<charID;
@@ -877,27 +834,35 @@ bool DatabaseTool::equipItem(int charID, string item) {
 }
 
 bool DatabaseTool::pickUp(int charID, string item) {
-	bool foundItem = false;
-	int foundItemId;
+	int foundItemID;
+	int foundInstanceID;
+	int canPickUp;
 	try{
 		database db (DB_LOCATION);
-		db << "select shortDesc, keywords, itemInstanceID from items X, instanceOfItem Y, characters Z where X.itemID = Y.itemID and Z.location = Y.zoneID and Z.charID = ?;"
+		db << "select shortDescription, keywords, X.itemID, isPickable, itemInstanceID from items X, instanceOfItem Y, characters Z where X.itemID = Y.itemID and Z.location = Y.zoneID and containerID is null and Z.charID = ?;"
 		<<charID
-		>>[&](string shortdesc, string keywords, int itemInstanceID) {
+		>>[&](string shortdesc, string keywords, int itemID, int isPickable, int instanceID) {
 			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
-				foundItem = true;
-				foundItemId = itemInstanceID;
+				canPickUp = isPickable;
+				foundItemID = itemID;
+				foundInstanceID = instanceID;
 			}
 		};
+		if(canPickUp) {
+			db << "insert into player_inventory values (NULL, ?, ?, 1, 0)"
+			<<charID
+			<<foundItemID;
+			db << "delete from instanceOfItem where itemInstanceID = ?"
+			<<foundInstanceID;
+			return true;
+		} else {
+			return false;
+		}
+
 	} catch(sqlite_exception e) {
 		cout << e.what() << endl;
 		return false;
 	}
-	cout << "test" << endl;
-	if(foundItem) {
-		moveItem(foundItemId, Transfer::toCharacter, charID);
-	}
-	return foundItem;
 }
 
 string DatabaseTool::getSlot(int equiableTo) {
@@ -994,8 +959,138 @@ int DatabaseTool::getNpcInstanceIDFromName(string name, int zoneID) {
 }
 
 
-string DatabaseTool::look(int charID) {
 
+
+// // NEW STUFF by pavel
+
+int DatabaseTool::createNewZone( string zoneName, string zoneDesc ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO zones (zoneName,zoneDescription) VALUES (?,?);"
+			<< zoneName
+			<< zoneDesc;
+
+		return db.last_insert_rowid();
+	} catch ( exception& e ) {
+		return 0;
+	}
 }
+
+
+int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO zones (zoneID,zoneName,zoneDescription) VALUES (?,?,?);"
+			<< zoneID
+			<< zoneName
+			<< zoneDesc;
+
+		return db.last_insert_rowid();
+	} catch ( exception& e ) {
+		return 0;
+	}
+}
+
+
+bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string keywords ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO zone_ext_descriptions (zoneID,description,keywords) VALUES (?,?,?);"
+			<< zoneID
+			<< desc
+			<< keywords;
+
+		return true;
+	} catch ( exception& e ) {
+		return false;
+	}
+}
+
+
+bool DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "INSERT INTO doors (zoneID,description,keywords,direction,linksTo) VALUES (?,?,?,?,?);"
+			<< zoneID
+			<< description
+			<< keywords
+			<< direction
+			<< pointer;
+
+		return true;
+	} catch ( exception& e ) {
+		return false;
+	}
+}
+
+
+string DatabaseTool::getDoorDescriptionAt( int zoneID, string direction ) {
+	try {
+		database db(DB_LOCATION);
+
+		string fetchedDesc;
+		db 	<< "SELECT description FROM doors WHERE zoneID == ? AND direction == ?;"
+			<< zoneID
+			<< direction
+			>> fetchedDesc;
+
+		return fetchedDesc;
+	} catch ( exception& e ) {
+		return "There is nothing there.";
+	}
+}
+
+
+int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
+	try {
+		database db(DB_LOCATION);
+
+		int fetchedZoneID;
+		db 	<< "SELECT linksTo FROM doors_n WHERE zoneID == ? AND direction == ?;"
+			<< zoneID
+			<< direction
+			>> fetchedZoneID;
+
+		return fetchedZoneID;
+	} catch ( exception& e ) {
+		return 0;
+	}
+}
+
+
+bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db 	<< "UPDATE characters SET location = ? WHERE charID == ?;"
+			<< zoneID
+			<< charID;
+
+		return true;
+	} catch ( exception& e ) {
+		return false;
+	}
+}
+
+
+
+
+
+
+
+
+
 
 

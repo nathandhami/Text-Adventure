@@ -16,26 +16,12 @@ void inventoryTest();
 int main(int argc, char* argv[])
 {
    try {
-      // cout << "running database tests" << endl;
-      // cout << DatabaseTool::addUser("testUser1", "test1") << endl;
+      cout << "running database tests" << endl;
+      //cout << DatabaseTool::addUser("testUser1", "test1") << endl;
 
       // cout << DatabaseTool::getUserAuthencationLevel(1) << endl;
       // cout << DatabaseTool::setUserAuthencationLevel(1, 99) << endl;
       // cout << DatabaseTool::getUserAuthencationLevel(1) << endl;
-      // DatabaseTool::addNPC(3000, 
-      //    " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
-      //    "wizard",
-      //    "A wizard walks around behind the counter, talking to himself.",
-      //    "the wizard");
-      // cout << DatabaseTool::getNPCDesc(3000) << endl;
-
-      // DatabaseTool::placeNpcInZone(3000, 3054);
-      // vector<int> npcsinzone = DatabaseTool::getAllNpcsInZone(3054);
-      // for(int i = 0; i < npcsinzone.size(); i++) {
-      //    cout << npcsinzone[i] << endl;
-      // }
-      //DatabaseTool::removeNpcFromZone(3000, 3054);
-
 
    	// cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
    	// cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
@@ -70,15 +56,10 @@ int main(int argc, char* argv[])
       //       cout << extendedDescs[i][x] << endl << endl;
       //    }
       // }
+
       //addZoneTest();
       //addItemTest();
       //spawnItemTest();
-      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 3) << endl;
-      // cout << DatabaseTool::moveItem(1, Transfer::toItem, 4) << endl;
-      // cout << DatabaseTool::getCharID(1) << endl;
-      // cout << DatabaseTool::getCharID(2) << endl;
-      // DatabaseTool::putCharInZone(1, 3054);
-      // cout << DatabaseTool::getCharsLocation(1) << endl;
 
       // vector<int> charsInZone = DatabaseTool::getAllOnlineCharsInZone(3054);
       // for(auto& charID: charsInZone) {
@@ -104,13 +85,11 @@ int main(int argc, char* argv[])
       //npcInstanceTest();
       //inventoryTest();
 
-      //cout << DatabaseTool::equipItem(1, "sword") << endl;
+      cout << DatabaseTool::equipItem(1, "sword") << endl;
 
+      // cout << DatabaseTool::pickUp(1, "dagger") << endl;
       // cout << DatabaseTool::pickUp(1, "sword") << endl;
-      // vector<string> items = DatabaseTool::getItemsInInventory(1);
-      // for(auto &description:items) {
-      //    cout << description << endl;
-      // }
+      // cout << DatabaseTool::pickUp(1, "chest") << endl;
 
       // cout << DatabaseTool::inCombat(1, Target::character) << endl;
       // cout << DatabaseTool::setCombatFlag(1, true, Target::character) << endl;
@@ -129,9 +108,9 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getCharIDInZoneFromName("leroy", 3054) << endl;
 
     
-      cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
-      cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
-      cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
+      // cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
+      // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
+      // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -139,12 +118,8 @@ int main(int argc, char* argv[])
 }
 
 void inventoryTest() {
-   vector<string> itemNames = DatabaseTool::getItemsInInventory(1);
-   vector<int> itemIDs = DatabaseTool::getInstanceIDsOfItemsInInventory(1);
+   vector<string> itemNames = DatabaseTool::getItemsInZone(3054);
    for(auto& item: itemNames) {
-      cout << item << endl;
-   }
-   for(auto& item: itemIDs) {
       cout << item << endl;
    }
 }
@@ -158,10 +133,18 @@ void updateAttributesTest() {
 }
 
 void npcInstanceTest() {
+   vector<string> keywords;
+   keywords.push_back("wizard");
+   DatabaseTool::addNpc(3000, 
+       " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
+      keywords,
+      "A wizard walks around behind the counter, talking to himself.",
+      "the wizard");
+
    DatabaseTool::createNpcInstance(3000, 3054);
    vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
-      cout << DatabaseTool::getNpcDesc(DatabaseTool::getNpcIDFromInstanceID(npcInstanceID)) << endl << endl;;
+      cout << DatabaseTool::getNpcDesc(npcInstanceID) << endl << endl;;
    }
 
    cout << DatabaseTool::isNpcAlive(1) <<  endl;
@@ -188,28 +171,27 @@ void charOnlineTest() {
 void addItemTest() {
       string longDesc = "You see a standard issue dagger here.";
       string shortDesc = "A dagger";
-      vector<ExtendedDescription> extendedDescriptions;
       
       vector<string> keywords;
       keywords.push_back("dagger");
 
-      ExtendedDescription extendedDesc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries", keywords);
-      extendedDescriptions.push_back(extendedDesc);
-      Item dagger(9999, longDesc, shortDesc, extendedDescriptions, keywords);
+      string desc("You see a dagger of great craftsmanship.  Imprinted on the side is: Merc Industries");
+
+      Item dagger(9999, longDesc, shortDesc, desc, keywords);
       cout << DatabaseTool::addItem(dagger) << endl;
       cout << DatabaseTool::addItem(dagger) << endl;
 }
 
 void spawnItemTest() {
    cout << "spawning items..." << endl;
-   cout << DatabaseTool::spawnItemInZone(3351, 3001) << endl;
-   cout << DatabaseTool::spawnItemInZone(9999, 3001) << endl;
-   cout << DatabaseTool::spawnItemInNpcInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInNpcInv(9999, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInCharacterInv(9999, 1) << endl;
-   cout << DatabaseTool::spawnItemInItem(3351, 1) << endl;
-   cout << DatabaseTool::spawnItemInItem(3351, 2) << endl;
+   cout << DatabaseTool::spawnItemInZone(1, 3054) << endl;
+   cout << DatabaseTool::spawnItemInZone(2, 3054) << endl;
+   cout << DatabaseTool::spawnItemInNpcInv(1, 1) << endl;
+   cout << DatabaseTool::spawnItemInNpcInv(2, 1) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(1, 1) << endl;
+   cout << DatabaseTool::spawnItemInCharacterInv(2, 1) << endl;
+   cout << DatabaseTool::spawnItemInItem(1, 1) << endl;
+   cout << DatabaseTool::spawnItemInItem(1, 2) << endl;
 }
 
 void addZoneTest() {
@@ -239,12 +221,12 @@ void addZoneTest() {
 
    string zoneDescription = "You are by the temple altar in the northern end of the Temple of Midgaard. A huge altar made from white polished marble is standing in front of you and behind it is a ten foot tall sitting statue of Odin, the King of the Gods.";
    string zoneName = "By the Temple Altar";
-   DatabaseTool::addZone(3054,
+   cout << "adding zone= " << DatabaseTool::addZone(3054,
       zoneName, 
       zoneDescription,
       extendedDescriptions,
-      doors);
-
+      doors) << endl;
+   cout << "getting zone info:" << endl;
    cout << DatabaseTool::getZoneName(3054) << endl << endl;
    cout << DatabaseTool::getZoneDesc(3054) << endl << endl;
    cout << DatabaseTool::getZoneExtendedDesc(3054, "altar") << endl << endl;

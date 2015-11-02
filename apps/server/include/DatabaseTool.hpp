@@ -2,6 +2,7 @@
 #define DATABASE
 
 
+
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -54,13 +55,17 @@ class ExtendedDescription{
 class Item{
 	public:
 		Item();
-		Item(int itemID, string longDesc, string shortDesc, vector<ExtendedDescription> extendedDescriptions, vector<string> keywords) {
+		Item(int itemID, string longDesc, string shortDesc, string description, vector<string> keywords) {
 			this->itemID = itemID;
 			this->longDesc = longDesc;
 			this->shortDesc = shortDesc;
-			this->extendedDescriptions = extendedDescriptions;
+			this->description = description;
 			this->keywords = keywords;
 			this->instanceID = 0;
+			this->isPickable = 0;
+			this->isEquippable = 0;
+			this->isStackable = 0;
+			this->isContainer = 0;
 		};
 		~Item(){
 		};
@@ -68,8 +73,12 @@ class Item{
 		int instanceID;
 		string shortDesc;
 		string longDesc;
-		vector<ExtendedDescription> extendedDescriptions;
+		string description;
 		vector<string> keywords;
+		int isPickable;
+		int isEquippable;
+		int isStackable;
+		int isContainer;
 };
 
 class Attributes {
@@ -229,7 +238,7 @@ class DatabaseTool{
 
 		static string getNpcName(int npcInstanceID);
 
-		static bool addNPC(
+		static bool addNpc(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
@@ -259,8 +268,6 @@ class DatabaseTool{
 
 		static vector<string> getItemsInInventory(int charID);
 
-		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
-
 		static vector<string> getItemsInZone(int zoneID);
 
 		static bool spawnItemInZone(int itemID, int zoneID);
@@ -270,8 +277,6 @@ class DatabaseTool{
 		static bool spawnItemInCharacterInv(int itemID, int zoneID);
 
 		static bool spawnItemInItem(int itemId, int itemInstanceID);
-		 
-		static bool moveItem(int instanceID, Transfer where, int toID);
 	
 		static bool deleteItem(int instanceID);
 
@@ -291,9 +296,23 @@ class DatabaseTool{
 	//to implement
 		static string look(int charID);
 
-		static void executeCommands();
+		static bool dropItem(charID, string item);
 
-		static bool addDoorToZone(int zoneID, Door door);
+		static void executeCommands();
+	
+		// TMP NEW THINGS ----------------------------------------------
+	
+		static int createNewZone( string zoneName, string zoneDesc );
+		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
+		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );
+	
+		static bool addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );
+		static string getDoorDescriptionAt( int zoneID, string direction );
+		static int getZoneIDBehindDoorAt( int zoneID, string direction );
+	
+		static bool moveCharacterToZone( int charID, int zoneID );
+	
+	
 	private:
 		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
