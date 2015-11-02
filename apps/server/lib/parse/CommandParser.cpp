@@ -21,7 +21,7 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 	const std::string MOVE_SYNONYM = "go";
 	
 	if ( commandHeader == CommandHeader::WORLD ) {
-		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION ) {
+		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION && parsedCommand.type != MOVE_CARDINAL ) {
 			parsedCommand.data = parsedCommand.type;
 			parsedCommand.type = MOVE_CARDINAL;
 		}

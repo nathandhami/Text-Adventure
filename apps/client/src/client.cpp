@@ -86,7 +86,7 @@ int main( /*int argc, const char* argv[]*/ ) {
 //	Game::enact( "fight sadas" );
 //	Game::enact( "@ leeeroooyjeeenkins wolololo." );
 //	Game::enact( "# this is a zone message." );
-	Game::enact( "blergh" );
+	Game::enact( "move" );
 	
 	
 	
