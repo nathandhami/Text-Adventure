@@ -24,21 +24,21 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::setUserAuthencationLevel(1, 99) << endl;
       // cout << DatabaseTool::getUserAuthencationLevel(1) << endl;
 
-   	// cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
-   	// cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
-   	// cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
+      // cout << DatabaseTool::getUserID("testUser1", "test1") << endl;
+      // cout << DatabaseTool::getUserID("testUser2", "test2") << endl;
+      // cout << DatabaseTool::getUserID("testUser1", "wrong password") << endl;
 
-   	// cout << DatabaseTool::getPassword(1) << endl;
-   	// cout << DatabaseTool::getPassword(2) << endl;
+      // cout << DatabaseTool::getPassword(1) << endl;
+      // cout << DatabaseTool::getPassword(2) << endl;
     //   cout << DatabaseTool::getPassword(99999) << endl;
 
-   	// cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
     //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
 
 
 
       //cout << DatabaseTool::getDirectionDesc(3054, "temple") << endl; 
-   	// cout << DatabaseTool::getCharsLocation(99) << endl;
+      // cout << DatabaseTool::getCharsLocation(99) << endl;
 
 
       // cout << DatabaseTool::getZoneName(3001) << endl;
@@ -113,7 +113,8 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
   
-      lookTest();
+      //lookTest();
+      DatabaseTool::executeCommands();
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -121,7 +122,9 @@ int main(int argc, char* argv[])
 }
 
 void lookTest() {
-   cout << DatabaseTool::look(1, "people") << endl;
+
+   cout << DatabaseTool::look(1, "wizard") << endl << endl;
+   // cout << DatabaseTool::look(1, "testChar1") << endl;
 }
 
 void inventoryTest() {

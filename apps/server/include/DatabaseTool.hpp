@@ -268,6 +268,8 @@ class DatabaseTool{
 
 		static vector<string> getItemsInInventory(int charID);
 
+		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
+
 		static vector<string> getItemsInZone(int zoneID);
 
 		static bool spawnItemInZone(int itemID, int zoneID);
@@ -290,15 +292,16 @@ class DatabaseTool{
 
 		static bool pickUp(int charID, string item);
 
+
 		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
 		static bool inCombat(int id, Target characterOrNpc);
-	//to implement
+
 		static string look(int charID, string word);
 
-		static bool dropItem(int charID, string item);
-
 		static void executeCommands();
+
+		static bool dropItem(int charID, string item);
 	
 		// TMP NEW THINGS ----------------------------------------------
 	
@@ -318,7 +321,7 @@ class DatabaseTool{
 	
 	
 	private:
-		static string findPlayerDescription(int lookerID, string name);
+		static string findPlayerDescription(int lookerID, int zoneID, string name);
 		static string findNpcDescription(int zoneID, string word);
 		static string findItemDescription(int charID, int zoneID, string word);
 		static string getSlot(int equiableTo);
