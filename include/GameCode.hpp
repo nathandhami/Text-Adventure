@@ -4,7 +4,8 @@
 #include <string>
 
 
-namespace GameCode {	
+namespace GameCode {
+	// Sent by client
 	// Request headers
 	const std::string LOGIN 		= "lgn";
 	const std::string LOGOUT 		= "lgo";
@@ -14,6 +15,7 @@ namespace GameCode {
 	const std::string CHAR_DELECT 	= "cds";
 	const std::string COMMAND 		= "cmd";
 	
+	// Sent by server
 	// Confirmation headers
 	const std::string CORRECT 		= "cor";
 	const std::string WRONG 		= "wrg";
