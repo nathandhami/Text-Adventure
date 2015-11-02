@@ -56,12 +56,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_enter_pressed()
 {
-	//outputTextBuffer->set_text(commandEntry.get_text());
-	outputTextBuffer->insert(outputTextBuffer->end(), commandEntry.get_text());
-	outputTextBuffer->insert(outputTextBuffer->end(), "\n");
-	outputTextview.set_buffer(outputTextBuffer);
 	m_adjustment = outputScrollWindow.get_vadjustment();
 	m_adjustment->set_value(m_adjustment->get_upper()); 
+
+	//outputTextBuffer->set_text(commandEntry.get_text());
+	outputTextBuffer->insert(outputTextBuffer->end(), ">>" + commandEntry.get_text() + "\n");
+	outputTextview.set_buffer(outputTextBuffer);
 
 	std::string command = commandEntry.get_text();
 	std::cout << command << std::endl;
