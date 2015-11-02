@@ -146,22 +146,22 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 	LOG( "> Header: " << header );
 	LOG( "> Body: " << body );
 	
-	/*Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
+	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
 	if ( iterator == funcMap.end() ) {
 		// not found
 		this->writeToClient( HEADER_ERROR, "Server error: incorrect request." );
 		return;
 	}
 	Session::ExecuteFunction func = iterator->second;
-	( this->*func )( body );*/
+	( this->*func )( body );
 	
-	if ( header == GameCode::LOGIN ) {
-		this->login( body );
-	} else if ( header == GameCode::LOGOUT ) {
-		this->logout( body );
-	} else if ( header == GameCode::COMMAND ) {
-		this->doGameCommand( body );
-	}
+//	if ( header == GameCode::LOGIN ) {
+//		this->login( body );
+//	} else if ( header == GameCode::LOGOUT ) {
+//		this->logout( body );
+//	} else if ( header == GameCode::COMMAND ) {
+//		this->doGameCommand( body );
+//	}
 }
 
 
@@ -194,7 +194,6 @@ void Session::logout( const std::string& credentials ) {
 		return;
 	}
 	
-	
 	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
 }
 
@@ -209,6 +208,8 @@ void Session::doGameCommand( const std::string& commandString ) {
 	if ( commandHeader == CommandHeader::WORLD ) {
 		std::string worldResponse =  World::executeCommand( this->currentUser.getUserId(), command );
 		this->writeToClient( GameCode::DESCRIPTION, worldResponse );
+	} else if ( commandHeader == CommandHeader::MESSENGER ) {
+		CarrierPigeon::deliverPackage( this->currentUser.getUserId(), command );
 	}
 	
 	

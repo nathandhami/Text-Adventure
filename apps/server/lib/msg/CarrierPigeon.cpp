@@ -1,20 +1,33 @@
 #include "CarrierPigeon.hpp"
 #include "Server.hpp"
 #include "DatabaseTool.hpp"
+#include "Command.hpp"
 
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
 
+#define LOG( msg ) std::cout << "[Pigeon] " << msg << std::endl
+
+
 // ------------------- PUBLIC -------------------
 
-int CarrierPigeon::deliverPackage( int senderId/*, Command messageCommand*/ ) {
+int CarrierPigeon::deliverPackage( int senderId, Command messageCommand ) {
+	const std::string PRIV_MSG( "@" );
+	const std::string ZONE_MSG( "#" );
 	//TO-DO: check for command type, and act accordingly
+	int numDeliveredTo = 0;
+	if ( messageCommand.type == PRIV_MSG ) {
+		CarrierPigeon::deliverToCharacter( senderId, messageCommand.data );
+	} else if ( messageCommand.type == ZONE_MSG ) {
+		CarrierPigeon::deliverToZone( senderId, messageCommand.data );
+	} else {
+		LOG( "The pigeon can't decide where to fly and crashes into a pole." );
+	}
 	
 	
-	
-	CarrierPigeon::deliverToCharacter( senderId, "leeeroooyjeeenkins wolololo." );
-	CarrierPigeon::deliverToZone( senderId, "wolololo." );
+//	CarrierPigeon::deliverToCharacter( senderId, "leeeroooyjeeenkins wolololo." );
+//	CarrierPigeon::deliverToZone( senderId, "wolololo." );
 	
 	return 0;
 }
