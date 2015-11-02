@@ -296,12 +296,12 @@ class DatabaseTool{
 		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
 		static bool inCombat(int id, Target characterOrNpc);
-	//to implement
+
 		static string look(int charID, string word);
 
-		static bool dropItem(int charID, string item);
-
 		static void executeCommands();
+
+		static bool dropItem(int charID, string item);
 	
 		// TMP NEW THINGS ----------------------------------------------
 	

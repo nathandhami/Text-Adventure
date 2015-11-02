@@ -1126,6 +1126,43 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 	}
 }
 
+void DatabaseTool::executeCommands() {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+		
+		db<< "select action, id, room from resetCommands where action == ? or action == ?"
+		<<"npc"
+		<<"object"
+		>>[&](string action, int id, int room) {
+
+			try {
+				// if(action == "npc") {
+				// 	db << "insert into instanceOfNpc values (NULL, ?, ?, 1, 0)"
+				// 	<<id
+				// 	<<room;
+				// 	int npcInstanceID = db.last_insert_rowid();
+				// 	db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+				// 	<<npcInstanceID;
+
+				// } else  
+				if(action == "object") {
+					db << "insert into instanceOfItem values (NULL, ?, ?,NULL)"
+					<<id
+					<<room;
+
+				}
+			} catch (sqlite_exception e) {
+
+			}
+
+		};
+	} catch(sqlite_exception e){
+		cout << e.what() << endl;
+
+	}
+}
 
 
 
