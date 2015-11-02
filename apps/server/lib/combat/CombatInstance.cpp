@@ -1,4 +1,5 @@
 #include "CombatInstance.hpp"
+#include "DatabaseTool.hpp"
 
 
 // --------Private functions--------
