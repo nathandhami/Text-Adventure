@@ -1231,7 +1231,7 @@ int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
 		database db(DB_LOCATION);
 
 		int fetchedZoneID;
-		db 	<< "SELECT linksTo FROM doors_n WHERE zoneID == ? AND direction == ?;"
+		db 	<< "SELECT linksTo FROM doors WHERE zoneID == ? AND direction == ?;"
 			<< zoneID
 			<< direction
 			>> fetchedZoneID;
@@ -1255,20 +1255,4 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 	} catch ( exception& e ) {
 		return false;
 	}
-<<<<<<< HEAD
 }
-
-
-
-
-
-
-
-
-
-
-
-
-=======
-}
->>>>>>> YamlParser2.5
