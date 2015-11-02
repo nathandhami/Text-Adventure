@@ -57,7 +57,7 @@ static void readCommands() {
 
 
 
-int main( /*int argc, const char* argv[]*/ ) {
+int main( int argc, const char* argv[] ) {
 //	UIWriter::sendSysStatus( "Connecting to server..." );
 //	
 //	transceiver = std::make_shared< Transceiver >();
@@ -75,16 +75,17 @@ int main( /*int argc, const char* argv[]*/ ) {
 	Game::initialize();
 	Game::start();
 	
-	NetMessage response = Game::login( "testUser1", "test1" );
+//	NetMessage response = Game::login( "testUser1", "test1" );
+	NetMessage response = Game::login( argv[ 1 ], argv[ 2 ] );
 	
 	std::cout << "Got response:" << std::endl;
 	std::cout << "\tHeader: " << response.header << std::endl;
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
-//	Game::enact( "move south" );
-//	Game::enact( "look north" );
+//	Game::enact( "move north" );
+//	Game::enact( "look up" );
 //	Game::enact( "fight sadas" );
-//	Game::enact( "@ leeeroooyjeeenkins wolololo." );
+//	Game::enact( "@ testChar1 wolololo." );
 	Game::enact( "# this is a zone message." );
 //	Game::enact( "blergh" );
 	
