@@ -55,7 +55,7 @@ void Game::logout() {
 	
 	NetMessage nmIter;
 	while ( Game::getFrontResponse().header != GameCode::OK ) {
-		std::cout << "[Game] Draining for log out" << std::endl;
+//		std::cout << "[Game] Draining for log out" << std::endl;
 	}
 	
 	Game::transceiver->flushQueue();

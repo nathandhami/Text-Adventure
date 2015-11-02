@@ -81,11 +81,11 @@ int main( /*int argc, const char* argv[]*/ ) {
 	std::cout << "\tHeader: " << response.header << std::endl;
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
-	Game::enact( "look north" );
+	Game::enact( "look" );
 //	Game::enact( "look north" );
 //	Game::enact( "fight sadas" );
 	
-	Game::logout();
+	
 	
 	std::cout << "Response: " << response.body << std::endl;
 	
@@ -98,13 +98,17 @@ int main( /*int argc, const char* argv[]*/ ) {
 	Game::logout();
 	
 	std::cout << "Response: " << response.body << std::endl;*/
+	int i = 10;
 	
-	while( 1 ) {
+	while( i > 0 ) {
 		
 		std::cout << "Response: " << Game::getFrontResponse().body << std::endl;
 		std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+		
+		i--;
 	}
-	Game::getFrontResponse();
+	
+	Game::logout();
 	
 	Game::stop();
 	

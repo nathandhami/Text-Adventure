@@ -14,14 +14,89 @@
 
 #define LOG( msg ) std::cout << "[Parser] " << msg << std::endl
 
+// Handles cases such as one-wrod movements and more!
+static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
+	const std::string MOVE_CARDINAL = "move";
+	const std::string MOVE_EXCEPTION = "look";
+	const std::string MOVE_SYNONYM = "go";
+	
+	if ( commandHeader == CommandHeader::WORLD ) {
+		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION ) {
+			parsedCommand.data = parsedCommand.type;
+			parsedCommand.type = MOVE_CARDINAL;
+		}
+		
+		if ( parsedCommand.type == MOVE_SYNONYM ) {
+			parsedCommand.type = MOVE_CARDINAL;
+		}
+	}
+}
 
-using namespace CommandHeader;
+
+std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) {
+	Command parsedCommand;
+	int parsedHeader = INVALID;
+	
+	LOG( "Parsing string: '" << commandString << "'..." );
+	
+	std::vector< std::string > tokens;
+	boost::split( tokens, commandString, boost::is_any_of( " " ), boost::token_compress_on );
+	
+	LOG( "Parsing tokens..." );
+	
+	std::string commandType = "";
+	int prefixLength = 0;
+	
+	// copied values because of the to_lower
+	for ( std::string token: tokens ) {
+		boost::to_lower( token );
+		LOG( "\tToken: " << token );
+		
+		std::string commandPrefix = commandType + " " + token;
+		boost::trim( commandPrefix );
+		
+		LOG( "\tPrefix: " << commandPrefix );
+		
+		int prefixHeader = DictionaryCmds::getParsableFromInput( commandPrefix );
+		LOG( "\tHeader: " << prefixHeader );
+		
+		if ( prefixHeader == CommandHeader::INVALID ) {
+			if ( parsedHeader == CommandHeader::INCOMPLETE ) parsedHeader = CommandHeader::INVALID;
+			break;
+		} else {
+			commandType = commandPrefix;
+			parsedHeader = prefixHeader;
+			prefixLength ++;
+		}
+	}
+	
+	
+	
+	// Get the size of 'trailing' data
+	int commandDataTokenLength = tokens.size() - prefixLength;
+	LOG( "Data size: " << commandDataTokenLength );
+	
+	// Cut off the command type from the data
+	std::rotate( tokens.begin(), tokens.end() - commandDataTokenLength, tokens.end() );
+	tokens.resize( commandDataTokenLength );
+	
+	std::string commandData = boost::algorithm::join( tokens, " " );
+	
+	parsedCommand.type = commandType;
+	parsedCommand.data = commandData;
+	
+	translateSpecial( parsedHeader, parsedCommand );
+	
+	return std::make_tuple( parsedHeader, parsedCommand );
+}
 
 
 
-std::tuple<  int, Command > CommandParser::getHeaderAndCommand( std::string command ){
+/*
+int CommandParser::getHeaderAndCommand( std::string command ){
 
-	std::tuple<  int, Command > headerAndParsedCommand;
+//	std::tuple<  int, Command > headerAndParsedCommand;
+	int headerAndParsedCommand;
 	headerAndParsedCommand = getHeaderAndCommandFromString( command );//Parse user command and get a header associated with the command type
 
 	//returns the header type and the command 
@@ -40,16 +115,18 @@ bool CommandParser::checkIfCardinal( std::string token ){ //checks if the comman
 
 
 //takes user command in string form and parses it into a Command struct
-std::tuple<  int, Command > CommandParser::getHeaderAndCommandFromString( std::string commandString ) {
+int CommandParser::getHeaderAndCommandFromString( std::string commandString ) {
 	
 	Command parsedCommand;
-	std::tuple<  int, Command > headerAndParsedCommand;
+//	std::tuple<  int, Command > headerAndParsedCommand;
+	int headerAndParsedCommand;
 	int commandHeader;
 	std::vector< std::string > tokens;
 	boost::trim(commandString);
 	if(commandString == ""){
 		commandHeader = INVALID;
-		headerAndParsedCommand = std::make_tuple(commandHeader, parsedCommand);
+//		headerAndParsedCommand = std::make_tuple(commandHeader, parsedCommand);
+		headerAndParsedCommand = commandHeader;
 		return headerAndParsedCommand;
 	}
 
@@ -138,8 +215,10 @@ std::tuple<  int, Command > CommandParser::getHeaderAndCommandFromString( std::s
 		}else parsedCommand.data += " " + tokens[i];
 	}
 
-	headerAndParsedCommand = std::make_tuple ( commandHeader, parsedCommand );
+//	headerAndParsedCommand = std::make_tuple ( commandHeader, parsedCommand );
+	headerAndParsedCommand = commandHeader;
 	
 	return headerAndParsedCommand;
 	
 }
+*/

@@ -202,6 +202,18 @@ void Session::logout( const std::string& credentials ) {
 // Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
 	
+	std::tuple< int, Command > parserResponse = ( CommandParser::getHeaderAndCommand( commandString ) );
+	int commandHeader = std::get< 0 >( parserResponse );
+	Command command = std::get< 1 >( parserResponse );
+	
+	if ( commandHeader == CommandHeader::WORLD ) {
+		std::string worldResponse =  World::executeCommand( this->currentUser.getUserId(), command );
+		this->writeToClient( GameCode::DESCRIPTION, worldResponse );
+	}
+	
+	
+	
+	
 	/*
 	
 	int header ::= parser::getheader
@@ -217,28 +229,25 @@ void Session::doGameCommand( const std::string& commandString ) {
 		
 	
 	*/
-	LOG( "Trying to parse...: "  << commandString );
+//	LOG( "Trying to parse...: "  << commandString );
 //	std::tuple< int, Command > parserResponse = ( CommandParser::getHeaderAndCommand( commandString ) );
-	
-	std::string stf = commandString;
-	std::tuple<int, Command> output = (CommandParser::getHeaderAndCommand(stf));
-	int header = get<0>(output);
-	
-	LOG( "Header asfsdfgfdxhsdf: " << header );
-	
-	
-	LOG( "Parsed" );
-	
-	LOG( "Command happened." );
-	int headerx = std::get< 0 >( output );
-	Command command = std::get< 1 >( output );
+////	std::tuple<int, Command> output = (CommandParser::getHeaderAndCommand(stf));
+////	int header = CommandParser::getHeaderAndCommand(stf);
+//	
+//	LOG( "Header: " << std::get< 0 >( parserResponse ) );
+//	LOG( "Command Type: " << std::get< 1 >( parserResponse ).type );
+//	LOG( "Command Data: " << std::get< 1 >( parserResponse ).data );
+//	
+//	LOG( "Parsed" );
+//	
+//	LOG( "Command happened." );
 
-	LOG( "Header: " << headerx );
-	LOG( "Cmd: " << command.type );
+//	LOG( "Header: " << headerx );
+//	LOG( "Cmd: " << command.type );
 	
-	if ( headerx == CommandHeader::WORLD ) {
-		LOG( "Got world" );
-	}
+//	if ( headerx == CommandHeader::WORLD ) {
+//		LOG( "Got world" );
+//	}
 //	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::STATUS, "some random stuff" );
 //	CarrierPigeon::deliverPackage( 1 );
 	
