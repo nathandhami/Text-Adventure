@@ -210,6 +210,8 @@ void Session::doGameCommand( const std::string& commandString ) {
 		this->writeToClient( GameCode::DESCRIPTION, worldResponse );
 	} else if ( commandHeader == CommandHeader::MESSENGER ) {
 		CarrierPigeon::deliverPackage( this->currentUser.getUserId(), command );
+	} else {
+		this->writeToClient( GameCode::INVALID, "Invalid command." );
 	}
 	
 	
@@ -317,15 +319,13 @@ void Session::asyncWrite() {
 
 
 bool Session::write( std::string message ) {
-//	std::cout << "Write called: " << message << std::endl;
 	boost::system::error_code error;
 	boost::asio::write(
 		this->socket,
 		boost::asio::buffer( message ),
 		error
 	);
-	if ( error ) { 
-		//		Authenticator::logout( this->userId );
+	if ( error ) {
 		std::cout << MESSAGE_DISCONNECT << std::endl;
 		return false;
 	}
@@ -338,7 +338,8 @@ void Session::gentleShutDown() {
 	LOG( "The client has disconnected. Terminating..." );
 	this->writing = false;
 	this->reading = false;
-	LOG( "Force logout." );
+	
+	LOG( "Forcing logout..." );
 	bool loggedOut = Authenticator::logout( this->currentUser );
 	if ( !loggedOut ) {
 		LOG( "Already logged out." );

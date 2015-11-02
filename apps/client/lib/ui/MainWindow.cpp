@@ -4,13 +4,16 @@
 
 MainWindow::MainWindow()
 : commandFrame("Enter Command"),
-  outputFrame("Server")
+  outputFrame("Server"),
+  m_WorkerThread(0)
 {	
 	//Initialize main window
 	set_default_size(900, 500);
 	set_title("Text Gale Online");
 	set_position(Gtk::WIN_POS_CENTER);
 	set_border_width(10);
+
+	m_WorkerThread = Glib::Threads::Thread::create(sigc::mem_fun(*this, &MainWindow::get_response_thread));
 
 	outputTextview.set_editable(FALSE);
 	outputScrollWindow.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
@@ -40,7 +43,7 @@ MainWindow::MainWindow()
 	add(uiGrid);	
 
   	outputTextBuffer = Gtk::TextBuffer::create();
-	//outputTextBuffer->set_text("What would you like to do?");
+	outputTextBuffer->set_text("What would you like to do?");
 	outputTextview.set_buffer(outputTextBuffer);
 
 	commandEntry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_enter_pressed));
@@ -59,11 +62,24 @@ void MainWindow::on_enter_pressed()
 	std::string command = commandEntry.get_text();
 	Game::enact(command);
 	
-	m_adjustment = outputScrollWindow.get_vadjustment();
-	m_adjustment->set_value(m_adjustment->get_upper()); 
+	//m_adjustment = outputScrollWindow.get_vadjustment();
+	//m_adjustment->set_value(m_adjustment->get_upper()); 
 
-	outputTextBuffer->insert(outputTextBuffer->end(), "Response: " + Game::getFrontResponse().body + "\n");
-	outputTextview.set_buffer(outputTextBuffer);
+	//outputTextBuffer->insert(outputTextBuffer->end(), "Response: " + Game::getFrontResponse().body + "\n");
+	//outputTextview.set_buffer(outputTextBuffer);
 
 	commandEntry.set_text("");
+}
+
+void MainWindow::get_response_thread()
+{
+	Glib::Threads::Mutex::Lock lock(m_Mutex);
+	while(true) {
+		Glib::usleep(1000000); // microseconds
+		m_adjustment = outputScrollWindow.get_vadjustment();
+		m_adjustment->set_value(m_adjustment->get_upper()); 
+	
+		outputTextBuffer->insert(outputTextBuffer->end(), "Response: " + Game::getFrontResponse().body + "\n");
+		outputTextview.set_buffer(outputTextBuffer);
+	}
 }

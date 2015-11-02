@@ -12,6 +12,7 @@ public:
 protected:
 	//Signal handlers:
 	void on_enter_pressed();
+	void get_response_thread();
 
   	//Child widgets:
 	Glib::RefPtr<Gtk::TextBuffer> outputTextBuffer;
@@ -23,6 +24,10 @@ protected:
 	Gtk::Box outputBox;
 	Gtk::Frame commandFrame;
 	Gtk::Frame outputFrame;
+
+	Glib::Dispatcher m_Dispatcher;
+  	Glib::Threads::Thread* m_WorkerThread;
+	mutable Glib::Threads::Mutex m_Mutex;
 };
 
 #endif
