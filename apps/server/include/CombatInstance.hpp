@@ -7,7 +7,7 @@
 #include "Zone.hpp"
 #include <deque>
 #include <unistd.h>
-#include <pthread.h>
+#include <thread>
 
 #define RETREAT_NOTIFICATION "Your opponent turns to flee.\n"
 #define VICTORY_NOTIFICATION "You defeated your opponent!\n"
@@ -20,21 +20,25 @@ class CombatInstance {
 	static const int CHALLENGE_TIMEOUT = 30;
 	static const int PLAYER_ONE = 0;
 	static const int PLAYER_TWO = 1;
-	static const int ATTACK_ACTION = 0;
-	static const int RETREAT_ACTION = 1;
 
-	bool challengeAccepted = false;
-	bool keepFighting = true;
-	bool readyForCleanup = false;
+	bool challengeAccepted;
+	bool keepFighting;
+	bool readyForCleanup;
 
-	int combatZoneID = 0;
-	int enemyType = 0;
-	int playerOneID = 0;
-	int playerTwoID = 0;
+	int combatZoneID;
+	int enemyType;
+	int playerOneID;
+	int playerTwoID;
 
-	pthread_t combatThread;
+	std::thread combatThread;
 
 	deque<deque<int>> playersActionQueue;
+
+
+	void removePlayersFromCombat(int playerID, int playerType);
+	void removePlayersFromCombat();
+
+	void waitForChallengeAccept();
 
 	void notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
 	
@@ -44,10 +48,7 @@ class CombatInstance {
 
 	void executePlayerAction(int player, int characterType);
 
-	void removePlayersFromCombat(int playerID, int playerType);
-	void removePlayersFromCombat();
-
-	void *runCombat(void*);
+	void runCombat();
 
 
 public:
@@ -55,6 +56,8 @@ public:
 	bool isCombatant(int playerID);
 
 	bool inZone(int zoneID);
+
+	void queuePlayerAction(int playerID, int action);
 
 	void acceptChallenge();
 
