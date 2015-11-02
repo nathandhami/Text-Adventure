@@ -20,11 +20,11 @@ using namespace std;
 // std::string data;
 //};
 
+using namespace CommandHeader;
 
+//const  CommandHeader DictionaryCmds::INVALID_COMMAND = INVALID;
 
-const enum CommandHeader DictionaryCmds::INVALID_COMMAND = INVALID;
-
-std::map< std::string, enum CommandHeader > DictionaryCmds::COMMAND_DICTIONARY = {
+std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	//Movement commands
 	{ "move"			, WORLD },
 	{ "north"			, WORLD },
@@ -64,9 +64,9 @@ std::map< std::string, enum CommandHeader > DictionaryCmds::COMMAND_DICTIONARY =
 
 
 
-enum CommandHeader DictionaryCmds::getParsableFromInput( std::string inputString ) {
+int DictionaryCmds::getParsableFromInput( std::string inputString ) {
 	if ( !DictionaryCmds::COMMAND_DICTIONARY.count( inputString ) ) {
-		return DictionaryCmds::INVALID_COMMAND;
+		return INVALID;
 	}
 	std::cout << "Parsable: " << DictionaryCmds::COMMAND_DICTIONARY[ inputString ] << std::endl;
 	return DictionaryCmds::COMMAND_DICTIONARY[ inputString ];

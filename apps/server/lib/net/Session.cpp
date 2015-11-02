@@ -3,6 +3,7 @@
 #include "NetConfig.hpp"
 #include "GameCode.hpp"
 #include "CommandParser.hpp"
+#include "DictionaryCmds.hpp"
 #include "Server.hpp"
 #include "CarrierPigeon.hpp"
 
@@ -145,14 +146,22 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 	LOG( "> Header: " << header );
 	LOG( "> Body: " << body );
 	
-	Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
+	/*Session::ExecFuncMap::const_iterator iterator = this->funcMap.find( header );
 	if ( iterator == funcMap.end() ) {
 		// not found
 		this->writeToClient( HEADER_ERROR, "Server error: incorrect request." );
 		return;
 	}
 	Session::ExecuteFunction func = iterator->second;
-	( this->*func )( body );
+	( this->*func )( body );*/
+	
+	if ( header == GameCode::LOGIN ) {
+		this->login( body );
+	} else if ( header == GameCode::LOGOUT ) {
+		this->logout( body );
+	} else if ( header == GameCode::COMMAND ) {
+		this->doGameCommand( body );
+	}
 }
 
 
@@ -205,20 +214,41 @@ void Session::doGameCommand( const std::string& commandString ) {
 		combater::dostuff command
 	else
 		write invalid
+		
 	
 	*/
+	LOG( "Trying to parse...: "  << commandString );
+//	std::tuple< int, Command > parserResponse = ( CommandParser::getHeaderAndCommand( commandString ) );
+	
+	std::string stf = commandString;
+	std::tuple<int, Command> output = (CommandParser::getHeaderAndCommand(stf));
+	int header = get<0>(output);
+	
+	LOG( "Header asfsdfgfdxhsdf: " << header );
+	
+	
+	LOG( "Parsed" );
 	
 	LOG( "Command happened." );
-	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::STATUS, "some random stuff" );
-	CarrierPigeon::deliverPackage( 1 );
+	int headerx = std::get< 0 >( output );
+	Command command = std::get< 1 >( output );
+
+	LOG( "Header: " << headerx );
+	LOG( "Cmd: " << command.type );
+	
+	if ( headerx == CommandHeader::WORLD ) {
+		LOG( "Got world" );
+	}
+//	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::STATUS, "some random stuff" );
+//	CarrierPigeon::deliverPackage( 1 );
 	
 //	std::cout << "Command happened." << std::endl;
-	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
+	/*std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
 	if ( parserResponse == HEADER_ERROR ) {
 		this->writeToClient( HEADER_ERROR, "Invalid Command." );
 	} else {
 		this->writeToClient( HEADER_OK, parserResponse );
-	}
+	}*/
 }
 
 void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {

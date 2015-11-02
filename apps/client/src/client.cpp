@@ -81,14 +81,15 @@ int main( /*int argc, const char* argv[]*/ ) {
 	std::cout << "\tHeader: " << response.header << std::endl;
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
-//	Game::enact( "look" );
-//	Game::enact( "move north" );
+	Game::enact( "look north" );
+//	Game::enact( "look north" );
+//	Game::enact( "fight sadas" );
 	
 	Game::logout();
 	
 	std::cout << "Response: " << response.body << std::endl;
 	
-	response = Game::login( "testUser2", "test2" );
+	/*response = Game::login( "testUser2", "test2" );
 	
 	std::cout << "Got response:" << std::endl;
 	std::cout << "\tHeader: " << response.header << std::endl;
@@ -96,7 +97,7 @@ int main( /*int argc, const char* argv[]*/ ) {
 	
 	Game::logout();
 	
-	std::cout << "Response: " << response.body << std::endl;
+	std::cout << "Response: " << response.body << std::endl;*/
 	
 	while( 1 ) {
 		

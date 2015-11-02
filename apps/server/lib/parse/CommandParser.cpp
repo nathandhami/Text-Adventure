@@ -12,9 +12,16 @@
 #include "CommandParser.hpp"
 #include "NetConfig.hpp"
 
-std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommand( std::string command ){
+#define LOG( msg ) std::cout << "[Parser] " << msg << std::endl
 
-	std::tuple< enum CommandHeader, Command > headerAndParsedCommand;
+
+using namespace CommandHeader;
+
+
+
+std::tuple<  int, Command > CommandParser::getHeaderAndCommand( std::string command ){
+
+	std::tuple<  int, Command > headerAndParsedCommand;
 	headerAndParsedCommand = getHeaderAndCommandFromString( command );//Parse user command and get a header associated with the command type
 
 	//returns the header type and the command 
@@ -33,11 +40,11 @@ bool CommandParser::checkIfCardinal( std::string token ){ //checks if the comman
 
 
 //takes user command in string form and parses it into a Command struct
-std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommandFromString( std::string commandString ) {
+std::tuple<  int, Command > CommandParser::getHeaderAndCommandFromString( std::string commandString ) {
 	
 	Command parsedCommand;
-	std::tuple< enum CommandHeader, Command > headerAndParsedCommand;
-	enum CommandHeader commandHeader;
+	std::tuple<  int, Command > headerAndParsedCommand;
+	int commandHeader;
 	std::vector< std::string > tokens;
 	boost::trim(commandString);
 	if(commandString == ""){
@@ -62,7 +69,7 @@ std::tuple< enum CommandHeader, Command > CommandParser::getHeaderAndCommandFrom
 		tokens[0] = "move";
 	}
 
-	enum CommandHeader header;
+	 int header;
 	int startOfCommandData;
 	int i = 0;
 	bool isACardinal;
