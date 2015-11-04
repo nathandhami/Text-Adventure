@@ -2,10 +2,13 @@
 #define EDITOR_HPP
 
 
+#include "Command.hpp"
+
+
 class Editor {
 public:
 	
-	static bool judgeAndPerform( int creatorId/*, Command command*/ );
+	static bool judgeAndPerform( int creatorId, Command command );
 	
 	
 private:

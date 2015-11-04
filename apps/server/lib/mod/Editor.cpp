@@ -13,11 +13,13 @@
 #define CMD_CREATE_DOODAD	"create doodad"
 
 
-bool Editor::judgeAndPerform( int creatorId/*, Command command*/ ) {
+bool Editor::judgeAndPerform( int creatorId, Command command ) {
 	const std::string REJECT_MESSAGE = "THOUGH art NOT worthyyy.";
 	//TO-DO: confirm user is a creator
 	// Server::sendMessageToCharacter( creatorId, GameCode::ALERT, formattedMessage );
 	// return false;
+	
+	int userId = 
 	
 	std::string commandType = CMD_CREATE_ITEM;
 //	std::string commandType = command.type;
