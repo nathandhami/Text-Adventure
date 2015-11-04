@@ -82,11 +82,11 @@ int main( int argc, const char* argv[] ) {
 	std::cout << "\tHeader: " << response.header << std::endl;
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
-	Game::enact( "go north" );
+//	Game::enact( "go north" );
 //	Game::enact( "move north" );
 //	Game::enact( "look up" );
 //	Game::enact( "fight sadas" );
-//	Game::enact( "@ testChar1 wolololo." );
+	Game::enact( "@ testChar1 wolololo." );
 //	Game::enact( "# This is a zone MeSsAgE." );
 //	Game::enact( "blergh" );
 	
