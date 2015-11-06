@@ -1,5 +1,10 @@
 #include "World.hpp"
-#include "WorldConstants.hpp"
+
+// --------Private variables--------
+	
+bool World::keepRespawning = false;
+
+std::thread World::respawnThread;
 
 // --------Private functions--------
 
@@ -14,7 +19,7 @@ string World::movePlayer(int playerID, string destination) {
 		return "Unable to move " + destination + ", it is full.\n";
 	}
 
-	Combat::endCombat(playerID, DatabaseTool::getCharNameFromID(playerID) + " left the zone.\n");
+	Combat::endCombat(playerID, "");
 
 	std::cout << "Player " << playerID << " is moving from zone " << currentZoneID << " to zone " << destinationZoneID << std::endl;
 	Zone::broadcastMessage(destinationZoneID, DatabaseTool::getCharNameFromID(playerID) + " entered the zone.\n");
@@ -25,9 +30,8 @@ string World::movePlayer(int playerID, string destination) {
 }
 
 string World::playerLook(int playerID, string keyword) {
-	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(keyword);
-	return Zone::getDescription(currentZoneID, keyword);
+	return DatabaseTool::look(playerID, keyword);
 }
 
 string World::playerPickupItem(int playerID, string item) {
@@ -38,6 +42,18 @@ string World::playerPickupItem(int playerID, string item) {
 		return "You pick up the " + item + ".\n";
 	}
 	return "The " + item + " is not in the room or cannot be picked up.\n";
+}
+
+void World::runRespawn() {
+	int counter = 0;
+	while (keepRespawning) {
+		counter++;
+		if (counter >= RESPAWN_TIME_SECONDS) {
+			DatabaseTool::respawnAll();
+			counter = 0;
+		}
+		sleep(1);
+	}
 }
 
 // --------Public functions--------
@@ -59,4 +75,24 @@ string World::executeCommand(int playerID, Command givenCommand) {
 		return playerPickupItem(playerID, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
+}
+
+bool World::isRespawnLoopRunning() {
+	return keepRespawning;
+}
+
+void World::startRespawnLoop() {
+	if (!World::isRespawnLoopRunning()) {
+		keepRespawning = true;
+		respawnThread = std::thread(&World::runRespawn);
+	}
+}
+
+void World::stopRespawnLoop() {
+	keepRespawning = false;
+	respawnThread.join();
+}
+
+void World::respawnImmediately() {
+	DatabaseTool::respawnAll();
 }

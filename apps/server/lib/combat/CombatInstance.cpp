@@ -2,16 +2,18 @@
 
 // --------Private variables--------
 
-bool challengeAccepted = false;
-bool keepFighting = true;
-bool readyForCleanup = false;
+bool CombatInstance::challengeAccepted = false;
+bool CombatInstance::keepFighting = true;
+bool CombatInstance::readyForCleanup = false;
 
-int combatZoneID = 0;
-int enemyType = 0;
-int playerOneID = 0;
-int playerTwoID = 0;
+int CombatInstance::combatZoneID = 0;
+int CombatInstance::enemyType = 0;
+int CombatInstance::playerOneID = 0;
+int CombatInstance::playerTwoID = 0;
 
-deque<deque<int>> playersActionQueue;
+std::thread CombatInstance::combatThread;
+
+deque<deque<int>> CombatInstance::playersActionQueue;
 
 
 // --------Private functions--------
@@ -200,7 +202,7 @@ void CombatInstance::acceptChallenge() {
 void CombatInstance::endCombat(string message) {
 	if (keepFighting) {
 		keepFighting = false;
-		//pthread_join(combatThread, NULL);
+		combatThread.join();
 		CombatInstance::removePlayersFromCombat(playerOneID, PLAYER_ONLY);
 		CombatInstance::removePlayersFromCombat(playerTwoID, enemyType);
 		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, message);
@@ -221,14 +223,19 @@ CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, in
 
 
 	combatThread = std::thread(&CombatInstance::runCombat, this);
-	combatThread.detach();
 	/*
 	int errorStartingThread = pthread_create(&combatThread, NULL, runCombat, NULL);
 	if (errorStartingThread) {
+<<<<<<< HEAD
 		cout << "Failed to create combat thread: " << errorStartingThread << "\n";
 		exit(-1);
 	}
 
+=======
+		cout << "Failed to start CombatInstance thread: " << errorStartingThread << endl;
+        exit(-1);
+	}
+>>>>>>> 9e3c3ca78bad4f3af97b48acda0fe1d8d5efdd11
 	pthread_exit(NULL);
 	*/
 }

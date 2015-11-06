@@ -21,18 +21,18 @@ class CombatInstance {
 	static const int PLAYER_ONE = 0;
 	static const int PLAYER_TWO = 1;
 
-	bool challengeAccepted;
-	bool keepFighting;
-	bool readyForCleanup;
+	static bool challengeAccepted;
+	static bool keepFighting;
+	static bool readyForCleanup;
 
-	int combatZoneID;
-	int enemyType;
-	int playerOneID;
-	int playerTwoID;
+	static int combatZoneID;
+	static int enemyType;
+	static int playerOneID;
+	static int playerTwoID;
 
-	std::thread combatThread;
+	static std::thread combatThread;
 
-	deque<deque<int>> playersActionQueue;
+	static deque<deque<int>> playersActionQueue;
 
 
 	void removePlayersFromCombat(int playerID, int playerType);

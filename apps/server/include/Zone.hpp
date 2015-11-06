@@ -21,7 +21,6 @@ public:
 	static string getName(int);
 
 	static void setDescription(int, string);
-	static string getDescription(int, string);
 
 	static void setNeighbourZone(int, string, int);
 	static int getNeighbourZone(int, string);
