@@ -7,6 +7,7 @@
 #include "Server.hpp"
 #include "CarrierPigeon.hpp"
 #include <mod/Editor.hpp>
+#include <cmd/Commander.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -81,7 +82,6 @@ std::string Session::getIP( IPType type ) {
 
 
 // new function for 'better' async reading
-// TO-DO: do a proper session shutdown if user dcs
 void Session::asyncReadUserRequest() {
 	this->readerThread = std::thread(
 		[ this ]() {
@@ -121,8 +121,6 @@ void Session::asyncReadUserRequest() {
 
 // new read function for the improved async
 std::string Session::read( const int maxBufferLength ) {
-//	std::cout << "Waiting for client write..." << std::endl;
-	
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;
 	
@@ -135,7 +133,6 @@ std::string Session::read( const int maxBufferLength ) {
 	if ( error ) {
 		return CODE_ERROR_READ;
 	}
-//	std::cout << "\tGOT: " <<  std::string( buffer.begin(), buffer.begin() + bufferLength ) << std::endl;
 	
 	return std::string( buffer.begin(), buffer.begin() + bufferLength );
 }
@@ -155,14 +152,6 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 	}
 	Session::ExecuteFunction func = iterator->second;
 	( this->*func )( body );
-	
-//	if ( header == GameCode::LOGIN ) {
-//		this->login( body );
-//	} else if ( header == GameCode::LOGOUT ) {
-//		this->logout( body );
-//	} else if ( header == GameCode::COMMAND ) {
-//		this->doGameCommand( body );
-//	}
 }
 
 
@@ -201,78 +190,12 @@ void Session::logout( const std::string& credentials ) {
 
 // Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
-	
-	std::tuple< int, Command > parserResponse = ( CommandParser::getHeaderAndCommand( commandString ) );
-	int commandHeader = std::get< 0 >( parserResponse );
-	Command command = std::get< 1 >( parserResponse );
-	
-	if ( commandHeader == CommandHeader::WORLD ) {
-		std::string worldResponse =  World::executeCommand( this->currentUser.getUserId(), command );
-		this->writeToClient( GameCode::DESCRIPTION, worldResponse );
-	} else if ( commandHeader == CommandHeader::MESSENGER ) {
-		CarrierPigeon::deliverPackage( this->currentUser.getUserId(), command );
-	} else if ( commandHeader == CommandHeader::EDITOR ){
-		bool worthy = Editor::judgeAndPerform( this->currentUser.getUserId(), this->currentUser.getUserId(), command );
-		if ( !worthy ) this->writeToClient( GameCode::ALERT, Editor::REJECT_MESSAGE );
-	} else {
-		this->writeToClient( GameCode::INVALID, "Invalid command." );
-	}
-	
-	
-	
-	
-	/*
-	
-	int header ::= parser::getheader
-	
-	if header = WORLDHEADER
-		world::dostuff command
-	else if header = MESSAGEHEADER
-		messenger::dostuff command
-	else if header = COMBAtHEADER
-		combater::dostuff command
-	else
-		write invalid
-		
-	
-	*/
-//	LOG( "Trying to parse...: "  << commandString );
-//	std::tuple< int, Command > parserResponse = ( CommandParser::getHeaderAndCommand( commandString ) );
-////	std::tuple<int, Command> output = (CommandParser::getHeaderAndCommand(stf));
-////	int header = CommandParser::getHeaderAndCommand(stf);
-//	
-//	LOG( "Header: " << std::get< 0 >( parserResponse ) );
-//	LOG( "Command Type: " << std::get< 1 >( parserResponse ).type );
-//	LOG( "Command Data: " << std::get< 1 >( parserResponse ).data );
-//	
-//	LOG( "Parsed" );
-//	
-//	LOG( "Command happened." );
-
-//	LOG( "Header: " << headerx );
-//	LOG( "Cmd: " << command.type );
-	
-//	if ( headerx == CommandHeader::WORLD ) {
-//		LOG( "Got world" );
-//	}
-//	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::STATUS, "some random stuff" );
-//	CarrierPigeon::deliverPackage( 1 );
-	
-//	std::cout << "Command happened." << std::endl;
-	/*std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
-	if ( parserResponse == HEADER_ERROR ) {
-		this->writeToClient( HEADER_ERROR, "Invalid Command." );
-	} else {
-		this->writeToClient( HEADER_OK, parserResponse );
-	}*/
+	std::pair< std::string, std::string > commandResponse = Commander::handleCommand( this->currentUser, commandString );
+	this->writeToClient( commandResponse.first, commandResponse.second );
 }
 
-void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {
-	// split char id and message
-//	Server::sendMessageToClient( "sdf-dsfsd-dsfs", charNameAndMessage );
-}
 
-// ------------ End 
+// ------------ End of MAPPED functions
 
 void Session::asyncWrite() {
 	this->writerThread = std::thread(
@@ -285,10 +208,6 @@ void Session::asyncWrite() {
 				// --- end critical section ---
 				this->messageQueueLock.unlock();
 				
-//				this->write( message.header );
-//				this->write( message.body );
-				
-				
 				// put size of the body into a string
 				std::stringstream formatStream;
 				formatStream << std::setfill( '0' ) << std::setw( NetMessage::MaxLength::BODY_LENGTH ) << message.body.length();
@@ -296,25 +215,16 @@ void Session::asyncWrite() {
 				// write to server ensuring no disconnects
 				if ( !this->write( message.header ) ) {
 					LOG( "Can't wite: client disconnected." );
-//					std::cout << "Write Failed." << std::endl;
-//					this->gentleShutDown();
 				} else if ( !this->write( formatStream.str() ) ) {
 					LOG( "Can't wite: client disconnected." );
-//					std::cout << "Write Failed." << std::endl;
-//					this->gentleShutDown();
 				} else if ( !this->write( message.body ) ) {
 					LOG( "Can't wite: client disconnected." );
-//					std::cout << "Write Failed." << std::endl;
-//					this->gentleShutDown();
 				}
-				
-				
 				
 				if ( this->responseMessageQueue.empty() ) {
 					this->writing = false;
 					this->writerThread.detach();
 				}
-//				std::cout << "Done writing." << std::endl;
 			}
 			LOG( "Stopped writing." );
 		}
@@ -329,16 +239,12 @@ bool Session::write( std::string message ) {
 		boost::asio::buffer( message ),
 		error
 	);
-	if ( error ) {
-		std::cout << MESSAGE_DISCONNECT << std::endl;
-		return false;
-	}
-	return true;
+	
+	return !error;
 }
 
 
 void Session::gentleShutDown() {
-	
 	LOG( "The client has disconnected. Terminating..." );
 	this->writing = false;
 	this->reading = false;

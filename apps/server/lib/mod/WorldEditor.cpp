@@ -11,6 +11,7 @@
 #define LOG( msg ) std::cout << "[WorldEditor] " << msg << std::endl
 
 
+// ------------------- PRIVATE ------------------
 
 static std::string addTokenToString( std::string originalString, std::string token ) {
 	if ( originalString.empty() ) {
@@ -29,11 +30,11 @@ static void parseToTokens( std::vector< std::string >& tokens, boost::regex patt
 }
 
 
-void WorldEditor::createZone( std::string zoneData ) {
+// ------------------- PUBLIC -------------------
+
+std::string WorldEditor::createZone( std::string zoneData ) {
 	const int STAGE_NAME = 	0;
 	const int STAGE_DESC = 	1;
-	
-	const std::string STAGE_SEP = ">>";
 	
 	int parsingStage = STAGE_NAME;
 	
@@ -57,36 +58,29 @@ void WorldEditor::createZone( std::string zoneData ) {
 	
 	std::vector< Door > doors;
 	
-	int zoneid = DatabaseTool::createNewZone( zoneName, zoneDesc );
-	LOG( "Insert zone with ID: " << zoneid );
+	int zoneId = DatabaseTool::createNewZone( zoneName, zoneDesc );
+	LOG( "Insert zone with ID: " << zoneId );
 	LOG( " == Done parsing." );
+	
+	return ( "Created \"" + zoneName + "\" with ID: " + std::to_string( zoneId ) );
 	
 }
 
 
-void WorldEditor::describeZone( int creatorId, std::string zoneData ) {
+std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
 	const int EXPECTED_TOKEN_NUM = 3;
 	boost::regex pattern( "(~as)|(~:)" );
 	
 	std::vector< std::string > tokens;
 	parseToTokens( tokens, pattern, zoneData );
 	
-	LOG( "Zone ID: " << tokens[0] );
-	LOG( "Desc: " << tokens[1] );
-	LOG( "Keywords: " << tokens[2] );
-	
-//	std::vector< std::string > commandTokens;
-//	boost::algorithm::split_regex( commandTokens, zoneData, boost::regex( "~as" ) );
-//
-//	std::vector< std::string > descTokens;
-//	boost::algorithm::split_regex( descTokens, commandTokens[ 1 ], boost::regex( "~:" ) );
-//	
-//	int zoneId = atoi( commandTokens[ 0 ].c_str() );
-//	
-//	LOG( "Zone ID: " << commandTokens[ 0 ] );
-//	LOG( "Zone ID: " << zoneId );
-//	
+	LOG( "Zone ID: " << tokens[ 0 ] );
+	LOG( "Desc: " << tokens[ 1 ] );
+	LOG( "Keywords: " << tokens[ 2 ] );
+
 	DatabaseTool::addExtendedDescriptionToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 1 ], tokens[ 2 ] );
+	
+	return ( "Described zone " + tokens[ 0 ] + " as " + tokens[ 1 ] );
 }
 
 

@@ -8,8 +8,8 @@
 class WorldEditor {
 public:
 	
-	static void createZone( std::string zoneData );
-	static void describeZone( int creatorId, std::string zoneData );
+	static std::string createZone( std::string zoneData );
+	static std::string describeZone( int creatorId, std::string zoneData );
 	static void addDoorToZone( int creatorId, std::string doorData );
 	
 	

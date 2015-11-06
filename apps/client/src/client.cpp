@@ -86,10 +86,11 @@ int main( int argc, const char* argv[] ) {
 //	Game::enact( "move north" );
 	Game::enact( " look" );
 //	Game::enact( "fight sadas" );
-//	Game::enact( "@ testChar1 wolololo." );
+	Game::enact( "@ testChar1 do you think this is a game?" );
 //	Game::enact( "# This is a zone MeSsAgE." );
-//	Game::enact( "blergh" );
+	Game::enact( "blergh" );
 //	Game::enact( "create zone my head hurts" );
+	Game::enact( "create zone Deadman Wonderland | You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland'" );
 	
 	
 	
@@ -104,14 +105,18 @@ int main( int argc, const char* argv[] ) {
 	Game::logout();
 	
 	std::cout << "Response: " << response.body << std::endl;*/
-	int i = 10;
+//	int i = 10;
 	
-	while( i > 0 ) {
+	while( true ) {
+		NetMessage response = Game::getFrontResponse();
 		
-		std::cout << "Response: " << Game::getFrontResponse().body << std::endl;
-		std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
 		
-		i--;
+		if ( response.header != GameCode::NONE ) {
+			std::cout << "Response: " << response.body << std::endl;
+		}
+		
+		
+		std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
 	}
 	
 	Game::logout();

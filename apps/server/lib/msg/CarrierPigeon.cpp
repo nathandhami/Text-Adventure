@@ -15,21 +15,17 @@
 int CarrierPigeon::deliverPackage( int senderId, Command messageCommand ) {
 	const std::string PRIV_MSG( "@" );
 	const std::string ZONE_MSG( "#" );
-	//TO-DO: check for command type, and act accordingly
+	
 	int numDeliveredTo = 0;
 	if ( messageCommand.type == PRIV_MSG ) {
-		CarrierPigeon::deliverToCharacter( senderId, messageCommand.data );
+		numDeliveredTo = CarrierPigeon::deliverToCharacter( senderId, messageCommand.data );
 	} else if ( messageCommand.type == ZONE_MSG ) {
-		CarrierPigeon::deliverToZone( senderId, messageCommand.data );
+		numDeliveredTo = CarrierPigeon::deliverToZone( senderId, messageCommand.data );
 	} else {
 		LOG( "The pigeon can't decide where to fly and crashes into a pole." );
 	}
 	
-	
-//	CarrierPigeon::deliverToCharacter( senderId, "leeeroooyjeeenkins wolololo." );
-//	CarrierPigeon::deliverToZone( senderId, "wolololo." );
-	
-	return 0;
+	return numDeliveredTo;
 }
 
 
@@ -37,16 +33,8 @@ int CarrierPigeon::deliverPackage( int senderId, Command messageCommand ) {
 // ------------------- PRIVATE ------------------
 
 int CarrierPigeon::deliverToZone( int senderId, std::string message ) {
-	
-	//TO-DO: get all char ids in the sender's zone
-	
 	int zoneId = DatabaseTool::getCharsLocation( senderId );
-	
-	std::cout << "PEGION; zoneid: " << zoneId << std::endl;
-	
 	std::vector< int > characterIds = DatabaseTool::getAllOnlineCharsInZone( zoneId );
-	
-	
 	
 	std::string senderName = DatabaseTool::getCharNameFromID( senderId );
 	
@@ -87,6 +75,10 @@ int CarrierPigeon::deliverToCharacter( int senderId, std::string message ) {
 	
 	if ( delivered ) {
 		std::cout << "Pigeon flew!" << std::endl;
+		
+		std::string feedBackMessage = "[private] to " + recipientName + ": " + messageBody;
+		Server::sendMessageToCharacter( senderId, GameCode::CHAT_PRIVATE, feedBackMessage );
+		
 		return ONE_CHARACTER;
 	}
 	

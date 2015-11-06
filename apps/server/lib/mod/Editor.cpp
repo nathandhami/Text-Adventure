@@ -14,19 +14,14 @@
 #define CMD_CREATE_DOODAD	"create doodad"
 
 
-bool Editor::judgeAndPerform( int creatorId, int charId, Command command ) {
+std::string Editor::judgeAndPerform( int creatorId, int charId, Command command ) {
+	const std::string MESSAGE_INVALID = "This world is NOT your toy.";
+	
 	//TO-DO: confirm user is a creator
 	// Server::sendMessageToCharacter( creatorId, GameCode::ALERT, formattedMessage );
 	// return false;
 	
-	int worthyLevel = DatabaseTool::getUserAuthencationLevel( creatorId );
-	if ( worthyLevel == 0 ) {
-		return false;
-	}
-	
-//	std::string commandType = CMD_CREATE_ITEM;
-	std::string commandType = command.type;
-	std::string commandString = command.data;
+
 	
 //	std::string commandString = "Deadman Wonderland >> You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland' >> It's also known as hell, prisoners go here to enjoy their last days in deadly competetive games for food and water.";
 	
@@ -36,12 +31,21 @@ bool Editor::judgeAndPerform( int creatorId, int charId, Command command ) {
 	
 //	std::string commandString = "a standard issue dagger ~: You see a standard issue dagger here~; You see a dagger of great craftsmanship. Imprinted on the side is: 'Merc Industries'~; dagger, merc";
 	
+	std::string editorResponse = MESSAGE_INVALID;
+	
+	int worthyLevel = DatabaseTool::getUserAuthencationLevel( creatorId );
+	if ( worthyLevel == 0 ) {
+		return Editor::REJECT_MESSAGE;
+	}
+	
+	std::string commandType = command.type;
+	std::string commandString = command.data;
 	
 	
 	if ( commandType == CMD_CREATE_ZONE ) {
-		WorldEditor::createZone( commandString );
+		editorResponse = WorldEditor::createZone( commandString );
 	} else if ( commandType == CMD_DESC_ZONE ) {
-		WorldEditor::describeZone( creatorId, commandString );
+		editorResponse = WorldEditor::describeZone( creatorId, commandString );
 	} else if ( commandType == CMD_CREATE_DOOR ) {
 		WorldEditor::addDoorToZone( creatorId, commandString );
 	} else if ( commandType == CMD_CREATE_ITEM ) {
@@ -50,7 +54,7 @@ bool Editor::judgeAndPerform( int creatorId, int charId, Command command ) {
 		std::cout << "What are we trying to do?\n";
 	}
 	
-	return true;
+	return editorResponse;
 }
 
 const std::string Editor::REJECT_MESSAGE = "THOUGH art NOT worthyyy.";

@@ -4,19 +4,15 @@
 
 class User {
 public:
+	friend class Authenticator;
 	
 	User() {}
 	
 	bool isAuthorized() const;
-	
-	void setUserId( int userId );
 	int getUserId() const;
-		
-	void setSelectedCharacterId( int characterId );
-	
+	void getSelectedCharacterId() const;
 	
 private:
-	
 	int userId = 0;
 	int selectedCharacterId = 0;
 	

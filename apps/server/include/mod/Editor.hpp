@@ -10,7 +10,7 @@ public:
 	
 	static const std::string REJECT_MESSAGE;
 	
-	static bool judgeAndPerform( int creatorId, int charId, Command command );
+	static std::string judgeAndPerform( int creatorId, int charId, Command command );
 	
 	
 private:
