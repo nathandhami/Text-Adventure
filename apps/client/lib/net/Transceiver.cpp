@@ -124,7 +124,7 @@ void Transceiver::asyncReadServerResponses() {
 				if ( header == CODE_ERROR_READ ) break;
 				// get body length
 				std::string bodyLengthStr = this->read( NetMessage::MaxLength::BODY_LENGTH );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( bodyLengthStr == CODE_ERROR_READ ) break;
 				int bodyLength = atoi( bodyLengthStr.c_str() );
 				// get body
 				std::string body = this->read( bodyLength );
@@ -142,7 +142,7 @@ void Transceiver::asyncReadServerResponses() {
 				} else {
 					// write to gameresponses
 					this->pushToReadQueue( header, body );
-					std::cout << "Response pushed." << std::endl;
+//					std::cout << "Response pushed." << std::endl;
 				}
 			}
 			this->readerThread.detach();
@@ -152,7 +152,7 @@ void Transceiver::asyncReadServerResponses() {
 
 
 std::string Transceiver::read( const int maxBufferLength ) {
-	std::cout << "Waiting for server write..." << std::endl;
+//	std::cout << "Waiting for server write..." << std::endl;
 	
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;

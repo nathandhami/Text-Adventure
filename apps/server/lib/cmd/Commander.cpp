@@ -13,7 +13,7 @@
 // ------------------- PUBLIC -------------------
 
 std::pair< std::string, std::string > Commander::handleCommand( User user, std::string commandText ) {
-	const std::string MESSAGE_INVALID = "Invalid command: " + commandText;
+	const std::string MESSAGE_INVALID = "Invalid action: " + commandText;
 	
 	std::string responseHeader = GameCode::INVALID;
 	std::string responseBody = MESSAGE_INVALID;

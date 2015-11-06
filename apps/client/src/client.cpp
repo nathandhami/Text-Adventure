@@ -90,7 +90,7 @@ int main( int argc, const char* argv[] ) {
 //	Game::enact( "# This is a zone MeSsAgE." );
 	Game::enact( "blergh" );
 //	Game::enact( "create zone my head hurts" );
-	Game::enact( "create zone Deadman Wonderland | You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland'" );
+//	Game::enact( "create zone Deadman Wonderland | You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland'" );
 	
 	
 	

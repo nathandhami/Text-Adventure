@@ -50,10 +50,7 @@ string World::executeCommand(int playerID, Command givenCommand) {
 		return "You cannot " + command + " while in combat.\n";
 	}
 	if (command == "move") {
-		if (!movePlayer(playerID, arguments)) {
-			return "Unable to move " + arguments + "\n";
-		}
-		return playerLook(playerID, "");
+		return movePlayer(playerID, arguments);
 	}
 	else if (command == "look") {
 		return playerLook(playerID, arguments);

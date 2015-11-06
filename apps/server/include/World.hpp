@@ -12,15 +12,15 @@ using namespace std;
 
 class World {
 	
-	static string World::movePlayer(int, string);
+	static string movePlayer(int, string);
 
-	static string World::playerLook(int, string);
+	static string playerLook(int, string);
 
-	static string World::playerPickupItem(int playerID, string item);
+	static string playerPickupItem(int playerID, string item);
 
 public:
 
-	static string World::executeCommand(int, Command);
+	static string executeCommand(int, Command);
 };
 
 #endif
