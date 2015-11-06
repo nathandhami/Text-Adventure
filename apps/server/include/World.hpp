@@ -6,7 +6,7 @@
 #include "Command.hpp"
 #include "Zone.hpp"
 #include <boost/algorithm/string.hpp>
-#include <pthread.h>
+#include <thread>
 
 using namespace std;
 
@@ -15,7 +15,7 @@ class World {
 	
 	bool keepRespawning = false;
 
-	pthread_t respawnThread;
+	std::thread respawnThread;
 
 	static bool movePlayer(int, string);
 	

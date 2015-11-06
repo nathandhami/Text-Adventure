@@ -31,7 +31,6 @@ void *runRespawn() {
 		DatabaseTool::respawnAll();
 		sleep(RESPAWN_TIME_SECONDS);
 	}
-	pthread_exit(NULL);
 }
 
 // --------Public functions--------
@@ -56,18 +55,16 @@ string World::executeCommand(int playerID, Command givenCommand) {
 }
 
 void World::startRespawnLoop() {
-	keepRespawning = true;
-	int errorStartingThread = pthread_create(&respawnThread, NULL, runRespawn, NULL);
-	if (errorStartingThread) {
-		cout << "Failed to start Respawn thread: " << errorStartingThread << endl;
-        exit(-1);
-    }
-	pthread_exit(NULL);
+	if (!World::isRespawnLoopRunning()) {
+		keepRespawning = true;
+		respawnThread = std::thread(&World::runRespawn, this);
+		respawnThread.detach();
+	}
 }
 
 void World::stopRespawnLoop() {
 	keepRespawning = false;
-	pthread_join(respawnThread);
+	respawnThread.join();
 }
 
 bool World::isRespawnLoopRunning() {
