@@ -305,6 +305,8 @@ class DatabaseTool{
 	
 		// TMP NEW THINGS ----------------------------------------------
 	
+		static bool testValidity();
+	
 		static int createNewZone( string zoneName, string zoneDesc );
 		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
 		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );

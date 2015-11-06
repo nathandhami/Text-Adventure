@@ -1318,6 +1318,7 @@ bool DatabaseTool::signUserIn( string userName, string password ){
 	try {
 		database db( DB_LOCATION );
 		
+		std::cout << "[Database] Succeeded the open.\n";
 		int loggedIn = 0;
 		db	<< "SELECT EXISTS(SELECT 1 FROM users WHERE userName == ? AND password == ? AND signedOn == 0 LIMIT 1);"
 			<< userName
@@ -1331,6 +1332,7 @@ bool DatabaseTool::signUserIn( string userName, string password ){
 		return loggedIn;
 	} catch(sqlite_exception e) {
 		std::cerr << e.what() << std::endl;
+		std::cout << "[Database] Failed to open file.";
 		return false;
 	}
 }
@@ -1355,7 +1357,15 @@ bool DatabaseTool::signUserOut( int userID ){
 	}
 }
 
-
+bool DatabaseTool::testValidity() {
+	try {
+		database db( DB_LOCATION );
+		return true;
+	} catch(sqlite_exception e) {
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
 
 
 

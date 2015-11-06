@@ -6,6 +6,7 @@
 #include "DictionaryCmds.hpp"
 #include "Server.hpp"
 #include "CarrierPigeon.hpp"
+#include <mod/Editor.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -210,6 +211,9 @@ void Session::doGameCommand( const std::string& commandString ) {
 		this->writeToClient( GameCode::DESCRIPTION, worldResponse );
 	} else if ( commandHeader == CommandHeader::MESSENGER ) {
 		CarrierPigeon::deliverPackage( this->currentUser.getUserId(), command );
+	} else if ( commandHeader == CommandHeader::EDITOR ){
+		bool worthy = Editor::judgeAndPerform( this->currentUser.getUserId(), this->currentUser.getUserId(), command );
+		if ( !worthy ) this->writeToClient( GameCode::ALERT, Editor::REJECT_MESSAGE );
 	} else {
 		this->writeToClient( GameCode::INVALID, "Invalid command." );
 	}

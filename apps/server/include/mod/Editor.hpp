@@ -8,7 +8,9 @@
 class Editor {
 public:
 	
-	static bool judgeAndPerform( int creatorId, Command command );
+	static const std::string REJECT_MESSAGE;
+	
+	static bool judgeAndPerform( int creatorId, int charId, Command command );
 	
 	
 private:

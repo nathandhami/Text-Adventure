@@ -84,11 +84,12 @@ int main( int argc, const char* argv[] ) {
 	
 //	Game::enact( "go north" );
 //	Game::enact( "move north" );
-//	Game::enact( "look up" );
+	Game::enact( " look" );
 //	Game::enact( "fight sadas" );
-	Game::enact( "@ testChar1 wolololo." );
+//	Game::enact( "@ testChar1 wolololo." );
 //	Game::enact( "# This is a zone MeSsAgE." );
 //	Game::enact( "blergh" );
+//	Game::enact( "create zone my head hurts" );
 	
 	
 	

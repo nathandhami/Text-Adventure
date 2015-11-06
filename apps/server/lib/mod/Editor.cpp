@@ -1,6 +1,7 @@
 #include <mod/Editor.hpp>
 #include <mod/ObjectEditor.hpp>
 #include <mod/WorldEditor.hpp>
+#include "DatabaseTool.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <vector>
@@ -13,17 +14,19 @@
 #define CMD_CREATE_DOODAD	"create doodad"
 
 
-bool Editor::judgeAndPerform( int creatorId, Command command ) {
-	const std::string REJECT_MESSAGE = "THOUGH art NOT worthyyy.";
+bool Editor::judgeAndPerform( int creatorId, int charId, Command command ) {
 	//TO-DO: confirm user is a creator
 	// Server::sendMessageToCharacter( creatorId, GameCode::ALERT, formattedMessage );
 	// return false;
 	
-	int userId = 
+	int worthyLevel = DatabaseTool::getUserAuthencationLevel( creatorId );
+	if ( worthyLevel == 0 ) {
+		return false;
+	}
 	
-	std::string commandType = CMD_CREATE_ITEM;
-//	std::string commandType = command.type;
-//	std::string commandString = command.data;
+//	std::string commandType = CMD_CREATE_ITEM;
+	std::string commandType = command.type;
+	std::string commandString = command.data;
 	
 //	std::string commandString = "Deadman Wonderland >> You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland' >> It's also known as hell, prisoners go here to enjoy their last days in deadly competetive games for food and water.";
 	
@@ -31,7 +34,7 @@ bool Editor::judgeAndPerform( int creatorId, Command command ) {
 //	std::string commandString = "4 ~as It's also known as hell. Prisoners go here to enjoy their last days in deadly competetive games for food and water. ~: bloodmagic, sexyoverwatch, totallynotrippedoff";
 //	std::string commandString = "4 ~at north ~to 4 ~: You see the entrance to the prison. ~:";
 	
-	std::string commandString = "a standard issue dagger ~: You see a standard issue dagger here~; You see a dagger of great craftsmanship. Imprinted on the side is: 'Merc Industries'~; dagger, merc";
+//	std::string commandString = "a standard issue dagger ~: You see a standard issue dagger here~; You see a dagger of great craftsmanship. Imprinted on the side is: 'Merc Industries'~; dagger, merc";
 	
 	
 	
@@ -46,4 +49,8 @@ bool Editor::judgeAndPerform( int creatorId, Command command ) {
 	}else {
 		std::cout << "What are we trying to do?\n";
 	}
+	
+	return true;
 }
+
+const std::string Editor::REJECT_MESSAGE = "THOUGH art NOT worthyyy.";

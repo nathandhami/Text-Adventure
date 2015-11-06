@@ -37,6 +37,8 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 	Command parsedCommand;
 	int parsedHeader = INVALID;
 	
+	boost::trim( commandString );
+	
 	LOG( "Parsing string: '" << commandString << "'..." );
 	
 	std::vector< std::string > tokens;
