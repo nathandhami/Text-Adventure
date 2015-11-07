@@ -84,13 +84,14 @@ int main( int argc, const char* argv[] ) {
 	
 //	Game::enact( "go north" );
 //	Game::enact( "move north" );
-	Game::enact( " look" );
+	Game::enact( " look east" );
 //	Game::enact( "fight sadas" );
 	Game::enact( "@ testChar1 do you think this is a game?" );
 //	Game::enact( "# This is a zone MeSsAgE." );
 	Game::enact( "blergh" );
 //	Game::enact( "create zone my head hurts" );
-//	Game::enact( "create zone Deadman Wonderland | You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland'" );
+	Game::enact( "create zone [Deadman Wonderland] seen as [You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland']" );
+	Game::enact( "delete zone 3207" );
 	
 	
 	

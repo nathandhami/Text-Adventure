@@ -309,6 +309,9 @@ class DatabaseTool{
 	
 		static int createNewZone( string zoneName, string zoneDesc );
 		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
+	
+		static void deleteZone( int zoneID );
+	
 		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );
 	
 		static bool addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );

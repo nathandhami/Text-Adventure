@@ -39,8 +39,17 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "look"			, WORLD },
 	{ "look at"			, WORLD },
 
+	// EDITOR commands
+
+	{ "create"			, INCOMPLETE },
 	{ "create zone"		, EDITOR },
+	
+	{ "delete"			, INCOMPLETE },
+	{ "delete zone"		, EDITOR },
+
+	{ "describe"		, INCOMPLETE },
 	{ "describe zone"	, EDITOR },
+	
 	{ "create door in"	, EDITOR },
 	{ "create item"		, EDITOR },
 	{ "create doodad"	, EDITOR },
@@ -51,8 +60,6 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "accept challenge", COMBAT },
 
 	{ "pick"			, INCOMPLETE },
-	{ "create"			, INCOMPLETE },
-	{ "describe"		, INCOMPLETE },
 	{ "create door"		, INCOMPLETE },
 	{ "accept"			, INCOMPLETE },
 

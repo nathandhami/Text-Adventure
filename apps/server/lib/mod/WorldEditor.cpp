@@ -5,6 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/regex.hpp>
 #include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 #include <vector>
 
 // Useful Macros
@@ -33,54 +34,69 @@ static void parseToTokens( std::vector< std::string >& tokens, boost::regex patt
 // ------------------- PUBLIC -------------------
 
 std::string WorldEditor::createZone( std::string zoneData ) {
-	const int STAGE_NAME = 	0;
-	const int STAGE_DESC = 	1;
+	const std::string MSG_INVALID_CMD = "Incorrect creation command. Usage:\n\tcreate zone [name] seen as [description]";
+	const int NUM_EXP_ARGS = 2;
+	const boost::regex PATTERN( "(\\].*seen as.*\\[)" );
 	
-	int parsingStage = STAGE_NAME;
-	
-	std::string zoneName = "";
-	std::string zoneDesc = "";
-	
-	LOG( " == Creating Zone..." );
-	
+	boost::trim_if( zoneData, boost::is_any_of( "[] " ) );
 	
 	std::vector< std::string > tokens;
-	boost::split( tokens, zoneData, boost::is_any_of( "|" ) );
+	boost::algorithm::split_regex( tokens, zoneData, PATTERN );
 	
-	zoneName = tokens[ STAGE_NAME ];
-	zoneDesc = tokens[ STAGE_DESC ];
+	std::string responseMessage = MSG_INVALID_CMD;
+	if ( tokens.size() == NUM_EXP_ARGS ) {
+		int zoneId = DatabaseTool::createNewZone( tokens[ 0 ], tokens[ 1 ] );
+		responseMessage = "You created zone \"" + tokens[ 0 ] + "\" with ID: " + std::to_string( zoneId );
+	}
 	
-	boost::trim( zoneName );
-	boost::trim( zoneDesc );
+	return responseMessage;
+}
+
+
+std::string WorldEditor::deleteZone( std::string zoneData ) {
+	const std::string MSG_INVALID_CMD = "This is not a valid ID.";
+	const int NUM_EXP_ARGS = 1;
 	
-	LOG( "Name: " << zoneName );
-	LOG( "Description: " << zoneDesc );
+	std::string responseMessage = MSG_INVALID_CMD;
+	try {
+		int zoneId = boost::lexical_cast<int>( zoneData );
+		if ( zoneId) {
+			DatabaseTool::deleteZone( zoneId );
+			responseMessage = "Deleted zone";
+		}
+	} catch( boost::bad_lexical_cast const& ) {
+		std::cout << "Error: input string was not valid" << std::endl;
+	}
 	
-	std::vector< Door > doors;
-	
-	int zoneId = DatabaseTool::createNewZone( zoneName, zoneDesc );
-	LOG( "Insert zone with ID: " << zoneId );
-	LOG( " == Done parsing." );
-	
-	return ( "Created \"" + zoneName + "\" with ID: " + std::to_string( zoneId ) );
-	
+	return responseMessage;
 }
 
 
 std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
-	const int EXPECTED_TOKEN_NUM = 3;
-	boost::regex pattern( "(~as)|(~:)" );
+	const std::string MSG_INVALID_CMD = "Incorrect creation command.";
+	const int NUM_EXP_ARGS = 3;
+	const boost::regex PATTERN( "(\\].*as.*\\[)|(\\].*telling.*\\[)" );
+	
+	boost::trim_if( zoneData, boost::is_any_of( "[] " ) );
 	
 	std::vector< std::string > tokens;
-	parseToTokens( tokens, pattern, zoneData );
+	boost::algorithm::split_regex( tokens, zoneData, PATTERN );
 	
-	LOG( "Zone ID: " << tokens[ 0 ] );
-	LOG( "Desc: " << tokens[ 1 ] );
-	LOG( "Keywords: " << tokens[ 2 ] );
-
-	DatabaseTool::addExtendedDescriptionToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 1 ], tokens[ 2 ] );
+	//TO-DO: finish what was started
 	
-	return ( "Described zone " + tokens[ 0 ] + " as " + tokens[ 1 ] );
+//	const int EXPECTED_TOKEN_NUM = 3;
+//	boost::regex pattern( "(~as)|(~:)" );
+//	
+//	std::vector< std::string > tokens;
+//	parseToTokens( tokens, pattern, zoneData );
+//	
+//	LOG( "Zone ID: " << tokens[ 0 ] );
+//	LOG( "Desc: " << tokens[ 1 ] );
+//	LOG( "Keywords: " << tokens[ 2 ] );
+//
+//	DatabaseTool::addExtendedDescriptionToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 1 ], tokens[ 2 ] );
+//	
+//	return ( "Described zone " + tokens[ 0 ] + " as " + tokens[ 1 ] );
 }
 
 

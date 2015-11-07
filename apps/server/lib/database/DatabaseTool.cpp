@@ -1208,6 +1208,21 @@ int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) 
 }
 
 
+void DatabaseTool::deleteZone( int zoneID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "DELETE FROM zones WHERE zoneID = ?;"
+			<< zoneID;
+
+	} catch ( exception& e ) {
+		return;
+	}
+}
+
+
 bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string keywords ) {
 	try {
 		database db(DB_LOCATION);
