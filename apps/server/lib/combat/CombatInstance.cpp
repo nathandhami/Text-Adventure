@@ -11,6 +11,11 @@ int CombatInstance::enemyType = 0;
 int CombatInstance::playerOneID = 0;
 int CombatInstance::playerTwoID = 0;
 
+// Temporary
+int CombatInstance::damageDealt = 4;
+int CombatInstance::playerOneHealthRemaining = 60;
+int CombatInstance::playerTwoHealthRemaining = 55;
+
 std::thread CombatInstance::combatThread;
 
 deque<deque<int>> CombatInstance::playersActionQueue;
@@ -88,11 +93,36 @@ void CombatInstance::notifyAttack(int player, int characterType, int damageDealt
 	}
 }
 
+// Waiting on equipment and attributes data
+// In the meantime no actual death or saved health for players (unless NPC)
 void CombatInstance::executePlayerAttack(int player, int characterType) {
-	/*int damageDealt = 0;
-	int healthRemaining = 0;
+	
+	// Temporary, rigged just to show messaging works.
 	if (player == PLAYER_ONE) {
-		damageDealt = // Get player damage
+		playerTwoHealthRemaining -= damageDealt;
+		if (playerTwoHealthRemaining <= 0) {
+			keepFighting = false;
+			if (characterType == NPC_ONLY) {
+				DatabaseTool::murderNpc(playerTwoID);
+			}
+		}
+		notifyAttack(player, characterType, damageDealt, playerTwoHealthRemaining);
+	}
+	else {
+		playerOneHealthRemaining -= damageDealt;
+		if (playerOneHealthRemaining <= 0) {
+			keepFighting = false;
+		}
+		notifyAttack(player, characterType, damageDealt, playerOneHealthRemaining);
+	}
+
+	/*
+	Attributes attackerAttributes;
+	Attributes defenderAttributes;
+
+	
+	if (player == PLAYER_ONE) {
+		damageDealt = 
 		if (characterType == PLAYER_ONLY) {
 			healthRemaining = DatabaseTool::getCharHealth(playerTwoID);
 		}
@@ -109,15 +139,7 @@ void CombatInstance::executePlayerAttack(int player, int characterType) {
 		}
 		healthRemaining = DatabaseTool::getCharHealth(playerOneID);
 	}
-	healthRemaining = healthRemaining - damageDealt;
-	// Deal player damage to other player health
-	if (healthRemaining <= 0) {
-		keepFighting = false;
-	}
-	notifyAttack(player, characterType, damageDealt, healthRemaining);
-	*/
-	notifyAttack(player, characterType, 0, 50);
-
+	*/	
 }
 
 void CombatInstance::executePlayerRetreat(int player) {
