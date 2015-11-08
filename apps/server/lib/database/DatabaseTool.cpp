@@ -526,6 +526,7 @@ vector<string> DatabaseTool::getItemsInInventory(int charID) {
 		>>[&](string desc) {
 			items.push_back(desc);
 		};
+		cout << "[DB] Got items" << endl;
 		return items;
 	} catch(sqlite_exception e) {
 		cout << e.what() << endl;
@@ -968,7 +969,7 @@ string DatabaseTool::look(int charID, string word) {
 			items = items + item + ", ";
 		}
 
-		if(items == "You see ") {
+		if(items == "In your inventory you have: ") {
 			items = "You have no items in your inventory.  ";
 		}
 

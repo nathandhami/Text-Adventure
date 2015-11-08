@@ -83,10 +83,6 @@ std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
 	std::vector< std::string > tokens;
 	boost::algorithm::split_regex( tokens, zoneData, PATTERN );
 	
-	LOG( "Num Args: " << tokens.size() );
-	LOG( "Num Args: " << tokens[0] );
-	LOG( "Num Args: " << tokens[1] );
-	
 	std::string responseMessage = MSG_INVALID_CMD;
 	if ( tokens.size() == NUM_EXP_ARGS ) {
 		int zoneId = atoi( tokens[ 0 ].c_str() );
@@ -95,26 +91,10 @@ std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
 		
 		DatabaseTool::addExtendedDescriptionToZone( zoneId, description, keyword );
 		responseMessage = "You have bent the fabric of time itself.";
-		Zone::broadcastMessage( zoneId, "You feel something changed about this place, but you can't put your finger on it." );
+		Zone::broadcastMessage( zoneId, "You feel something changed about this place, but you can't quite put your finger on it." );
 	}
 	
 	return responseMessage;
-	
-	//TO-DO: finish what was started
-	
-//	const int EXPECTED_TOKEN_NUM = 3;
-//	boost::regex pattern( "(~as)|(~:)" );
-//	
-//	std::vector< std::string > tokens;
-//	parseToTokens( tokens, pattern, zoneData );
-//	
-//	LOG( "Zone ID: " << tokens[ 0 ] );
-//	LOG( "Desc: " << tokens[ 1 ] );
-//	LOG( "Keywords: " << tokens[ 2 ] );
-//
-//	DatabaseTool::addExtendedDescriptionToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 1 ], tokens[ 2 ] );
-//	
-//	return ( "Described zone " + tokens[ 0 ] + " as " + tokens[ 1 ] );
 }
 
 

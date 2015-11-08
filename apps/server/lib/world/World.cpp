@@ -34,6 +34,11 @@ string World::playerLook(int playerID, string keyword) {
 	return DatabaseTool::look(playerID, keyword);
 }
 
+string World::playerLookAt(int playerID, string keyword) {
+	boost::trim(keyword);
+	return DatabaseTool::look(playerID, keyword);
+}
+
 string World::playerPickupItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
@@ -69,6 +74,9 @@ string World::executeCommand(int playerID, Command givenCommand) {
 		return movePlayer(playerID, arguments);
 	}
 	else if (command == "look") {
+		return playerLook(playerID, arguments);
+	}
+	else if (command == "look at") {
 		return playerLook(playerID, arguments);
 	}
 	else if (command == "pickup") {

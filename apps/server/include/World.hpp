@@ -22,6 +22,7 @@ class World {
 	static string movePlayer(int, string);
 	
 	static string playerLook(int, string);
+	static string playerLookAt(int, string);
 
 	static string playerPickupItem(int playerID, string item);
 

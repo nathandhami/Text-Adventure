@@ -84,7 +84,7 @@ int main( int argc, const char* argv[] ) {
 	
 //	Game::enact( "go north" );
 //	Game::enact( "move north" );
-	Game::enact( " look altar" );
+	Game::enact( " look at inventory" );
 //	Game::enact( "fight sadas" );
 	Game::enact( "@ testChar1 do you think this is a game?" );
 //	Game::enact( "# This is a zone MeSsAgE." );
