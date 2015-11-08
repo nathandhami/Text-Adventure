@@ -50,6 +50,7 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "delete"			, INCOMPLETE },
 	{ "delete zone"		, EDITOR },
 	{ "delete door"		, EDITOR },
+	{ "delete object"	, EDITOR },
 
 	{ "describe"		, INCOMPLETE },
 	{ "describe zone"	, EDITOR },
@@ -63,7 +64,7 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "accept"			, INCOMPLETE },
 
 	{ "equip"			, CHARACTER },
-	{ "pick up"			, CHARACTER },
+	{ "pick up"			, WORLD },
 
 	{ "@"				, MESSENGER },
 	{ "#"				, MESSENGER }

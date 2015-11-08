@@ -322,6 +322,8 @@ class DatabaseTool{
 		static bool moveCharacterToZone( int charID, int zoneID );
 	
 		static int createNewItem( string shrtDesc, string desc, string lngDesc, string keywords );
+		static void deleteObject( int objectID );
+	
 		static bool signUserIn( string userName, string password );
 		static bool signUserOut( int userID );
 	

@@ -79,7 +79,7 @@ string World::executeCommand(int playerID, Command givenCommand) {
 	else if (command == "look at") {
 		return playerLook(playerID, arguments);
 	}
-	else if (command == "pickup") {
+	else if (command == "pick up") {
 		return playerPickupItem(playerID, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";

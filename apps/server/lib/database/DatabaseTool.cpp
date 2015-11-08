@@ -1327,6 +1327,21 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 }
 
 
+void DatabaseTool::deleteObject( int objectID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "DELETE FROM items WHERE itemID = ?;"
+			<< objectID;
+
+	} catch ( exception& e ) {
+		return;
+	}
+}
+
+
 int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, string keywords ) {
 	try {
 		database db(DB_LOCATION);

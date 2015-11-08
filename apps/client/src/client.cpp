@@ -94,7 +94,11 @@ int main( int argc, const char* argv[] ) {
 //	Game::enact( "describe zone [3054] as [prisoners] telling [It's also known as hell. Prisoners go here to enjoy their last days in deadly competetive games for food and water.]" );
 //	Game::enact( "delete zone 3207" );
 //	Game::enact( "create door [river] in [3054] at [east] to [3205] seen as [You see river glittering in the distance playing the melody of spring.]" );
-	Game::enact( "delete door 235" );
+//	Game::enact( "delete door 235" );
+//	Game::enact( "create item [item name] seen as [what you see] upclose [the long description] recognized as [keywords]" );
+//	Game::enact( "delete object 10004" );
+//	Game::enact( "pick up a bottle of beer" );
+	Game::enact( "look at inventory" );
 	
 	
 	

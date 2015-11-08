@@ -8,7 +8,8 @@
 class ObjectEditor {
 public:
 	
-	static void createItem( int creatorId, std::string itemData );
+	static std::string createItem( int creatorId, std::string itemData );
+	static std::string deleteObject( std::string itemData );
 	
 private:
 	
