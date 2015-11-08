@@ -51,6 +51,6 @@ bool Zone::roomForMorePlayers(int zoneID) {
 void Zone::broadcastMessage(int zoneID, string message) {
 	vector<int> playersInZone = DatabaseTool::getAllOnlineCharsInZone(zoneID);
 	for (int i = 0; i < playersInZone.size(); i++) {
-		Server::sendMessageToCharacter(playersInZone[i], GameCode::NONE, message);
+		Server::sendMessageToCharacter(playersInZone[i], GameCode::STATUS, message);
 	}
 }

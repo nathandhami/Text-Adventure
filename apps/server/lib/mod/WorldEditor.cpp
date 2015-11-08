@@ -1,5 +1,6 @@
 #include <mod/WorldEditor.hpp>
 #include <DatabaseTool.hpp>
+#include "Zone.hpp"
 
 #include <iostream>
 #include <boost/algorithm/string.hpp>
@@ -62,10 +63,10 @@ std::string WorldEditor::deleteZone( std::string zoneData ) {
 		int zoneId = boost::lexical_cast<int>( zoneData );
 		if ( zoneId) {
 			DatabaseTool::deleteZone( zoneId );
-			responseMessage = "Deleted zone";
+			responseMessage = "Deleted zone " + std::to_string( zoneId );
 		}
 	} catch( boost::bad_lexical_cast const& ) {
-		std::cout << "Error: input string was not valid" << std::endl;
+		std::cout << "Zone ID can only be a number." << std::endl;
 	}
 	
 	return responseMessage;
@@ -75,12 +76,29 @@ std::string WorldEditor::deleteZone( std::string zoneData ) {
 std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
 	const std::string MSG_INVALID_CMD = "Incorrect creation command.";
 	const int NUM_EXP_ARGS = 3;
-	const boost::regex PATTERN( "(\\].*as.*\\[)|(\\].*telling.*\\[)" );
+	const boost::regex PATTERN( "(\\].*?as.*?\\[)|(\\]((?!\\]).)*?telling.*?\\[)" );
 	
 	boost::trim_if( zoneData, boost::is_any_of( "[] " ) );
 	
 	std::vector< std::string > tokens;
 	boost::algorithm::split_regex( tokens, zoneData, PATTERN );
+	
+	LOG( "Num Args: " << tokens.size() );
+	LOG( "Num Args: " << tokens[0] );
+	LOG( "Num Args: " << tokens[1] );
+	
+	std::string responseMessage = MSG_INVALID_CMD;
+	if ( tokens.size() == NUM_EXP_ARGS ) {
+		int zoneId = atoi( tokens[ 0 ].c_str() );
+		std::string keyword = tokens[ 1 ];
+		std::string description = tokens[ 2 ];
+		
+		DatabaseTool::addExtendedDescriptionToZone( zoneId, description, keyword );
+		responseMessage = "You have bent the fabric of time itself.";
+		Zone::broadcastMessage( zoneId, "You feel something changed about this place, but you can't put your finger on it." );
+	}
+	
+	return responseMessage;
 	
 	//TO-DO: finish what was started
 	
