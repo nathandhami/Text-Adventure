@@ -49,6 +49,8 @@ MainWindow::MainWindow()
 	commandEntry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_enter_pressed));
 
 	outputTextBuffer->insert(outputTextBuffer->end(), "\n");
+	
+	set_focus_child(commandEntry);
 
 	show_all_children();
 }
