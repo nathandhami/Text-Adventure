@@ -526,6 +526,7 @@ vector<string> DatabaseTool::getItemsInInventory(int charID) {
 		>>[&](string desc) {
 			items.push_back(desc);
 		};
+		cout << "[DB] Got items" << endl;
 		return items;
 	} catch(sqlite_exception e) {
 		cout << e.what() << endl;
@@ -968,7 +969,7 @@ string DatabaseTool::look(int charID, string word) {
 			items = items + item + ", ";
 		}
 
-		if(items == "You see ") {
+		if(items == "In your inventory you have: ") {
 			items = "You have no items in your inventory.  ";
 		}
 
@@ -1208,6 +1209,21 @@ int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) 
 }
 
 
+void DatabaseTool::deleteZone( int zoneID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "DELETE FROM zones WHERE zoneID = ?;"
+			<< zoneID;
+
+	} catch ( exception& e ) {
+		return;
+	}
+}
+
+
 bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string keywords ) {
 	try {
 		database db(DB_LOCATION);
@@ -1226,7 +1242,7 @@ bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string
 }
 
 
-bool DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
+int DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
 	try {
 		database db(DB_LOCATION);
 
@@ -1239,9 +1255,25 @@ bool DatabaseTool::addDoorToZone( int zoneID, string description, string directi
 			<< direction
 			<< pointer;
 
-		return true;
+		return db.last_insert_rowid();
 	} catch ( exception& e ) {
-		return false;
+		std::cerr << e.what() << std::endl;
+		return 0;
+	}
+}
+
+
+void DatabaseTool::deleteDoor( int doorID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "DELETE FROM doors WHERE doorID = ?;"
+			<< doorID;
+
+	} catch ( exception& e ) {
+		return;
 	}
 }
 
@@ -1331,6 +1363,7 @@ bool DatabaseTool::signUserIn( string userName, string password ){
 		return loggedIn;
 	} catch(sqlite_exception e) {
 		std::cerr << e.what() << std::endl;
+		std::cout << "[Database] Failed to open file.";
 		return false;
 	}
 }
@@ -1356,6 +1389,29 @@ bool DatabaseTool::signUserOut( int userID ){
 }
 
 
+void DatabaseTool::clearAllSessions() {
+	database db( DB_LOCATION );
+	
+	db << "DELETE FROM charactersOnline;";
+}
+
+
+void DatabaseTool::signOffAllUsers() {
+	database db( DB_LOCATION );
+	
+	db << "UPDATE users SET signedOn = 0";
+}
+
+
+bool DatabaseTool::testValidity() {
+	try {
+		database db( DB_LOCATION );
+		return true;
+	} catch(sqlite_exception e) {
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
 
 
 

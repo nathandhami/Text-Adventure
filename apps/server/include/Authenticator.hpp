@@ -14,12 +14,17 @@
 
 #include "User.hpp"
 
-namespace Authenticator {
-	int login( std::string data );
-	bool login( User& user, std::string userCredentials );
-	void logout( int userId );
-	bool logout( User& user );
-}
+class Authenticator {
+public:
+	static int login( std::string data );
+	static bool login( User& user, std::string userCredentials );
+	static void logout( int userId );
+	static bool logout( User& user );
+	
+private:
+	Authenticator() {}
+	
+};
 
 
 

@@ -20,7 +20,7 @@ bool Authenticator::login( User& user, std::string data ) {
 	bool signedIn = DatabaseTool::signUserIn( credentials[ 0 ], credentials[ 1 ] );
 
 	if ( signedIn ) {
-		user.setUserId( DatabaseTool::getUserID( credentials[ 0 ], credentials[ 1 ] ) );
+		user.userId = DatabaseTool::getUserID( credentials[ 0 ], credentials[ 1 ] );
 		std::cout << "[Auth] Logged: " << DatabaseTool::getUserID( credentials[ 0 ], credentials[ 1 ] ) << std::endl;
 	} else {
 		std::cout << "[Auth] Failed to log in." << std::endl;
@@ -41,7 +41,7 @@ bool Authenticator::logout( User& user ) {
 		if ( signedOut ) {
 			std::cout << "[Auth] Logged out." << std::endl;
 			DatabaseTool::setCharOffline( user.getUserId() );
-			user.setUserId( NO_USER_ID );
+			user.userId = NO_USER_ID;
 		} else {
 			std::cout << "[Auth] Failed to log out." << std::endl;
 		}
@@ -50,11 +50,4 @@ bool Authenticator::logout( User& user ) {
 	}
 	
 	return false;
-}
-
-
-void Authenticator::logout( int userId ) {
-	if ( userId ) {
-		DatabaseTool::setCharOffline( userId );
-	}
 }

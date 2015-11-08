@@ -1,31 +1,64 @@
 #include "World.hpp"
-#include "WorldConstants.hpp"
+
+// --------Private variables--------
+	
+bool World::keepRespawning = false;
+
+std::thread World::respawnThread;
 
 // --------Private functions--------
 
-bool World::movePlayer(int playerID, string destination) {
-	boost::to_upper(destination);
-	if (!WorldConstants::isDirection(destination)) {
-		return false;
-	}
+string World::movePlayer(int playerID, string destination) {
+	boost::trim(destination);
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	int destinationZoneID = Zone::getNeighbourZone(currentZoneID, destination);
-	if (!Zone::roomForMorePlayers(destinationZoneID)) {
-		return false;
-	}
-	std::cout << "Zone: " << destinationZoneID << std::endl;
 	if ( destinationZoneID == 0 ) {
-		return false;
+		return "Unable to move " + destination + "\n";
 	}
-	Combat::endCombat(playerID, DatabaseTool::getCharNameFromID(playerID) + " left the zone.\n");
+	if (!Zone::roomForMorePlayers(destinationZoneID)) {
+		return "Unable to move " + destination + ", it is full.\n";
+	}
+
+	Combat::endCombat(playerID, "");
+
+	std::cout << "Player " << playerID << " is moving from zone " << currentZoneID << " to zone " << destinationZoneID << std::endl;
+	Zone::broadcastMessage(destinationZoneID, DatabaseTool::getCharNameFromID(playerID) + " entered the zone.\n");
+
 	DatabaseTool::putCharInZone(playerID, destinationZoneID);
-	return true;
+	Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " left the zone.\n");
+	return playerLook(playerID, "");
 }
 
 string World::playerLook(int playerID, string keyword) {
+	boost::trim(keyword);
+	return DatabaseTool::look(playerID, keyword);
+}
+
+string World::playerLookAt(int playerID, string keyword) {
+	boost::trim(keyword);
+	return DatabaseTool::look(playerID, keyword);
+}
+
+string World::playerPickupItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
-	boost::to_upper(keyword);
-	return Zone::getDescription(currentZoneID, keyword);
+	boost::trim(item);
+	if (DatabaseTool::pickUp(playerID, item)) {
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up the " + item + "\n");
+		return "You pick up the " + item + ".\n";
+	}
+	return "The " + item + " is not in the room or cannot be picked up.\n";
+}
+
+void World::runRespawn() {
+	int counter = 0;
+	while (keepRespawning) {
+		counter++;
+		if (counter >= RESPAWN_TIME_SECONDS) {
+			DatabaseTool::respawnAll();
+			counter = 0;
+		}
+		sleep(1);
+	}
 }
 
 // --------Public functions--------
@@ -38,13 +71,36 @@ string World::executeCommand(int playerID, Command givenCommand) {
 		return "You cannot " + command + " while in combat.\n";
 	}
 	if (command == "move") {
-		if (!movePlayer(playerID, arguments)) {
-			return "Unable to move " + arguments + "\n";
-		}
-		return playerLook(playerID, "");
+		return movePlayer(playerID, arguments);
 	}
 	else if (command == "look") {
 		return playerLook(playerID, arguments);
 	}
+	else if (command == "look at") {
+		return playerLook(playerID, arguments);
+	}
+	else if (command == "pickup") {
+		return playerPickupItem(playerID, arguments);
+	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
+}
+
+bool World::isRespawnLoopRunning() {
+	return keepRespawning;
+}
+
+void World::startRespawnLoop() {
+	if (!World::isRespawnLoopRunning()) {
+		keepRespawning = true;
+		respawnThread = std::thread(&World::runRespawn);
+	}
+}
+
+void World::stopRespawnLoop() {
+	keepRespawning = false;
+	respawnThread.join();
+}
+
+void World::respawnImmediately() {
+	DatabaseTool::respawnAll();
 }

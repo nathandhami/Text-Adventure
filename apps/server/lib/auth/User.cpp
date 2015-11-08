@@ -7,16 +7,12 @@ bool User::isAuthorized() const {
 }
 
 
-void User::setUserId( int userId ) {
-	this->userId = userId;
-}
-
-
 int User::getUserId() const {
 	return this->userId;
 }
 
 
-void setSelectedCharacterId( int characterId ) {
+int getSelectedCharacterId() {
 	
+	return 0;
 }
