@@ -16,7 +16,9 @@ MainWindow::MainWindow()
 	m_WorkerThread = Glib::Threads::Thread::create(sigc::mem_fun(*this, &MainWindow::get_response_thread));
 
 	outputTextview.set_editable(FALSE);
-	outputScrollWindow.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
+	outputScrollWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+	
+	//Wraps text in the textview
 	outputTextview.set_wrap_mode(Gtk::WRAP_CHAR);
 
 	//Adds the output text to scrollwindow parent
@@ -46,10 +48,12 @@ MainWindow::MainWindow()
 	outputTextBuffer->set_text("What would you like to do?");
 	outputTextview.set_buffer(outputTextBuffer);
 
+	//Enter signal to get user input and call function to handle it
 	commandEntry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_enter_pressed));
 
 	outputTextBuffer->insert(outputTextBuffer->end(), "\n");
 	
+	//Sets the focus on the command entry box when the program starts
 	set_focus_child(commandEntry);
 
 	show_all_children();
