@@ -2,7 +2,8 @@ CREATE TABLE users (
   userID integer primary key,
   userName varchar(30) unique,
   password varchar(20) not null,
-  authencationLevel integer not null
+  authencationLevel integer not null,
+  signedOn integer default 0
 );
 
 CREATE TABLE characters (

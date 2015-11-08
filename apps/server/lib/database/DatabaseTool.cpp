@@ -15,6 +15,8 @@ const string INITIAL_ZONE = "3054";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
 
+const int verbosity = 0;
+
 using namespace std;
 using namespace  sqlite;
 
@@ -36,6 +38,9 @@ bool DatabaseTool::executeSQLInsert(string statment){
 		db << statment;
 	return true;
 	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 
@@ -57,6 +62,9 @@ int DatabaseTool::getUserID(string userName, string password){
 		>>charID;
 		return charID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -70,6 +78,9 @@ int DatabaseTool::getUserAuthencationLevel(int userID) {
 		>>authencationLevel;
 		return authencationLevel;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -88,6 +99,9 @@ string DatabaseTool::getPassword(int userID) {
 		>>password;
 		return password;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 
@@ -108,6 +122,9 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		<<description;
 		return true;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -123,6 +140,9 @@ vector<string> DatabaseTool::getCharactersNames(int userID){
 		};
 		return names;
 	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return names;
 	}
 }
@@ -136,6 +156,9 @@ int DatabaseTool::getCharIDFromName(string name){
 		>>charID;
 		return charID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -150,6 +173,9 @@ int DatabaseTool::getCharIDInZoneFromName(string name, int zoneID) {
 		>>charID;
 		return charID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -163,6 +189,9 @@ string DatabaseTool::getCharNameFromID(int charID) {
 		>>name;
 		return name;
 	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 
@@ -177,6 +206,9 @@ bool DatabaseTool::isCharOnline(int charID){
 		>>onlineStatus;
 		return onlineStatus;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -200,6 +232,9 @@ string DatabaseTool::getSessionID(int charID) {
 		>>sessionID;
 		return sessionID;
 	}catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 
@@ -214,6 +249,9 @@ int DatabaseTool::getCharID(int userID){
 		>>charID;
 		return charID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -232,6 +270,9 @@ int DatabaseTool::getCharsLocation(int charID){
 		>>zoneID;
 		return zoneID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -261,6 +302,9 @@ bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 		<<npcInstanceID;
 		return true;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -290,6 +334,9 @@ bool DatabaseTool::isNpcAlive(int npcInstanceID){
 		>> isAlive;
 		return isAlive;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 
@@ -320,6 +367,9 @@ string DatabaseTool::getNpcDesc(int npcInstanceID){
 		>>description;
 		return description;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 }
@@ -333,6 +383,9 @@ string DatabaseTool::getNpcName(int npcInstanceID){
 		>>name;
 		return name;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 }
@@ -346,6 +399,9 @@ int DatabaseTool::getNpcIDFromInstanceID(int npcInstanceID) {
 		>>npcID;
 		return npcID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -399,6 +455,9 @@ bool DatabaseTool::addZone(
 		}
 		return true;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -412,6 +471,9 @@ string DatabaseTool::getZoneName(int zoneID){
 		>>zoneName;
 		return zoneName;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 }
@@ -425,6 +487,9 @@ string DatabaseTool::getZoneDesc(int zoneID){
 		>>description;
 		return description;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 }
@@ -442,6 +507,9 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 		};
 		return extendedDesc;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 
@@ -461,7 +529,9 @@ int DatabaseTool::getDirectionID(int zoneID, string direction){
 		};
 		return linksTo;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -480,7 +550,9 @@ string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 		};
 		return doorDescription;
 	} catch (sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 }
@@ -513,6 +585,9 @@ bool DatabaseTool::addItem(Item item) {
 		return true;
 
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -528,7 +603,9 @@ vector<string> DatabaseTool::getItemsInInventory(int charID) {
 		};
 		return items;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return items;
 	}
 }
@@ -545,6 +622,9 @@ vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 		};
 		return items;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return items;
 
 	}
@@ -561,7 +641,9 @@ bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
 		<<zoneID;
 		return true;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -583,7 +665,9 @@ bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
 			return false;
 		}
 	}catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -605,7 +689,9 @@ bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
 			return false;
 		}
 	}catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -638,7 +724,9 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 			return false;
 		}
 	}catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -741,6 +829,9 @@ Attributes DatabaseTool::getAttributes(int id, Target characterOrNpc){
 				return attributes;
 		}
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return attributes;
 	}
 }
@@ -791,6 +882,9 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target target){
 				<<attributes.id;
 				return true;
 			} catch(sqlite_exception e) {
+				if(verbosity > 0) {
+					cout << e.what();
+				}
 				return false;
 			}
 	}
@@ -825,7 +919,9 @@ bool DatabaseTool::equipItem(int charID, string item) {
 		};
 		return foundItem;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 
@@ -858,7 +954,9 @@ bool DatabaseTool::pickUp(int charID, string item) {
 		}
 
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -912,6 +1010,9 @@ bool DatabaseTool::setCombatFlag(int id, bool inCombat, Target characterOrNpc) {
 				return false;
 		}
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 
@@ -934,6 +1035,9 @@ bool DatabaseTool::inCombat(int id, Target characterOrNpc) {
 				return inCombat;
 		}
 	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -951,6 +1055,9 @@ int DatabaseTool::getNpcInstanceIDFromName(string name, int zoneID) {
 		};
 		return instanceID;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 
@@ -968,7 +1075,7 @@ string DatabaseTool::look(int charID, string word) {
 			items = items + item + ", ";
 		}
 
-		if(items == "You see ") {
+		if(items == "In your inventory you have: ") {
 			items = "You have no items in your inventory.  ";
 		}
 
@@ -1031,10 +1138,6 @@ string DatabaseTool::look(int charID, string word) {
 		return description;
 	}
 
-	description = findItemDescription(charID, zoneID, word);
-	if(!description.empty()) {
-		return description;
-	}
 
 	description = findPlayerDescription(charID, zoneID, word);
 	if(!description.empty()) {
@@ -1042,6 +1145,11 @@ string DatabaseTool::look(int charID, string word) {
 	}
 
 	description = findNpcDescription(zoneID, word);
+	if(!description.empty()) {
+		return description;
+	}
+
+	description = findItemDescription(charID, zoneID, word);
 	if(!description.empty()) {
 		return description;
 	}
@@ -1067,7 +1175,9 @@ string DatabaseTool::findNpcDescription(int zoneID, string word) {
 		};
 		return foundDescription;
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 
@@ -1085,6 +1195,9 @@ string DatabaseTool::findPlayerDescription(int lookerID, int zoneID, string name
 
 		return description;
 	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 
@@ -1121,7 +1234,9 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 		return foundDescription;
 
 	} catch(sqlite_exception e) {
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "";
 	}
 }
@@ -1159,7 +1274,9 @@ void DatabaseTool::executeCommands() {
 
 		};
 	} catch(sqlite_exception e){
-		cout << e.what() << endl;
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 
 	}
 }
@@ -1185,6 +1302,9 @@ int DatabaseTool::createNewZone( string zoneName, string zoneDesc ) {
 
 		return db.last_insert_rowid();
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -1203,6 +1323,9 @@ int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) 
 
 		return db.last_insert_rowid();
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -1221,6 +1344,9 @@ bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string
 
 		return true;
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -1241,6 +1367,9 @@ bool DatabaseTool::addDoorToZone( int zoneID, string description, string directi
 
 		return true;
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
@@ -1258,6 +1387,9 @@ string DatabaseTool::getDoorDescriptionAt( int zoneID, string direction ) {
 
 		return fetchedDesc;
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return "There is nothing there.";
 	}
 }
@@ -1275,6 +1407,9 @@ int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
 
 		return fetchedZoneID;
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return 0;
 	}
 }
@@ -1290,6 +1425,9 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 
 		return true;
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			cout << e.what();
+		}
 		return false;
 	}
 }
