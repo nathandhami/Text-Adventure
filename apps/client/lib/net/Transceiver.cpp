@@ -121,14 +121,26 @@ void Transceiver::asyncReadServerResponses() {
 				
 				
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->reading = false;
+					this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+					break;
+				}
 				// get body length
 				std::string bodyLengthStr = this->read( NetMessage::MaxLength::BODY_LENGTH );
-				if ( bodyLengthStr == CODE_ERROR_READ ) break;
+				if ( bodyLengthStr == CODE_ERROR_READ ) {
+					this->reading = false;
+					this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+					break;
+				}
 				int bodyLength = atoi( bodyLengthStr.c_str() );
 				// get body
 				std::string body = this->read( bodyLength );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->reading = false;
+					this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+					break;
+				}
 				
 				
 				

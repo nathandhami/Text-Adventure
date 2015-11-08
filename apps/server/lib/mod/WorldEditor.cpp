@@ -148,7 +148,7 @@ std::string WorldEditor::deleteDoor( int creatorId, std::string doorData ) {
 		DatabaseTool::deleteDoor( doorId );
 		responseMessage = "Deleted door " + std::to_string( doorId );
 		int zoneId = DatabaseTool::getCharsLocation( creatorId );
-		Zone::broadcastMessage( zoneId, "Watch your step, the world is shrinking!" );
+		Zone::broadcastMessage( zoneId, "Watch your steps, the world is shrinking!" );
 	}
 	
 	return responseMessage;
