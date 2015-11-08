@@ -30,6 +30,11 @@ class CombatInstance {
 	static int playerOneID;
 	static int playerTwoID;
 
+	// For testing combat until we have equipment and attribute data
+	static int damageDealt;
+	static int playerOneHealthRemaining;
+	static int playerTwoHealthRemaining;
+
 	static std::thread combatThread;
 
 	static deque<deque<int>> playersActionQueue;
