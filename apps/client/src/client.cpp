@@ -83,16 +83,18 @@ int main( int argc, const char* argv[] ) {
 	std::cout << "\tBody:\n" << response.body << std::endl;
 	
 //	Game::enact( "go north" );
-//	Game::enact( "move north" );
-	Game::enact( " look at inventory" );
+//	Game::enact( "move east" );
+//	Game::enact( " look east" );
 //	Game::enact( "fight sadas" );
-	Game::enact( "@ testChar1 do you think this is a game?" );
+//	Game::enact( "@ testChar1 do you think this is a game?" );
 //	Game::enact( "# This is a zone MeSsAgE." );
-	Game::enact( "blergh" );
+//	Game::enact( "blergh" );
 //	Game::enact( "create zone my head hurts" );
 //	Game::enact( "create zone [Deadman Wonderland] seen as [You see a what used to be colourful arc with giant letters spelling: 'Deadman Wonderland']" );
 //	Game::enact( "describe zone [3054] as [prisoners] telling [It's also known as hell. Prisoners go here to enjoy their last days in deadly competetive games for food and water.]" );
 //	Game::enact( "delete zone 3207" );
+//	Game::enact( "create door [river] in [3054] at [east] to [3205] seen as [You see river glittering in the distance playing the melody of spring.]" );
+	Game::enact( "delete door 235" );
 	
 	
 	

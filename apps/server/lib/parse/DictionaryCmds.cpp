@@ -43,16 +43,16 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 
 	{ "create"			, INCOMPLETE },
 	{ "create zone"		, EDITOR },
+	{ "create door"		, EDITOR },
+	{ "create item"		, EDITOR },
+	{ "create doodad"	, EDITOR },
 	
 	{ "delete"			, INCOMPLETE },
 	{ "delete zone"		, EDITOR },
+	{ "delete door"		, EDITOR },
 
 	{ "describe"		, INCOMPLETE },
 	{ "describe zone"	, EDITOR },
-	
-	{ "create door in"	, EDITOR },
-	{ "create item"		, EDITOR },
-	{ "create doodad"	, EDITOR },
 
 	{ "fight"			, COMBAT },
 	{ "attack"			, COMBAT },
@@ -60,7 +60,6 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "accept challenge", COMBAT },
 
 	{ "pick"			, INCOMPLETE },
-	{ "create door"		, INCOMPLETE },
 	{ "accept"			, INCOMPLETE },
 
 	{ "equip"			, CHARACTER },

@@ -34,8 +34,8 @@ private:
 	static std::shared_ptr< Watcher > watcher;
 	static SessionMap sessions;
 	
+	static void resetUserLogin();
 	static std::string generateUniqueIdentifierString();
-	
 	
 };
 

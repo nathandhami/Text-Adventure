@@ -10,7 +10,10 @@
 #define CMD_CREATE_ZONE 	"create zone"
 #define CMD_DESC_ZONE 		"describe zone"
 #define CMD_DELETE_ZONE		"delete zone"
-#define CMD_CREATE_DOOR		"create door in"
+
+#define CMD_CREATE_DOOR		"create door"
+#define CMD_DELETE_DOOR		"delete door"
+
 #define CMD_CREATE_ITEM		"create item"
 #define CMD_CREATE_DOODAD	"create doodad"
 
@@ -50,7 +53,9 @@ std::string Editor::judgeAndPerform( int creatorId, int charId, Command command 
 	} else if ( commandType == CMD_DELETE_ZONE ) {
 		editorResponse = WorldEditor::deleteZone( commandString );
 	} else if ( commandType == CMD_CREATE_DOOR ) {
-		WorldEditor::addDoorToZone( creatorId, commandString );
+		editorResponse = WorldEditor::addDoorToZone( creatorId, commandString );
+	} else if ( commandType == CMD_DELETE_DOOR ) {
+		editorResponse = WorldEditor::deleteDoor( creatorId, commandString );
 	} else if ( commandType == CMD_CREATE_ITEM ) {
 		ObjectEditor::createItem( creatorId, commandString );
 	}else {

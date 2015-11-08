@@ -1242,7 +1242,7 @@ bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string
 }
 
 
-bool DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
+int DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
 	try {
 		database db(DB_LOCATION);
 
@@ -1255,9 +1255,25 @@ bool DatabaseTool::addDoorToZone( int zoneID, string description, string directi
 			<< direction
 			<< pointer;
 
-		return true;
+		return db.last_insert_rowid();
 	} catch ( exception& e ) {
-		return false;
+		std::cerr << e.what() << std::endl;
+		return 0;
+	}
+}
+
+
+void DatabaseTool::deleteDoor( int doorID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "DELETE FROM doors WHERE doorID = ?;"
+			<< doorID;
+
+	} catch ( exception& e ) {
+		return;
 	}
 }
 
@@ -1371,6 +1387,21 @@ bool DatabaseTool::signUserOut( int userID ){
 		return false;
 	}
 }
+
+
+void DatabaseTool::clearAllSessions() {
+	database db( DB_LOCATION );
+	
+	db << "DELETE FROM charactersOnline;";
+}
+
+
+void DatabaseTool::signOffAllUsers() {
+	database db( DB_LOCATION );
+	
+	db << "UPDATE users SET signedOn = 0";
+}
+
 
 bool DatabaseTool::testValidity() {
 	try {

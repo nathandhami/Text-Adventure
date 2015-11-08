@@ -12,6 +12,7 @@
 // ------------------- PUBLIC -------------------
 
 void Server::initialize() {
+	Server::resetUserLogin();
 	Server::watcher = std::make_shared< Watcher >();
 }
 
@@ -78,6 +79,13 @@ bool Server::sendMessageToCharacter( int characterId, std::string header, std::s
 
 std::shared_ptr< Watcher > Server::watcher;
 Server::SessionMap Server::sessions;
+
+
+void Server::resetUserLogin() {
+	std::cout << "[Server] Refreshing..." << std::endl;
+	DatabaseTool::clearAllSessions();
+	DatabaseTool::signOffAllUsers();
+}
 
 
 std::string Server::generateUniqueIdentifierString() {

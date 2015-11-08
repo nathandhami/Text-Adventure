@@ -12,7 +12,9 @@ public:
 	static std::string deleteZone( std::string zoneData );
 	
 	static std::string describeZone( int creatorId, std::string zoneData );
-	static void addDoorToZone( int creatorId, std::string doorData );
+	
+	static std::string addDoorToZone( int creatorId, std::string doorData );
+	static std::string deleteDoor( int creatorId, std::string doorData );
 	
 	
 private:

@@ -32,6 +32,16 @@ static void parseToTokens( std::vector< std::string >& tokens, boost::regex patt
 }
 
 
+static int getIntFromString( std::string text ) {
+	try {
+		int number = boost::lexical_cast<int>( text );
+		return number;
+	} catch( boost::bad_lexical_cast const& ) {
+		return 0;
+	}
+}
+
+
 // ------------------- PUBLIC -------------------
 
 std::string WorldEditor::createZone( std::string zoneData ) {
@@ -61,7 +71,7 @@ std::string WorldEditor::deleteZone( std::string zoneData ) {
 	std::string responseMessage = MSG_INVALID_CMD;
 	try {
 		int zoneId = boost::lexical_cast<int>( zoneData );
-		if ( zoneId) {
+		if ( zoneId ) {
 			DatabaseTool::deleteZone( zoneId );
 			responseMessage = "Deleted zone " + std::to_string( zoneId );
 		}
@@ -76,7 +86,7 @@ std::string WorldEditor::deleteZone( std::string zoneData ) {
 std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
 	const std::string MSG_INVALID_CMD = "Incorrect creation command.";
 	const int NUM_EXP_ARGS = 3;
-	const boost::regex PATTERN( "(\\].*?as.*?\\[)|(\\]((?!\\]).)*?telling.*?\\[)" );
+	const boost::regex PATTERN( "(\\]((?!\\]).)*?as.*?\\[)|(\\]((?!\\]).)*?telling.*?\\[)" );
 	
 	boost::trim_if( zoneData, boost::is_any_of( "[] " ) );
 	
@@ -98,24 +108,51 @@ std::string WorldEditor::describeZone( int creatorId, std::string zoneData ) {
 }
 
 
-void WorldEditor::addDoorToZone( int creatorId, std::string doorData ) {
-	const int EXPECTED_TOKEN_NUM = 5;
-	boost::regex pattern( "(~at)|(~to)|(~:)" );
+std::string WorldEditor::addDoorToZone( int creatorId, std::string doorData ) {
+	const std::string MSG_INVALID_CMD = "Incorrect creation command.";
+	const int NUM_EXP_ARGS = 5;
+	const boost::regex PATTERN( "(\\]((?!\\]).)*?in.*?\\[)|(\\]((?!\\]).)*?at.*?\\[)|(\\]((?!\\]).)*?to.*?\\[)|(\\]((?!\\]).)*?seen as.*?\\[)" );
+	
+	boost::trim_if( doorData, boost::is_any_of( "[] " ) );
 	
 	std::vector< std::string > tokens;
-	parseToTokens( tokens, pattern, doorData );
+	boost::algorithm::split_regex( tokens, doorData, PATTERN );
 	
-	//TO-DO: check size, inform user if invalid format
+	std::string responseMessage = MSG_INVALID_CMD;
+	if ( tokens.size() == NUM_EXP_ARGS ) {
+		std::string doorName 		= tokens[ 0 ];
+		int zoneId 					= atoi( tokens[ 1 ].c_str() );
+		std::string direction 		= tokens[ 2 ];
+		int destinationId 			= atoi( tokens[ 3 ].c_str() );
+		std::string description 	= tokens[ 4 ];
+		
+		LOG( "ZONEID1: " << zoneId );
+		LOG( "ZONEID2: " << destinationId );
+		
+		//int zoneID, string description, string direction, int pointer, string keywords
+		int newDoorId = DatabaseTool::addDoorToZone( zoneId, description, direction, destinationId, doorName );
+		responseMessage = "You have collided two zones! [" + std::to_string( newDoorId ) + "]";
+		Zone::broadcastMessage( zoneId, "You feel like the moment you turned your head the world has grown larger!" );
+	}
 	
-	LOG( "Zone: " << tokens[0] );
-	LOG( "Location: " << tokens[1] );
-	LOG( "Destination: " << tokens[2] );
-	LOG( "Description: " << tokens[3] );
-	LOG( "Keywords: " << tokens[4] );
-	
-	DatabaseTool::addDoorToZone( atoi( tokens[ 0 ].c_str() ), tokens[ 3 ], tokens[ 1 ], atoi( tokens[ 2 ].c_str() ), tokens[ 4 ] );
+	return responseMessage;
 }
 
+
+std::string WorldEditor::deleteDoor( int creatorId, std::string doorData ) {
+	const std::string MSG_INVALID_CMD = "This is not a valid ID.";
+	
+	std::string responseMessage = MSG_INVALID_CMD;
+	int doorId = getIntFromString( doorData );
+	if ( doorId ) {
+		DatabaseTool::deleteDoor( doorId );
+		responseMessage = "Deleted door " + std::to_string( doorId );
+		int zoneId = DatabaseTool::getCharsLocation( creatorId );
+		Zone::broadcastMessage( zoneId, "Watch your step, the world is shrinking!" );
+	}
+	
+	return responseMessage;
+}
 
 
 
