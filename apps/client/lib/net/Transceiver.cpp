@@ -74,6 +74,11 @@ NetMessage Transceiver::readAndPopQueue() {
 }
 
 
+void Transceiver::flushQueue() {
+	this->responseQueue = {};
+}
+
+
 // ------------------- PRIVATE ------------------
 
 void Transceiver::connectToHost() {
@@ -116,14 +121,26 @@ void Transceiver::asyncReadServerResponses() {
 				
 				
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->reading = false;
+					this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+					break;
+				}
 				// get body length
 				std::string bodyLengthStr = this->read( NetMessage::MaxLength::BODY_LENGTH );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( bodyLengthStr == CODE_ERROR_READ ) {
+					this->reading = false;
+					this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+					break;
+				}
 				int bodyLength = atoi( bodyLengthStr.c_str() );
 				// get body
 				std::string body = this->read( bodyLength );
-				if ( header == CODE_ERROR_READ ) break;
+				if ( header == CODE_ERROR_READ ) {
+					this->reading = false;
+					this->pushToReadQueue( GameCode::DISCONNECTED, "Lost connection to the server." );
+					break;
+				}
 				
 				
 				
@@ -137,7 +154,7 @@ void Transceiver::asyncReadServerResponses() {
 				} else {
 					// write to gameresponses
 					this->pushToReadQueue( header, body );
-					std::cout << "Response pushed." << std::endl;
+//					std::cout << "Response pushed." << std::endl;
 				}
 			}
 			this->readerThread.detach();
@@ -147,7 +164,7 @@ void Transceiver::asyncReadServerResponses() {
 
 
 std::string Transceiver::read( const int maxBufferLength ) {
-	std::cout << "Waiting for server write..." << std::endl;
+//	std::cout << "Waiting for server write..." << std::endl;
 	
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;

@@ -64,11 +64,6 @@ private:
 	bool writeInProgress = false;
 	
 	//Autherization data
-//	typedef struct {
-//		bool authorized;
-//		int userId;
-//		int characterId;
-//	} User;
 	User currentUser;
 	
 	// Client interactors
@@ -86,8 +81,7 @@ private:
 	ExecFuncMap funcMap = {
 		{ GameCode::LOGIN		, &Session::login },
 		{ GameCode::LOGOUT		, &Session::logout },
-		{ GameCode::COMMAND		, &Session::doGameCommand },
-		{ HEADER_MESSAGE	, &Session::sendMessageToCharacter }
+		{ GameCode::COMMAND		, &Session::doGameCommand }
 	};
 	
 //	NetMessage stripAndExecute( std::string header, std::string body );
@@ -98,7 +92,6 @@ private:
 	void selectCharacter( const std::string& characterName );
 	void deselectCurrentCharacter( const std::string& placeholder );
 	void doGameCommand( const std::string& commandString );
-	void sendMessageToCharacter( const std::string& charNameAndMessage );
 	
 	
 	std::string getIP( IPType type );

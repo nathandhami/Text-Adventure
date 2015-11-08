@@ -3,6 +3,7 @@
 
 #include "WorldConstants.hpp"
 #include "DatabaseTool.hpp"
+#include "Server.hpp"
 #include <vector>
 
 using namespace std;
@@ -20,14 +21,13 @@ public:
 	static string getName(int);
 
 	static void setDescription(int, string);
-	static string getDescription(int, string);
 
 	static void setNeighbourZone(int, string, int);
 	static int getNeighbourZone(int, string);
 
 	static bool roomForMorePlayers(int);
 
-	//void playerEnteringZone(int);
+	static void broadcastMessage(int zoneID, string message);
 };
 
 #endif

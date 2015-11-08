@@ -5,14 +5,14 @@
 #include <string>
 
 
-class ItemEditor {
+class ObjectEditor {
 public:
 	
 	static void createItem( int creatorId, std::string itemData );
 	
 private:
 	
-	ItemEditor() {}
+	ObjectEditor() {}
 };
 
 

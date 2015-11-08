@@ -2,6 +2,7 @@
 #include "DatabaseTool.hpp"
 
 #include <iostream>
+#include <cstdlib>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -11,11 +12,13 @@
 // ------------------- PUBLIC -------------------
 
 void Server::initialize() {
+	Server::resetUserLogin();
 	Server::watcher = std::make_shared< Watcher >();
 }
 
 
 void Server::start() {
+	if ( !DatabaseTool::testValidity() ) exit( EXIT_FAILURE );
 	Server::watcher->run();
 }
 
@@ -76,6 +79,13 @@ bool Server::sendMessageToCharacter( int characterId, std::string header, std::s
 
 std::shared_ptr< Watcher > Server::watcher;
 Server::SessionMap Server::sessions;
+
+
+void Server::resetUserLogin() {
+	std::cout << "[Server] Refreshing..." << std::endl;
+	DatabaseTool::clearAllSessions();
+	DatabaseTool::signOffAllUsers();
+}
 
 
 std::string Server::generateUniqueIdentifierString() {

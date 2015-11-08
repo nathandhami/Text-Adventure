@@ -20,70 +20,60 @@ using namespace std;
 // std::string data;
 //};
 
+using namespace CommandHeader;
 
+//const  CommandHeader DictionaryCmds::INVALID_COMMAND = INVALID;
 
-const std::string DictionaryCmds::INVALID_COMMAND = "invstr";
-
-std::map< std::string, std::string > DictionaryCmds::COMMAND_DICTIONARY = {
+std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	//Movement commands
-	{ "move"		, "move;any" },
-	{ "north"		, "move;north" },
-	{ "south"		, "move;south" },
-	{ "east"		, "move;east" },
-	{ "west"		, "move;west" },
-	{ "move north"	, "move;north" },
-	{ "move south"	, "move;south" },
-	{ "move east"	, "move;east" },
-	{ "move west"	, "move;west" },
+	{ "move"			, WORLD },
+	{ "go"				, WORLD },
+	{ "north"			, WORLD },
+	{ "south"			, WORLD },
+	{ "east"			, WORLD },
+	{ "west"			, WORLD },
+	{ "northeast"		, WORLD },
+	{ "northwest"		, WORLD },
+	{ "southeast"		, WORLD },
+	{ "southwest"		, WORLD },
+	{ "look"			, WORLD },
+	{ "look at"			, WORLD },
 
-	//Observatory commands
-	{ "look"		, "look;" },
-	{ "look north"	, "look;north" },
-	{ "look south"	, "look;south" },
-	{ "look east"	, "look;east" },
-	{ "look west"	, "look;west" }
+	// EDITOR commands
+
+	{ "create"			, INCOMPLETE },
+	{ "create zone"		, EDITOR },
+	{ "create door"		, EDITOR },
+	{ "create item"		, EDITOR },
+	{ "create doodad"	, EDITOR },
+	
+	{ "delete"			, INCOMPLETE },
+	{ "delete zone"		, EDITOR },
+	{ "delete door"		, EDITOR },
+
+	{ "describe"		, INCOMPLETE },
+	{ "describe zone"	, EDITOR },
+
+	{ "fight"			, COMBAT },
+	{ "attack"			, COMBAT },
+	{ "retreat"			, COMBAT },
+	{ "accept challenge", COMBAT },
+
+	{ "pick"			, INCOMPLETE },
+	{ "accept"			, INCOMPLETE },
+
+	{ "equip"			, CHARACTER },
+	{ "pick up"			, CHARACTER },
+
+	{ "@"				, MESSENGER },
+	{ "#"				, MESSENGER }
 };
 
 
 
-/*DictionaryCmds::DictionaryCmds() {
-    
-    //commandsInDictionary[0] = "move";
-    commandsInDictionary["move"] = "move";
-    commandsInDictionary["north"] = "move north";
-    commandsInDictionary["south"] = "move south";
-    commandsInDictionary["east"] = "move east";
-    commandsInDictionary["west"] = "move west";
-    commandsInDictionary["south"] = "move south";
-   // commandsInDictionary["login"] = "user login";
-}
-
-DictionaryCmds::~DictionaryCmds() {
-
-
-}
-
-int DictionaryCmds::dictionarySize() const {
-    return commandsInDictionary.size();
-}
-
-bool DictionaryCmds::checkCommandValid(Command commandType) const {
-
-	if (commandsInDictionary.count(commandType.type)) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-std::map<std::string, std::string> DictionaryCmds::getDictionary() const {
-    return commandsInDictionary;
-}*/
-
-std::string DictionaryCmds::getParsableFromInput( std::string inputString ) {
+int DictionaryCmds::getParsableFromInput( std::string inputString ) {
 	if ( !DictionaryCmds::COMMAND_DICTIONARY.count( inputString ) ) {
-		return DictionaryCmds::INVALID_COMMAND;
+		return INVALID;
 	}
 	std::cout << "Parsable: " << DictionaryCmds::COMMAND_DICTIONARY[ inputString ] << std::endl;
 	return DictionaryCmds::COMMAND_DICTIONARY[ inputString ];

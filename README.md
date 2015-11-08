@@ -46,3 +46,31 @@ In project's root folder:
 `$ cmake ..` do this everytime any of the CMakeLists are updated
 
 `$ make`
+
+
+## How to run:
+To start the server, run: `./server-start.sh`
+
+To start the game, run: `./play.sh`
+
+### Two accounts available to login to:
+Username: `userTest1`, password: `test1`
+
+Username: `userTest2`, password: `test2`
+
+
+## Creator commands
+#### Create and delete zones:
+```
+create zone [The name of your zone] seen as [Description of your zone]
+delete zone [zoneID]
+```
+#### Add extended description to the zone:
+```
+describe [zoneID] as [keyword] telling [your extended description here] 
+```
+#### Create and delete doors
+```
+create door [keyword] in [zoneID] at [direction] to [zoneID] seen as [Door's description]
+delete door [doorID]
+```

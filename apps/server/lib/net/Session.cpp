@@ -3,8 +3,11 @@
 #include "NetConfig.hpp"
 #include "GameCode.hpp"
 #include "CommandParser.hpp"
+#include "DictionaryCmds.hpp"
 #include "Server.hpp"
 #include "CarrierPigeon.hpp"
+#include <mod/Editor.hpp>
+#include <cmd/Commander.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -79,7 +82,6 @@ std::string Session::getIP( IPType type ) {
 
 
 // new function for 'better' async reading
-// TO-DO: do a proper session shutdown if user dcs
 void Session::asyncReadUserRequest() {
 	this->readerThread = std::thread(
 		[ this ]() {
@@ -119,8 +121,6 @@ void Session::asyncReadUserRequest() {
 
 // new read function for the improved async
 std::string Session::read( const int maxBufferLength ) {
-//	std::cout << "Waiting for client write..." << std::endl;
-	
 	std::vector< char > buffer( maxBufferLength );
 	boost::system::error_code error;
 	
@@ -133,7 +133,6 @@ std::string Session::read( const int maxBufferLength ) {
 	if ( error ) {
 		return CODE_ERROR_READ;
 	}
-//	std::cout << "\tGOT: " <<  std::string( buffer.begin(), buffer.begin() + bufferLength ) << std::endl;
 	
 	return std::string( buffer.begin(), buffer.begin() + bufferLength );
 }
@@ -185,47 +184,18 @@ void Session::logout( const std::string& credentials ) {
 		return;
 	}
 	
-	this->writeToClient( HEADER_OK, MESSAGE_OK_LOGGED_OUT );
+	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
 }
 
 
 // Movement, observation, combat, chat, interaction
 void Session::doGameCommand( const std::string& commandString ) {
-	
-	/*
-	
-	int header ::= parser::getheader
-	
-	if header = WORLDHEADER
-		world::dostuff command
-	else if header = MESSAGEHEADER
-		messenger::dostuff command
-	else if header = COMBAtHEADER
-		combater::dostuff command
-	else
-		write invalid
-	
-	*/
-	
-	LOG( "Command happened." );
-	Server::sendMessageToCharacter( this->currentUser.getUserId(), GameCode::STATUS, "some random stuff" );
-	CarrierPigeon::deliverPackage( 1 );
-	
-//	std::cout << "Command happened." << std::endl;
-	std::string parserResponse = CommandParser::handleIDandCommand( this->currentUser.getUserId(), commandString );
-	if ( parserResponse == HEADER_ERROR ) {
-		this->writeToClient( HEADER_ERROR, "Invalid Command." );
-	} else {
-		this->writeToClient( HEADER_OK, parserResponse );
-	}
+	std::pair< std::string, std::string > commandResponse = Commander::handleCommand( this->currentUser, commandString );
+	this->writeToClient( commandResponse.first, commandResponse.second );
 }
 
-void Session::sendMessageToCharacter( const std::string& charNameAndMessage ) {
-	// split char id and message
-//	Server::sendMessageToClient( "sdf-dsfsd-dsfs", charNameAndMessage );
-}
 
-// ------------ End 
+// ------------ End of MAPPED functions
 
 void Session::asyncWrite() {
 	this->writerThread = std::thread(
@@ -238,10 +208,6 @@ void Session::asyncWrite() {
 				// --- end critical section ---
 				this->messageQueueLock.unlock();
 				
-//				this->write( message.header );
-//				this->write( message.body );
-				
-				
 				// put size of the body into a string
 				std::stringstream formatStream;
 				formatStream << std::setfill( '0' ) << std::setw( NetMessage::MaxLength::BODY_LENGTH ) << message.body.length();
@@ -249,25 +215,16 @@ void Session::asyncWrite() {
 				// write to server ensuring no disconnects
 				if ( !this->write( message.header ) ) {
 					LOG( "Can't wite: client disconnected." );
-//					std::cout << "Write Failed." << std::endl;
-//					this->gentleShutDown();
 				} else if ( !this->write( formatStream.str() ) ) {
 					LOG( "Can't wite: client disconnected." );
-//					std::cout << "Write Failed." << std::endl;
-//					this->gentleShutDown();
 				} else if ( !this->write( message.body ) ) {
 					LOG( "Can't wite: client disconnected." );
-//					std::cout << "Write Failed." << std::endl;
-//					this->gentleShutDown();
 				}
-				
-				
 				
 				if ( this->responseMessageQueue.empty() ) {
 					this->writing = false;
 					this->writerThread.detach();
 				}
-//				std::cout << "Done writing." << std::endl;
 			}
 			LOG( "Stopped writing." );
 		}
@@ -276,28 +233,27 @@ void Session::asyncWrite() {
 
 
 bool Session::write( std::string message ) {
-//	std::cout << "Write called: " << message << std::endl;
 	boost::system::error_code error;
 	boost::asio::write(
 		this->socket,
 		boost::asio::buffer( message ),
 		error
 	);
-	if ( error ) { 
-		//		Authenticator::logout( this->userId );
-		std::cout << MESSAGE_DISCONNECT << std::endl;
-		return false;
-	}
-	return true;
+	
+	return !error;
 }
 
 
 void Session::gentleShutDown() {
-	
 	LOG( "The client has disconnected. Terminating..." );
 	this->writing = false;
 	this->reading = false;
 	
+	LOG( "Forcing logout..." );
+	bool loggedOut = Authenticator::logout( this->currentUser );
+	if ( !loggedOut ) {
+		LOG( "Already logged out." );
+	}
 	LOG( "SESSION SAFELY ENDED." );
 	
 }

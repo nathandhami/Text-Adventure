@@ -2,10 +2,15 @@
 #define EDITOR_HPP
 
 
+#include "Command.hpp"
+
+
 class Editor {
 public:
 	
-	static bool judgeAndPerform( int creatorId/*, Command command*/ );
+	static const std::string REJECT_MESSAGE;
+	
+	static std::string judgeAndPerform( int creatorId, int charId, Command command );
 	
 	
 private:

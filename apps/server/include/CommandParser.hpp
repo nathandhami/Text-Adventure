@@ -4,6 +4,9 @@
 #include <iostream>
 #include "World.hpp"
 #include "Command.hpp"
+#include <tuple>
+#include <string>
+#include "DictionaryCmds.hpp"
 
 
 
@@ -14,11 +17,13 @@ public:
 	~CommandParser();
 
 
-	static std::string  handleIDandCommand(int playerID, std::string command);
-    static Command getCommandFromString(std::string commandString);
-
+//	static std::tuple<  int, Command >  getHeaderAndCommand( std::string command );
+//    static std::tuple<  int, Command > getHeaderAndCommandFromString( std::string commandString );
+	
+	static std::tuple< int, Command >  getHeaderAndCommand( std::string command );
+//    static st getHeaderAndCommandFromString( std::string commandString );
 
 private:
-
+	static bool checkIfCardinal( std::string token );
 };
 #endif

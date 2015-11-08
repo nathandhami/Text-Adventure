@@ -3,11 +3,13 @@
 
 #include <string>
 
+#include "Command.hpp"
+
 
 class CarrierPigeon {
 public:
 	
-	static int deliverPackage( int senderId/*, Command messageCommand*/ );
+	static int deliverPackage( int senderId, Command messageCommand );
 	
 	
 private:

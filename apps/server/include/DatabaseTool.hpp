@@ -305,15 +305,28 @@ class DatabaseTool{
 	
 		// TMP NEW THINGS ----------------------------------------------
 	
+		static bool testValidity();
+	
 		static int createNewZone( string zoneName, string zoneDesc );
 		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
+	
+		static void deleteZone( int zoneID );
+	
 		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );
 	
-		static bool addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );
+		static int addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );
+		static void deleteDoor( int doorID );
 		static string getDoorDescriptionAt( int zoneID, string direction );
 		static int getZoneIDBehindDoorAt( int zoneID, string direction );
 	
 		static bool moveCharacterToZone( int charID, int zoneID );
+	
+		static int createNewItem( string shrtDesc, string desc, string lngDesc, string keywords );
+		static bool signUserIn( string userName, string password );
+		static bool signUserOut( int userID );
+	
+		static void clearAllSessions();
+		static void signOffAllUsers();
 	
 	
 	private:
