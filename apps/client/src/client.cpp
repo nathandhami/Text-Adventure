@@ -31,7 +31,6 @@ static void on_enter_pressed()
 	std::cout << "Enter pressed." << std::endl;
 }
 
-
 static void login() {
 	UIWriter::sendSysStatus( "Please enter your credentials" );
 	
@@ -69,10 +68,10 @@ int main( int argc, const char* argv[] ) {
 	Gtk::Main kit(argc);
 	MainWindow window;
 
-	Game::initialize();
-	Game::start();
+	//Game::initialize();
+	//Game::start();
 
-	NetMessage response = Game::login( "testUser1", "test1" );
+	//NetMessage response = Game::login( "testUser1", "test1" );
 	//NetMessage response = Game::login( argv[ 1 ], argv[ 2 ] );
 	
 	//std::cout << "Got response:" << std::endl;

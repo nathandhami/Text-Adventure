@@ -6,7 +6,13 @@ MainWindow::MainWindow()
 : commandFrame("Enter Command"),
   outputFrame("Server"),
   m_WorkerThread(0)
-{	
+{
+	Game::initialize();
+	Game::start();	
+
+	//Sets login info
+	NetMessage response = Game::login( "testUser1", "test1" );
+
 	//Initialize main window
 	set_default_size(900, 500);
 	set_title("Text Gale Online");
@@ -18,7 +24,7 @@ MainWindow::MainWindow()
 	outputTextview.set_editable(FALSE);
 	outputScrollWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 	
-	//Wraps text in the textview
+	//Wraps next char to new line in the textview
 	outputTextview.set_wrap_mode(Gtk::WRAP_CHAR);
 
 	//Adds the output text to scrollwindow parent
@@ -81,11 +87,16 @@ void MainWindow::get_response_thread()
 {
 	Glib::Threads::Mutex::Lock lock(m_Mutex);
 	while(true) {
-		Glib::usleep(1000000); // microseconds
+		NetMessage response = Game::getFrontResponse();
+	
+		Glib::usleep(500000); // microseconds
 		m_adjustment = outputScrollWindow.get_vadjustment();
 		m_adjustment->set_value(m_adjustment->get_upper()); 
 	
-		outputTextBuffer->insert(outputTextBuffer->end(), "Response: " + Game::getFrontResponse().body + "\n");
+		if ( response.header != GameCode::NONE ) {
+			outputTextBuffer->insert(outputTextBuffer->end(), ">> " + response.body + "\n");
+		}
+
 		outputTextview.set_buffer(outputTextBuffer);
 	}
 }
