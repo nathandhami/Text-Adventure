@@ -27,6 +27,7 @@ using namespace CommandHeader;
 std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	//Movement commands
 	{ "move"			, WORLD },
+	{ "go"				, WORLD },
 	{ "north"			, WORLD },
 	{ "south"			, WORLD },
 	{ "east"			, WORLD },

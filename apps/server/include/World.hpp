@@ -5,6 +5,7 @@
 #include "DatabaseTool.hpp"
 #include "Command.hpp"
 #include "Zone.hpp"
+#include "Combat.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace std;

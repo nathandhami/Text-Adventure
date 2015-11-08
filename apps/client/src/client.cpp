@@ -73,17 +73,19 @@ int main( int argc, const char* argv[] ) {
 	Game::start();
 
 	NetMessage response = Game::login( "testUser1", "test1" );
+	//NetMessage response = Game::login( argv[ 1 ], argv[ 2 ] );
 	
 	//std::cout << "Got response:" << std::endl;
 	//std::cout << "\tHeader: " << response.header << std::endl;
 	//std::cout << "\tBody:\n" << response.body << std::endl;
 	
-//	Game::enact( "" );
-//	Game::enact( "look north" );
+//	Game::enact( "go north" );
+//	Game::enact( "move north" );
+//	Game::enact( "look up" );
 //	Game::enact( "fight sadas" );
-//	Game::enact( "@ leeeroooyjeeenkins wolololo." );
-//	Game::enact( "# this is a zone message." );
-//	Game::enact( "move" );	
+//	Game::enact( "@ testChar1 wolololo." );
+//	Game::enact( "# This is a zone MeSsAgE." );
+//	Game::enact( "blergh" );
 	
 //	std::cout << "Response: " << response.body << std::endl;
 	
