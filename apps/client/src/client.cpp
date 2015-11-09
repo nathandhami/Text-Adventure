@@ -16,7 +16,9 @@
 
 
 int main( int argc, char* argv[] ) {
-
+	Game::initialize();
+	Game::start();
+	
 	argc = 1;
 	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create( argc, argv, "com.gtkmm.tutorial1.base" );
 	

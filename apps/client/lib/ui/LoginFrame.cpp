@@ -1,4 +1,7 @@
 #include <ui/LoginFrame.hpp>
+#include <NetMessage.hpp>
+#include <GameCode.hpp>
+#include "Game.hpp"
 
 // ------------------- PUBLIC -------------------
 
@@ -45,7 +48,18 @@ void LoginFrame::prepareComponents() {
 
 void LoginFrame::loginButton_click() {
 
-	this->hide();
+	std::string username = this->usernameEntry.get_text();
+	std::string password = this->passwordEntry.get_text();
+	
+	NetMessage msg = Game::login( username, password );
+	
+	if ( msg.header == GameCode::CORRECT ) {
+		this->hide();
+	} else {
+		Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		dlg.set_title( "Login Failed" );
+		dlg.run();
+	}
 
 	//	this->close();
 

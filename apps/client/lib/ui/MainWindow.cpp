@@ -47,6 +47,7 @@ void MainWindow::switchToGameFrame() {
 //	(Gtk::Widget)(this->loginFrame).destroy();
 	this->remove();
 	this->add( gameFrame );
+	this->gameFrame.startReading();
 	
 	this->show_all_children();
 	
