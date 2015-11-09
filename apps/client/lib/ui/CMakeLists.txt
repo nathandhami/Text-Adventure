@@ -5,7 +5,10 @@
 #add_library( UIReader UIReader.cpp )
 #target_link_libraries ( UIReader ConsoleReader )
 
-add_library( LoginWindow LoginWindow.cpp )
-target_link_libraries ( LoginWindow GameWindow )
+add_library( LoginFrame LoginFrame.cpp )
+#target_link_libraries ( UIReader ConsoleReader )
 
-add_library( GameWindow GameWindow.cpp )
+add_library( MainWindow MainWindow.cpp )
+target_link_libraries ( MainWindow LoginFrame )
+
+#target_link_libraries ( LoginWindow GameWindow )

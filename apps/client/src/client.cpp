@@ -2,10 +2,9 @@
 #include "UIReader.hpp"
 #include "Transceiver.hpp"
 #include "NetConfig.hpp"
-#include "MainWindow.hpp"
+//#include "MainWindow.hpp"
 #include "Game.hpp"
-#include <ui/LoginWindow.hpp>
-#include <ui/GameWindow.hpp>
+#include <ui/MainWindow.hpp>
 
 #include <cstdlib>
 #include <boost/algorithm/string/join.hpp>
@@ -21,13 +20,13 @@ int main( int argc, char* argv[] ) {
 	argc = 1;
 	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create( argc, argv, "com.gtkmm.tutorial1.base" );
 	
-	LoginWindow loginWindow;
+	MainWindow mainWindow;
 //	GameWindow gameWindow;
 	
 //	gameWindow.show();
 //	app->add_window( loginWindow );
 //	app->run();
-	app->run( loginWindow );
+	app->run( mainWindow );
 
 	return 0;
 	
