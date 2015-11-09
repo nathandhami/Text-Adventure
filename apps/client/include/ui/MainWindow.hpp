@@ -4,6 +4,7 @@
 
 #include <gtkmm.h>
 #include <ui/LoginFrame.hpp>
+#include <ui/GameFrame.hpp>
 
 //#include <ui/GameWindow.hpp>
 
@@ -16,6 +17,7 @@ public:
 
 private:
 	LoginFrame loginFrame;
+	GameFrame gameFrame;
 	
 	void prepareComponents();
 	void switchToGameFrame();

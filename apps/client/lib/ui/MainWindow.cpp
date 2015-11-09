@@ -40,8 +40,14 @@ void MainWindow::prepareComponents() {
 
 
 void MainWindow::switchToGameFrame() {
-	Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+	/*Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
 	dlg.set_title( "Login Failed" );
 
-	dlg.run();
+	dlg.run();*/
+//	(Gtk::Widget)(this->loginFrame).destroy();
+	this->remove();
+	this->add( gameFrame );
+	
+	this->show_all_children();
+	
 }
