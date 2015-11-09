@@ -898,9 +898,12 @@ vector<string> DatabaseTool::getItemsInInventory(int charID) {
 		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "select shortDescription from items X, player_inventory Y where X.itemID = Y.itemID and charID =?"
+		db << "select shortDescription, isEquipped from items X, player_inventory Y where X.itemID = Y.itemID and charID =? order by isEquipped desc"
 		<<charID
-		>>[&](string desc) {
+		>>[&](string desc, int isEquipped) {
+			if(isEquipped) {
+				desc = "{" + desc + "}";
+			}
 			items.push_back(desc);
 		};
 
