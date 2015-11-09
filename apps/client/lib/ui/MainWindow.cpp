@@ -41,9 +41,13 @@ MainWindow::MainWindow()
 	loginGrid.show();
 	usernameLabel.show();
 	usernameEntry.show();
+	usernameEntry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_login_click));
+
 	passwordLabel.show();
 	passwordEntry.show();
+	passwordEntry.signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_login_click));
     	passwordEntry.set_visibility(false);
+
 	loginButton.show();
 
 	/************ END OF LOGIN PAGE ******/
@@ -146,9 +150,13 @@ void MainWindow::get_response_thread()
 	while(true) {
 		NetMessage response = Game::getFrontResponse();
 		m_adjustment = outputScrollWindow.get_vadjustment();
-		m_adjustment->set_value(m_adjustment->get_upper()); 
-
+		m_adjustment->set_value(m_adjustment->get_upper());
 		
+		if ( response.header == GameCode::DISCONNECTED ) {
+
+			exit(1);			
+			
+		}
 	
 		if ( response.header != GameCode::NONE ) {
 			outputTextBuffer->insert(outputTextBuffer->end(), ">> " + response.body + "\n");
