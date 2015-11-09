@@ -330,6 +330,8 @@ class DatabaseTool{
 		static void clearAllSessions();
 		static void signOffAllUsers();
 	
+//		static bool dropItem( int charID, string item );
+	
 	
 	private:
 		static string findPlayerDescription(int lookerID, int zoneID, string name);

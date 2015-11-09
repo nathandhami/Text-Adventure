@@ -98,7 +98,9 @@ int main( int argc, const char* argv[] ) {
 //	Game::enact( "create item [item name] seen as [what you see] upclose [the long description] recognized as [keywords]" );
 //	Game::enact( "delete object 10004" );
 //	Game::enact( "pick up a bottle of beer" );
-	Game::enact( "look at inventory" );
+//	Game::enact( "drop a bottle of beer" );
+//	Game::enact( "look at inventory" );
+	Game::enact( "look at a bottle of beer" );
 	
 	
 	

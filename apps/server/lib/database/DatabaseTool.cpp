@@ -864,6 +864,39 @@ bool DatabaseTool::pickUp(int charID, string item) {
 	}
 }
 
+
+bool DatabaseTool::dropItem(int charID, string item) {
+	int foundItemID;
+	int foundInvID;
+	int zoneID;
+	try{
+		database db (DB_LOCATION);
+		db << "SELECT itm.shortDescription, itm.keywords, itm.itemID, inv.ownershipID FROM items itm, player_inventory inv, characters chr WHERE itm.itemID = inv.itemID AND chr.charID = ?;"
+		<<charID
+		>>[&](string shortdesc, string keywords, int itemID, int ownershipID) {
+			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
+				foundItemID = itemID;
+				foundInvID = ownershipID;
+			}
+		};
+
+		zoneID = DatabaseTool::getCharsLocation( charID );
+		
+		db 	<< "INSERT INTO instanceOfItem (itemID,zoneID) VALUES (?, ?)"
+			<< foundItemID
+			<< zoneID;
+		
+		db 	<< "DELETE FROM player_inventory WHERE ownershipID = ?"
+			<< foundInvID;
+		
+		return true;
+	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return false;
+	}
+}
+
+
 string DatabaseTool::getSlot(int equiableTo) {
 	switch(equiableTo){
 		case 1:
