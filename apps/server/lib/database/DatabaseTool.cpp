@@ -1685,7 +1685,37 @@ void DatabaseTool::executeCommands() {
 }
 
 
+bool DatabaseTool::unEquip(int charID, string item) {
+	bool foundItem = false;
+	try{
+		databaseMutex.lock();
+		database db (DB_LOCATION);
 
+		db << "select shortDescription, keywords, ownershipID, isEquippable from items X, player_inventory Y where X.itemID = Y.itemID and charID = ?;"
+		<<charID
+		>>[&](string shortdesc, string keywords, int itemInstanceID, int equippableSlot) {
+			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
+				db <<"update player_inventory set isEquipped = 0 where ownershipID = ?;"
+				<<itemInstanceID;
+				
+				string statment = "update playerAttributes set " + getSlot(equippableSlot) + "= 0  where charID = ? ;";
+				db << statment
+				<<charID;
+				foundItem = true;
+			}
+		};
+
+		databaseMutex.unlock();
+		return foundItem;
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}	
+}
 
 
 

@@ -292,7 +292,6 @@ class DatabaseTool{
 
 		static bool pickUp(int charID, string item);
 
-
 		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
 		static bool inCombat(int id, Target characterOrNpc);
@@ -300,6 +299,8 @@ class DatabaseTool{
 		static string look(int charID, string word);
 
 		static void executeCommands();
+
+		static bool unEquip(int charID, string item);
 
 		static bool dropItem(int charID, string item);
 	

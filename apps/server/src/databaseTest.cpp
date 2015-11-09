@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
       //charOnlineTest();
-      DatabaseTool::equipItem(1, "dagger");
+      DatabaseTool::unEquip(1, "dagger");
       lookTest();
       //npcInstanceTest();
    }
