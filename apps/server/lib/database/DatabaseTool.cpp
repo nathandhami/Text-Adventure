@@ -9,21 +9,26 @@
 #include "sqlite_modern_cpp.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
+#include <mutex> 
 
 const string DB_LOCATION = "apps/server/databases/adventureDB";
 const string INITIAL_ZONE = "3054";
+const string FOREIGN_KEY_ON = "PRAGMA foreign_keys = ON;";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
 
-const int verbosity = 0;
+static std::mutex databaseMutex;
+
+const int verbosity = 1;
 
 using namespace std;
-using namespace  sqlite;
+using namespace sqlite;
 
 
 
 
 string DatabaseTool::quotesql( const string& s ) {
+
 	if(s.empty()) {
 		return string("NULL");
 	} else {
@@ -31,77 +36,112 @@ string DatabaseTool::quotesql( const string& s ) {
 	}
 }
 
-bool DatabaseTool::executeSQLInsert(string statment){
+bool DatabaseTool::addUser(string userName, string password) {
 	try {
-		database db( DB_LOCATION );
-		db << "PRAGMA foreign_keys = ON;";
-		db << statment;
-	return true;
-	} catch (sqlite_exception e) {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "INSERT INTO users (userID, userName, password, authencationLevel, signedOn) VALUES ( NULL, ?, ?, 0, 0);"
+		<<userName
+		<<password;
+
+		databaseMutex.unlock();
+		return true;
+	}catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
-
-
-}
-
-bool DatabaseTool::addUser(string userName, string password) {
-	string sqlStatment = "INSERT INTO users VALUES ( NULL, " + quotesql(userName) + "," + quotesql(password) + ", 0);";
-	return executeSQLInsert(sqlStatment);
 }
 
 int DatabaseTool::getUserID(string userName, string password){
 	try {
+		databaseMutex.lock();
 		database db( DB_LOCATION );
 		int charID;
+
 		db << "select userID from users where userName= ? AND password= ?;"
 		<<userName
 		<<password
 		>>charID;
+
+		databaseMutex.unlock();
 		return charID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 int DatabaseTool::getUserAuthencationLevel(int userID) {
 	try {
+		databaseMutex.lock();
 		database db( DB_LOCATION );
 		int authencationLevel;
+
 		db << "select authencationLevel from users where userID=?"
 		<<userID
 		>>authencationLevel;
+
+		databaseMutex.unlock();
 		return authencationLevel;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 bool DatabaseTool::setUserAuthencationLevel(int userID, int authencationLevel) {
-	string statment = "UPDATE users SET authencationLevel = " + to_string(authencationLevel) + " WHERE userID = " + to_string(userID) + ";";
-	return executeSQLInsert(statment);
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "update users SET authencationLevel = ? where userID = ?;"
+		<< authencationLevel
+		<<userID;
+
+		databaseMutex.unlock();
+		return true;
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+
+	}
 }
 
 string DatabaseTool::getPassword(int userID) {
 	try {
+		databaseMutex.lock();
 		string password = "";
 		database db( DB_LOCATION );
+
 		db << "select password from users where userID=?;"
 		<<userID
 		>>password;
+
+		databaseMutex.unlock();
 		return password;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 
@@ -109,9 +149,11 @@ string DatabaseTool::getPassword(int userID) {
 
 bool DatabaseTool::addCharacter(string name, int userID, string description){
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
-		db << "INSERT INTO characters VALUES ( NULL, ? , ?, ?);"
+
+		db << FOREIGN_KEY_ON;
+		db << "INSERT INTO characters (charID, name, userID, location) VALUES ( NULL, ? , ?, ?);"
 		<<name
 		<<userID
 		<<INITIAL_ZONE;
@@ -120,11 +162,15 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		db << "INSERT INTO playerAttributes VALUES (?, ?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 		<<charID
 		<<description;
+
+		databaseMutex.unlock();
 		return true;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
@@ -132,66 +178,90 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 vector<string> DatabaseTool::getCharactersNames(int userID){
 	vector<string> names;
 	try {
+		databaseMutex.lock();
 		database db( DB_LOCATION );
+
 		db << "select name from characters where userID=?;"
 		<<userID
 		>>[&](string name) {
 			names.push_back(name);
 		};
+
+		databaseMutex.unlock();
 		return names;
 	} catch (sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return names;
 	}
 }
 		
 int DatabaseTool::getCharIDFromName(string name){
 	try {
+		databaseMutex.lock();
 		int charID = 0;
 		database db( DB_LOCATION );
+
 		db << "select charID from characters where name=?"
 		<<name
 		>>charID;
+
+		databaseMutex.unlock();
 		return charID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 int DatabaseTool::getCharIDInZoneFromName(string name, int zoneID) {
 	try {
+		databaseMutex.lock();
 		int charID = 0;
 		database db( DB_LOCATION );
+
 		db << "select X.charID from characters X, charactersOnline Y where X.charID = Y.charID and name=? and location = ?"
 		<<name
 		<<zoneID
 		>>charID;
+
+		databaseMutex.unlock();
 		return charID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 string DatabaseTool::getCharNameFromID(int charID) {
 	try {
+		databaseMutex.lock();
 		string name = "";
 		database db(DB_LOCATION);
+
 		db << "select name from characters where charID = ?;"
 		<< charID
 		>>name;
+
+		databaseMutex.unlock();
 		return name;
 	} catch (sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 
@@ -199,42 +269,88 @@ string DatabaseTool::getCharNameFromID(int charID) {
 
 bool DatabaseTool::isCharOnline(int charID){
 	try {
+		databaseMutex.lock();
 		int onlineStatus = 0;
 		database db( DB_LOCATION );
+
 		db << "SELECT EXISTS(SELECT 1 FROM charactersOnline WHERE charID= ? LIMIT 1);"
 		<<charID
 		>>onlineStatus;
+
+		databaseMutex.unlock();
 		return onlineStatus;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
-void DatabaseTool::setCharOnline(int charID, string sessionID){
-	string sqlStatment = "INSERT INTO charactersOnline VALUES ( " + to_string(charID) + " , " + quotesql(sessionID) + " , 0);";
-	executeSQLInsert(sqlStatment);
+bool DatabaseTool::setCharOnline(int charID, string sessionID){
+	try{
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << FOREIGN_KEY_ON;
+		db << "INSERT INTO charactersOnline VALUES ( ?, ? , 0);"
+		<< charID
+		<< sessionID;
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
-void DatabaseTool::setCharOffline(int charID){
-	string sqlStatment = "DELETE FROM charactersOnline WHERE charID = " + to_string(charID) + ";";
-	executeSQLInsert(sqlStatment);
+bool DatabaseTool::setCharOffline(int charID){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "DELETE FROM charactersOnline WHERE charID = ?;"
+		<<charID;
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 string DatabaseTool::getSessionID(int charID) {
 	try {
+		databaseMutex.lock();
 		string sessionID;
 		database db( DB_LOCATION );
+
 		db << "select sessionID from charactersOnline where charID=?;"
 		<<charID
 		>>sessionID;
+
+		databaseMutex.unlock();
 		return sessionID;
 	}catch (sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() <<std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 
@@ -242,56 +358,92 @@ string DatabaseTool::getSessionID(int charID) {
 
 int DatabaseTool::getCharID(int userID){
 	try {
+		databaseMutex.lock();
 		int charID = 0;
 		database db( DB_LOCATION );
+
 		db << "select charID from characters where userID=?;"
 		<<userID
 		>>charID;
+
+		databaseMutex.unlock();
 		return charID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << endl;;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
-void DatabaseTool::putCharInZone(int charID, int zoneID){
-	string sqlStatment = "UPDATE characters SET location = " + to_string(zoneID) + " WHERE charID = " + to_string(charID) + ";";
-	executeSQLInsert(sqlStatment);
+bool DatabaseTool::putCharInZone(int charID, int zoneID){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << FOREIGN_KEY_ON;
+		db << "UPDATE characters SET location = ? WHERE charID = ?;"
+		<<zoneID
+		<<charID;
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 int DatabaseTool::getCharsLocation(int charID){
 	try {
+		databaseMutex.lock();
 		int zoneID = 0;
 		database db( DB_LOCATION );
+
 		db<< "select location from characters where charID=?;"
 		<<charID
 		>>zoneID;
+
+		databaseMutex.unlock();
 		return zoneID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 vector<int> DatabaseTool::getAllOnlineCharsInZone(int zoneID){
+	databaseMutex.lock();
 	vector<int> charsInZone;
 	database db( DB_LOCATION );
+
 	db << "select x.charID from characters C, charactersOnline X where location= ? AND x.charID = c.charID;"
 	<< zoneID
 	>>[&](int charID) {
 		charsInZone.push_back(charID);
 	};
+
+	databaseMutex.unlock();
 	return charsInZone;
 }
 
 bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
+
+		db << FOREIGN_KEY_ON;
 		db << "INSERT INTO instanceOfNpc VALUES ( NULL, ?, ?, 1 , 0);"
 		<<npcID
 		<<zoneID;
@@ -300,108 +452,201 @@ bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 
 		db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 		<<npcInstanceID;
+
+		databaseMutex.unlock();
 		return true;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
 
 vector<int> DatabaseTool::getAllAliveNpcsInZone(int zoneID){
+	databaseMutex.lock();
 	vector<int> npcsInZone;
 	database db( DB_LOCATION );
+
 	db << "select npcInstanceID from instanceOfNpc where zoneID=? and isAlive = 1;"
 	<< zoneID
 	>>[&](int npcID) {
 		npcsInZone.push_back(npcID);
 	};
+
+	databaseMutex.unlock();
 	return npcsInZone;
 }
 
-void DatabaseTool::deleteNpcInstance(int npcInstanceID){
-	string sqlStatment = "delete from instanceOfNpc where npcID=" + to_string(npcInstanceID) + ";";
-	executeSQLInsert(sqlStatment);
+bool DatabaseTool::deleteNpcInstance(int npcInstanceID){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "delete from instanceOfNpc where npcInstanceID= ?;"
+		<< npcInstanceID;
+
+		databaseMutex.unlock();
+		return true;
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return true;
+	}
 }
 
 bool DatabaseTool::isNpcAlive(int npcInstanceID){
 	try {
+		databaseMutex.lock();
 		int isAlive;
 		database db(DB_LOCATION);
+
 		db << "select isAlive from instanceOfNpc where npcInstanceID = ?;"
-		<<npcInstanceID
+		<< npcInstanceID
 		>> isAlive;
+
+		databaseMutex.unlock();
 		return isAlive;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 
 }
 
-void DatabaseTool::respawnAll(){
-	string statment = "UPDATE instanceOfNpc SET isAlive = 1;";
-	executeSQLInsert(statment);
+bool DatabaseTool::respawnAll(){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
 
+		db << "UPDATE instanceOfNpc SET isAlive = 1;";
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 bool DatabaseTool::murderNpc(int npcInstanceID){
-	string statment = "UPDATE instanceOfNpc SET isAlive = 0 where npcInstanceID = " + to_string(npcInstanceID) + ";";
-	return executeSQLInsert(statment);
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "UPDATE instanceOfNpc SET isAlive = 0 where npcInstanceID = ?;"
+		<< npcInstanceID;
+
+		databaseMutex.unlock();
+		return true;
+
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 bool DatabaseTool::reviveNpc(int npcInstanceID){
-	string statment = "UPDATE instanceOfNpc SET isAlive = 1 where npcInstanceID = " + to_string(npcInstanceID) + ";";
-	return executeSQLInsert(statment);
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "UPDATE instanceOfNpc SET isAlive = 1 where npcInstanceID = ?;"
+		<<npcInstanceID;
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 string DatabaseTool::getNpcDesc(int npcInstanceID){
 	try {
+		databaseMutex.lock();
 		string description;
 		database db( DB_LOCATION );
+
 		db << "select description from npcs X, instanceOfNpc Y where X.npcID = Y.npcID and npcInstanceID=?;"
 		<<npcInstanceID
 		>>description;
+
+		databaseMutex.unlock();
 		return description;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 }
 
 string DatabaseTool::getNpcName(int npcInstanceID){
 	try {
+		databaseMutex.lock();
 		string name;
 		database db( DB_LOCATION );
+
 		db << "select shortDesc from npcs X, instanceOfNpc Y where X.npcID = Y.npcID and npcInstanceID=?;"
 		<<npcInstanceID
 		>>name;
+
+		databaseMutex.unlock();
 		return name;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 }
 
 int DatabaseTool::getNpcIDFromInstanceID(int npcInstanceID) {
 	try {
+		databaseMutex.lock();
 		int npcID;
 		database db( DB_LOCATION );
+
 		db << "select npcID from instanceOfNpc where npcInstanceID=?;"
 		<<npcInstanceID
 		>>npcID;
+
+		databaseMutex.unlock();
 		return npcID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -410,18 +655,31 @@ bool DatabaseTool::addNpc(
 		 	int npcID, 
 		 	string description, 
 		 	vector<string> keywords,
-		 	string longdesc,
+		 	string longDesc,
 		 	string shortDesc
 		 	){
-	string sqlStatment = "INSERT INTO npcs VALUES (" 
-		+ to_string(npcID) 
-		+ ", " + quotesql(description)
-		+ ", " + quotesql(concatKeywords(keywords))
-		+ ", " + quotesql(longdesc)
-		+ ", " + quotesql(shortDesc) 
-		+ ");";
-	return executeSQLInsert(sqlStatment);
+	try{
+		databaseMutex.lock();
+		database db(DB_LOCATION);
 
+		db << "INSERT INTO npcs VALUES ( ?, ?, ?, ?, ?);"
+		<<npcID
+		<<description
+		<<concatKeywords(keywords)
+		<<longDesc
+		<<shortDesc;
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 bool DatabaseTool::addZone(
@@ -432,7 +690,10 @@ bool DatabaseTool::addZone(
 		 	vector<Door> doors
 		 	){
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
+
+		db <<FOREIGN_KEY_ON;
 		db << "insert into zones (zoneID, zoneName, zoneDescription) values (?,?,?)"
 		<<zoneID
 		<<zoneName
@@ -453,51 +714,69 @@ bool DatabaseTool::addZone(
 			<<door.direction
 			<<door.goesTo;
 		}
+
+		databaseMutex.unlock();
 		return true;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() <<std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
 
 string DatabaseTool::getZoneName(int zoneID){
 	try {
+		databaseMutex.lock();
 		string zoneName = "";
 		database db( DB_LOCATION );
+
 		db <<"select zoneName from zones where zoneID=?;"
 		<<zoneID
 		>>zoneName;
+
+		databaseMutex.unlock();
 		return zoneName;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 }
 
 string DatabaseTool::getZoneDesc(int zoneID){
 	try {
+		databaseMutex.lock();
 		string description = "";
 		database db( DB_LOCATION );
+
 		db << "select zoneDescription from zones where zoneID=?;"
 		<<zoneID
 		>>description;
+
+		databaseMutex.unlock();
 		return description;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 }
 
 string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 	try {
+		databaseMutex.lock();
 		string extendedDesc = "";
 		database db( DB_LOCATION );
+
 		db << "select keywords, description from zone_ext_descriptions where zoneID=?;"
 		<<zoneID
 		>>[&](string keywords, string description) {
@@ -505,11 +784,15 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 				extendedDesc = description;
 			}
 		};
+
+		databaseMutex.unlock();
 		return extendedDesc;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() <<std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 
@@ -517,9 +800,11 @@ string DatabaseTool::getZoneExtendedDesc(int zoneID, string keyword){
 
 int DatabaseTool::getDirectionID(int zoneID, string direction){
 	try {
+		databaseMutex.lock();
 		int linksTo  = 0;
 		database db( DB_LOCATION );
 		boost::to_lower(direction);
+
 		db << "select keywords, direction, linksTo from doors where zoneID=?;"
 		<<zoneID
 		>>[&](string keywords, string doorDirection, int linksToID) {
@@ -527,20 +812,26 @@ int DatabaseTool::getDirectionID(int zoneID, string direction){
 				linksTo = linksToID;
 			}
 		};
+
+		databaseMutex.unlock();
 		return linksTo;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	try {
+		databaseMutex.lock();
 		string doorDescription = "";
 		database db( DB_LOCATION );
 		boost::to_lower(direction);
+
 		db << "select direction, keywords, description from doors where zoneID=?;"
 		<<zoneID
 		>>[&](string doorDirection, string keywords, string description) {
@@ -548,11 +839,15 @@ string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 				doorDescription = description;
 			}		
 		};
+
+		databaseMutex.unlock();
 		return doorDescription;
 	} catch (sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 }
@@ -568,9 +863,10 @@ string DatabaseTool::concatKeywords(vector<string> keywords) {
 
 bool DatabaseTool::addItem(Item item) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db << "insert into items (itemID, shortDescription, description, longDescription, keywords, isPickable, isEquippable, isStackable, isContainer) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		<<item.itemID
@@ -582,12 +878,16 @@ bool DatabaseTool::addItem(Item item) {
 		<<item.isEquippable
 		<<item.isStackable
 		<<item.isContainer;
+
+		databaseMutex.unlock();
 		return true;
 
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() <<std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
@@ -595,18 +895,23 @@ bool DatabaseTool::addItem(Item item) {
 vector<string> DatabaseTool::getItemsInInventory(int charID) {
 	vector<string> items;
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
+
 		db << "select shortDescription from items X, player_inventory Y where X.itemID = Y.itemID and charID =?"
 		<<charID
 		>>[&](string desc) {
 			items.push_back(desc);
 		};
-		cout << "[DB] Got items" << endl;
+
+		databaseMutex.unlock();
 		return items;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return items;
 	}
 }
@@ -614,6 +919,7 @@ vector<string> DatabaseTool::getItemsInInventory(int charID) {
 vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 	vector<string> items;
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
 		db << "select shortDescription from items X, instanceOfItem Y where X.itemID == Y.itemID and containerID is null and Y.zoneID ==?"
@@ -621,11 +927,15 @@ vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 		>>[&](string desc) {
 			items.push_back(desc);
 		};
+
+		databaseMutex.unlock();
 		return items;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;;
 		}
+
+		databaseMutex.unlock();
 		return items;
 
 	}
@@ -635,75 +945,99 @@ vector<string> DatabaseTool::getItemsInZone(int zoneID) {
 
 bool DatabaseTool::spawnItemInZone(int itemID, int zoneID){
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
+
 		db << "insert into instanceOfItem values (NULL, ?, ?, NULL)"
 		<<itemID
 		<<zoneID;
+
+		databaseMutex.unlock();
 		return true;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
 
 bool DatabaseTool::spawnItemInNpcInv(int itemID, int npcInstanceID){
 	try {
+		databaseMutex.lock();
 		int canPickUp;
 		database db (DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
+
 		db << "select isPickable from items where itemID = ?;"
 		<<itemID
 		>>canPickUp;
+
 		if(canPickUp > 0) {
 			db << "INSERT INTO npc_inventory VALUES ( NULL, ?, ?, 0, 0);"
 			<<npcInstanceID
 			<<itemID;
+
+			databaseMutex.unlock();
 			return true;
 		} else {
+			databaseMutex.unlock();
 			return false;
 		}
 	}catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 bool DatabaseTool::spawnItemInCharacterInv(int itemID, int charID){
 	try {
+		databaseMutex.lock();
 		int canPickUp;
 		database db (DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
+
 		db << "select isPickable from items where itemID = ?;"
 		<<itemID
 		>>canPickUp;
+
 		if(canPickUp > 0) {
 			db << "INSERT INTO player_inventory VALUES ( NULL, ?, ?, 1, 0);"
 			<<charID
 			<<itemID;
+
+			databaseMutex.unlock();
 			return true;
 		} else {
+			databaseMutex.unlock();
 			return false;
 		}
 	}catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
 
 bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 	try {
+		databaseMutex.lock();
 		int canPickUp;
 		int isContainer;
 		int zoneID;
 		database db (DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
+
 		db << "select isPickable from items where itemID = ?;"
 		<<itemID
 		>>canPickUp;
@@ -720,14 +1054,19 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 			<<itemID
 			<<zoneID
 			<<itemInstanceID;
+
+			databaseMutex.unlock();
 			return true;
 		} else {
+			databaseMutex.unlock();
 			return false;
 		}
 	}catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -792,109 +1131,128 @@ bool DatabaseTool::spawnItemInItem(int itemID, int itemInstanceID) {
 // }
 
 bool DatabaseTool::addResetCommand(ResetCommand command){
-	string statment = "insert into resetCommands values (NULL,"
-		+ quotesql(command.action) + ","
-		+ to_string(command.id) + ","
-		+ to_string(command.slot) + "," 
-		+ to_string(command.npcLimit) + ","
-		+ to_string(command.room) + ","
-		+ quotesql(command.state) + ","
-		+ to_string(command.container) + ");";
-	return executeSQLInsert(statment);
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+		db << FOREIGN_KEY_ON;
+
+		db << "insert into resetCommands values (NULL, ?, ?, ?, ?, ?, ?, ?);"
+		<<command.action
+		<<command.id
+		<<command.slot
+		<<command.npcLimit
+		<<command.room
+		<<command.state
+		<<command.container;
+
+		databaseMutex.unlock();
+		return true;
+
+	}catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
 }
 
 Attributes DatabaseTool::getAttributes(int id, Target characterOrNpc){
 	Attributes attributes;
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
-		switch(characterOrNpc) {
-			case character:
-				db << "select charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
-				<< id
-				>>[&](int charID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-					Attributes characterAttributes(charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
-					attributes = characterAttributes;
-				};
-				return attributes;
-				break;
-			case npc:
-				db << "select npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
-				<< id
-				>>[&](int npcInstanceID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-					Attributes npcAttributes(npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
-					attributes = npcAttributes;
-				};
-				return attributes;
-				break;
-			default:
-				return attributes;
+
+		if(characterOrNpc == Target::character) {
+			db << "select charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
+			<< id
+			>>[&](int charID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+				Attributes characterAttributes(charID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+				attributes = characterAttributes;
+			};
+		} else if(characterOrNpc == Target::npc) {
+			db << "select npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
+			<< id
+			>>[&](int npcInstanceID, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+				Attributes npcAttributes(npcInstanceID, level, experience, health, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+				attributes = npcAttributes;
+			};
 		}
+
+		databaseMutex.unlock();
+		return attributes;
+
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return attributes;
 	}
 }
 
-bool DatabaseTool::updateAttributes(Attributes attributes, Target target){
-	switch(target) {
-		case character:
-			try {
-				database db(DB_LOCATION);
-				db << "UPDATE playerAttributes SET level = ?, experience = ?, health = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
-				<<attributes.level
-				<<attributes.experience
-				<<attributes.health
-				<<attributes.strength
-				<<attributes.intelligence
-				<<attributes.dexterity
-				<<attributes.charisma
-				<<attributes.ringSlot
-				<<attributes.headSlot
-				<<attributes.chestSlot
-				<<attributes.greavesSlot
-				<<attributes.feetSlot
-				<<attributes.handSlot
-				<<attributes.weponSlot
-				<<attributes.id;
-				return true;
-			} catch(sqlite_exception e) {
-				return false;
-			}
-		case npc:
-			try {
-				database db(DB_LOCATION);
-				db << "UPDATE npcAttributes SET level = ?, experience = ?, health = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
-				<<attributes.level
-				<<attributes.experience
-				<<attributes.health
-				<<attributes.strength
-				<<attributes.intelligence
-				<<attributes.dexterity
-				<<attributes.charisma
-				<<attributes.ringSlot
-				<<attributes.headSlot
-				<<attributes.chestSlot
-				<<attributes.greavesSlot
-				<<attributes.feetSlot
-				<<attributes.handSlot
-				<<attributes.weponSlot
-				<<attributes.id;
-				return true;
-			} catch(sqlite_exception e) {
-				if(verbosity > 0) {
-					cout << e.what();
-				}
-				return false;
-			}
+bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		if(characterOrNpc == Target::character) {
+			db << "UPDATE playerAttributes SET level = ?, experience = ?, health = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
+			<<attributes.level
+			<<attributes.experience
+			<<attributes.health
+			<<attributes.strength
+			<<attributes.intelligence
+			<<attributes.dexterity
+			<<attributes.charisma
+			<<attributes.ringSlot
+			<<attributes.headSlot
+			<<attributes.chestSlot
+			<<attributes.greavesSlot
+			<<attributes.feetSlot
+			<<attributes.handSlot
+			<<attributes.weponSlot
+			<<attributes.id;
+		} else if(characterOrNpc == Target::npc) {
+			db << "UPDATE npcAttributes SET level = ?, experience = ?, health = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
+			<<attributes.level
+			<<attributes.experience
+			<<attributes.health
+			<<attributes.strength
+			<<attributes.intelligence
+			<<attributes.dexterity
+			<<attributes.charisma
+			<<attributes.ringSlot
+			<<attributes.headSlot
+			<<attributes.chestSlot
+			<<attributes.greavesSlot
+			<<attributes.feetSlot
+			<<attributes.handSlot
+			<<attributes.weponSlot
+			<<attributes.id;
+		}
+
+		databaseMutex.unlock();
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
 	}
+
 }
 
 bool DatabaseTool::equipItem(int charID, string item) {
 	bool foundItem = false;
 	try{
+		databaseMutex.lock();
 		database db (DB_LOCATION);
+		db << FOREIGN_KEY_ON;
+
 		db << "select shortDescription, keywords, ownershipID, isEquippable from items X, player_inventory Y where X.itemID = Y.itemID and charID = ?;"
 		<<charID
 		>>[&](string shortdesc, string keywords, int itemInstanceID, int equippableSlot) {
@@ -918,11 +1276,15 @@ bool DatabaseTool::equipItem(int charID, string item) {
 				foundItem = true;
 			}
 		};
+
+		databaseMutex.unlock();
 		return foundItem;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 
@@ -932,8 +1294,12 @@ bool DatabaseTool::pickUp(int charID, string item) {
 	int foundItemID;
 	int foundInstanceID;
 	int canPickUp;
+	bool equipped = false;
 	try{
+		databaseMutex.lock();
 		database db (DB_LOCATION);
+		db << FOREIGN_KEY_ON;
+
 		db << "select shortDescription, keywords, X.itemID, isPickable, itemInstanceID from items X, instanceOfItem Y, characters Z where X.itemID = Y.itemID and Z.location = Y.zoneID and containerID is null and Z.charID = ?;"
 		<<charID
 		>>[&](string shortdesc, string keywords, int itemID, int isPickable, int instanceID) {
@@ -949,15 +1315,18 @@ bool DatabaseTool::pickUp(int charID, string item) {
 			<<foundItemID;
 			db << "delete from instanceOfItem where itemInstanceID = ?"
 			<<foundInstanceID;
-			return true;
-		} else {
-			return false;
+			equipped = true;
 		}
+
+		databaseMutex.unlock();
+		return equipped;
 
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
@@ -986,34 +1355,38 @@ string DatabaseTool::getSlot(int equiableTo) {
 
 bool DatabaseTool::setCombatFlag(int id, bool inCombat, Target characterOrNpc) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
-		switch(characterOrNpc) {
-			case character:
-				if(inCombat) {
-					db << "update charactersOnline set inCombat = 1 where charID =?"
-					<<id;
-				} else {
-					db << "update charactersOnline set inCombat = 0 where charID =?"
-					<<id;					
-				}
-				return true;
-			case npc:
-				if(inCombat) {
-					db << "update instanceOfNpc set inCombat = 1 where npcInstanceID = ?"
-					<< id;
-				} else {
-					db << "update instanceOfNpc set inCombat = 0 where npcInstanceID = ?"
-					<< id;
-					
-				}
-				return true;
-			default:
-				return false;
+		bool isSet = false;
+
+		if(characterOrNpc == Target::character) {
+			if(inCombat) {
+				db << "update charactersOnline set inCombat = 1 where charID =?"
+				<<id;
+			} else {
+				db << "update charactersOnline set inCombat = 0 where charID =?"
+				<<id;					
+			}
+			isSet = true;
+		} else if(characterOrNpc == Target::npc) {
+			if(inCombat) {
+				db << "update instanceOfNpc set inCombat = 1 where npcInstanceID = ?"
+				<< id;
+			} else {
+				db << "update instanceOfNpc set inCombat = 0 where npcInstanceID = ?"
+				<< id;	
+			}
+			isSet = true;
 		}
+
+		databaseMutex.unlock();
+		return isSet;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 
@@ -1021,32 +1394,38 @@ bool DatabaseTool::setCombatFlag(int id, bool inCombat, Target characterOrNpc) {
 
 bool DatabaseTool::inCombat(int id, Target characterOrNpc) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 		int inCombat;
-		switch(characterOrNpc) {
-			case character:
-				db << "select inCombat from charactersOnline where charID = ?"
-				<<id
-				>>inCombat;
-				return inCombat;
-			case npc:
-				db << "select inCombat from instanceOfNpc where npcInstanceID = ?"
-				<<id
-				>>inCombat;
-				return inCombat;
+
+		if(characterOrNpc == Target::character) {
+			db << "select inCombat from charactersOnline where charID = ?"
+			<<id
+			>>inCombat;
+		} else if(characterOrNpc == Target::npc) {
+			db << "select inCombat from instanceOfNpc where npcInstanceID = ?"
+			<<id
+			>>inCombat;
 		}
+
+		databaseMutex.unlock();
+		return inCombat;
 	} catch (sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
 
 int DatabaseTool::getNpcInstanceIDFromName(string name, int zoneID) {
 	try {
+		databaseMutex.lock();
 		int instanceID = 0;
 		database db(DB_LOCATION);
+
 		db << "select npcInstanceID, keywords, shortdesc from instanceOfNpc X, npcs Y where X.npcID = Y.npcID and zoneID = ?"
 		<<zoneID
 		>>[&](int npcInstanceID, string keywords, string shortDesc) {
@@ -1054,11 +1433,15 @@ int DatabaseTool::getNpcInstanceIDFromName(string name, int zoneID) {
 				instanceID = npcInstanceID;
 			}
 		};
+
+		databaseMutex.unlock();
 		return instanceID;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 
@@ -1161,24 +1544,29 @@ string DatabaseTool::look(int charID, string word) {
 
 string DatabaseTool::findNpcDescription(int zoneID, string word) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 		string foundDescription = "";
+
 		db << "select description, longDesc, keywords, shortDesc from npcs N, instanceOfNpc I where N.npcID == I.npcID and zoneID == ?;"
 		<<zoneID
 		>>[&] (string description, string longDescription, string keywords, string shortDesc) {
 
 			if(shortDesc.find(word) != string::npos) {
 				foundDescription = longDescription;
-			}
-			if(keywords.find(word) != string::npos) {
+			}else if(keywords.find(word) != string::npos) {
 				foundDescription = description;
 			}
 		};
+
+		databaseMutex.unlock();
 		return foundDescription;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 
@@ -1186,6 +1574,7 @@ string DatabaseTool::findNpcDescription(int zoneID, string word) {
 
 string DatabaseTool::findPlayerDescription(int lookerID, int zoneID, string name) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
 		string description;
@@ -1194,11 +1583,14 @@ string DatabaseTool::findPlayerDescription(int lookerID, int zoneID, string name
 		<<zoneID
 		>>description;
 
+		databaseMutex.unlock();
 		return description;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 
@@ -1221,8 +1613,6 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 			}
 		};
 
-
-
 		if(foundDescription == "") {
 			db << "select longDescription, keywords, shortDescription from items X, instanceOfItem Y where X.itemID == Y.itemID and zoneID == ?"
 			<<zoneID
@@ -1232,18 +1622,23 @@ string DatabaseTool::findItemDescription(int charID, int zoneID, string word) {
 				}
 			};
 		}
+
+		databaseMutex.unlock();
 		return foundDescription;
 
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "";
 	}
 }
 
 void DatabaseTool::executeCommands() {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
 		db << "PRAGMA foreign_keys = ON;";
@@ -1274,10 +1669,14 @@ void DatabaseTool::executeCommands() {
 			}
 
 		};
+
+		databaseMutex.unlock();
 	} catch(sqlite_exception e){
 		if(verbosity > 0) {
 			cout << e.what();
 		}
+
+		databaseMutex.unlock();
 
 	}
 }
@@ -1293,19 +1692,23 @@ void DatabaseTool::executeCommands() {
 
 int DatabaseTool::createNewZone( string zoneName, string zoneDesc ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "INSERT INTO zones (zoneName,zoneDescription) VALUES (?,?);"
 			<< zoneName
 			<< zoneDesc;
 
+		databaseMutex.unlock();
 		return db.last_insert_rowid();
 	} catch ( exception& e ) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -1313,20 +1716,24 @@ int DatabaseTool::createNewZone( string zoneName, string zoneDesc ) {
 
 int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "INSERT INTO zones (zoneID,zoneName,zoneDescription) VALUES (?,?,?);"
 			<< zoneID
 			<< zoneName
 			<< zoneDesc;
 
+		databaseMutex.unlock();
 		return db.last_insert_rowid();
 	} catch ( exception& e ) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -1334,14 +1741,22 @@ int DatabaseTool::createNewZone( int zoneID, string zoneName, string zoneDesc ) 
 
 void DatabaseTool::deleteZone( int zoneID ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "DELETE FROM zones WHERE zoneID = ?;"
 			<< zoneID;
 
+		databaseMutex.unlock();
+
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
 		return;
 	}
 }
@@ -1349,20 +1764,24 @@ void DatabaseTool::deleteZone( int zoneID ) {
 
 bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string keywords ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "INSERT INTO zone_ext_descriptions (zoneID,description,keywords) VALUES (?,?,?);"
 			<< zoneID
 			<< desc
 			<< keywords;
 
+		databaseMutex.unlock();
 		return true;
 	} catch ( exception& e ) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
@@ -1370,9 +1789,10 @@ bool DatabaseTool::addExtendedDescriptionToZone( int zoneID, string desc, string
 
 int DatabaseTool::addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "INSERT INTO doors (zoneID,description,keywords,direction,linksTo) VALUES (?,?,?,?,?);"
 			<< zoneID
@@ -1381,9 +1801,14 @@ int DatabaseTool::addDoorToZone( int zoneID, string description, string directio
 			<< direction
 			<< pointer;
 
+		databaseMutex.unlock();
 		return db.last_insert_rowid();
 	} catch ( exception& e ) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -1391,14 +1816,22 @@ int DatabaseTool::addDoorToZone( int zoneID, string description, string directio
 
 void DatabaseTool::deleteDoor( int doorID ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "DELETE FROM doors WHERE doorID = ?;"
 			<< doorID;
 
+		databaseMutex.unlock();
+
 	} catch ( exception& e ) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
 		return;
 	}
 }
@@ -1406,6 +1839,7 @@ void DatabaseTool::deleteDoor( int doorID ) {
 
 string DatabaseTool::getDoorDescriptionAt( int zoneID, string direction ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
 		string fetchedDesc;
@@ -1414,11 +1848,14 @@ string DatabaseTool::getDoorDescriptionAt( int zoneID, string direction ) {
 			<< direction
 			>> fetchedDesc;
 
+		databaseMutex.unlock();
 		return fetchedDesc;
 	} catch ( exception& e ) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return "There is nothing there.";
 	}
 }
@@ -1426,6 +1863,7 @@ string DatabaseTool::getDoorDescriptionAt( int zoneID, string direction ) {
 
 int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
 		int fetchedZoneID;
@@ -1434,11 +1872,15 @@ int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
 			<< direction
 			>> fetchedZoneID;
 
+
+		databaseMutex.unlock();
 		return fetchedZoneID;
 	} catch ( exception& e ) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -1446,17 +1888,21 @@ int DatabaseTool::getZoneIDBehindDoorAt( int zoneID, string direction ) {
 
 bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
 
 		db 	<< "UPDATE characters SET location = ? WHERE charID == ?;"
 			<< zoneID
 			<< charID;
 
+		databaseMutex.unlock();
 		return true;
 	} catch ( exception& e ) {
 		if(verbosity > 0) {
-			cout << e.what();
+			std::cerr << e.what() << std::endl;
 		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
@@ -1464,8 +1910,9 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 
 int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, string keywords ) {
 	try {
+		databaseMutex.lock();
 		database db(DB_LOCATION);
-		db << "PRAGMA foreign_keys = ON;";
+		db << FOREIGN_KEY_ON;
 
 		db 	<< "INSERT INTO items (shortDescription,description,longDescription,keywords,isPickable,isEquippable,isStackable,isContainer) VALUES (?,?,?,?,1,1,0,0);"
 			<< shrtDesc
@@ -1473,9 +1920,14 @@ int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, s
 			<< lngDesc
 			<< keywords;
 		
+		databaseMutex.unlock();
 		return db.last_insert_rowid();
 	} catch ( exception& e ) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
 		return 0;
 	}
 }
@@ -1483,6 +1935,8 @@ int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, s
 
 bool DatabaseTool::signUserIn( string userName, string password ){
 	try {
+
+		databaseMutex.lock();
 		database db( DB_LOCATION );
 		
 		int loggedIn = 0;
@@ -1495,10 +1949,15 @@ bool DatabaseTool::signUserIn( string userName, string password ){
 			<<	userName
 			<<	password;
 		
+		databaseMutex.unlock();
 		return loggedIn;
 	} catch(sqlite_exception e) {
-		std::cerr << e.what() << std::endl;
-		std::cout << "[Database] Failed to open file.";
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+			std::cout << "[Database] Failed to open file.";
+		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
@@ -1506,6 +1965,7 @@ bool DatabaseTool::signUserIn( string userName, string password ){
 
 bool DatabaseTool::signUserOut( int userID ){
 	try {
+		databaseMutex.lock();
 		database db( DB_LOCATION );
 		
 		int loggedOut = 0;
@@ -1516,34 +1976,67 @@ bool DatabaseTool::signUserOut( int userID ){
 		db 	<<	"UPDATE users SET signedOn = 0 WHERE userID == ? AND signedOn == 1;"
 			<<	userID;
 		
+		databaseMutex.unlock();
 		return loggedOut;
 	} catch(sqlite_exception e) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }
 
 
 void DatabaseTool::clearAllSessions() {
-	database db( DB_LOCATION );
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
 	
-	db << "DELETE FROM charactersOnline;";
+		db << "DELETE FROM charactersOnline;";
+
+		databaseMutex.unlock();
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+	}
 }
 
 
 void DatabaseTool::signOffAllUsers() {
-	database db( DB_LOCATION );
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
 	
-	db << "UPDATE users SET signedOn = 0";
+		db << "UPDATE users SET signedOn = 0";
+
+		databaseMutex.unlock();
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+	}
 }
 
 
 bool DatabaseTool::testValidity() {
 	try {
+		databaseMutex.lock();
 		database db( DB_LOCATION );
+
+		databaseMutex.unlock();
 		return true;
 	} catch(sqlite_exception e) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
 		return false;
 	}
 }

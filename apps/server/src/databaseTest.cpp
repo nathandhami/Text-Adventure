@@ -113,8 +113,8 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
       //charOnlineTest();
-      lookTest();
-      //DatabaseTool::executeCommands();
+      //lookTest();
+      npcInstanceTest();
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -150,15 +150,7 @@ void updateAttributesTest() {
 }
 
 void npcInstanceTest() {
-   vector<string> keywords;
-   keywords.push_back("wizard");
-   DatabaseTool::addNpc(3000, 
-       " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
-      keywords,
-      "A wizard walks around behind the counter, talking to himself.",
-      "the wizard");
 
-   DatabaseTool::createNpcInstance(3000, 3054);
    vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
       cout << DatabaseTool::getNpcDesc(npcInstanceID) << endl << endl;;
