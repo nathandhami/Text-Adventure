@@ -139,6 +139,15 @@ void MainWindow::on_login_click()
 void MainWindow::on_enter_pressed()
 {
 	std::string command = commandEntry.get_text();
+	
+	if(command.compare("logout") == 0) {
+
+		Game::logout();
+		Game::stop();
+		exit(1);
+
+	}
+
 	Game::enact(command);
 
 	commandEntry.set_text("");
@@ -166,4 +175,5 @@ void MainWindow::get_response_thread()
 
 		Glib::usleep(500000); // microseconds
 	}
+	lock.release();
 }
