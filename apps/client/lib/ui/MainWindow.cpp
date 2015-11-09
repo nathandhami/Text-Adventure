@@ -5,13 +5,19 @@
 MainWindow::MainWindow()
 : commandFrame("Enter Command"),
   outputFrame("Server"),
-  m_WorkerThread(0)
-{
+  m_WorkerThread(0),
+  usernameLabel("Username: "),
+  passwordLabel("Password: "),
+  loginButton("Login")
+{	
+	//intially hide the main widget
+	uiGrid.hide();
+
 	Game::initialize();
 	Game::start();	
 
 	//Sets login info
-	NetMessage response = Game::login( "testUser1", "test1" );
+	//NetMessage response = Game::login( "testUser1", "test1" );
 
 	//Initialize main window
 	set_default_size(900, 500);
@@ -20,6 +26,27 @@ MainWindow::MainWindow()
 	set_border_width(10);
 
 	m_WorkerThread = Glib::Threads::Thread::create(sigc::mem_fun(*this, &MainWindow::get_response_thread));
+
+	/************ LOGIN PAGE *************/
+	
+	loginGrid.add(usernameLabel);
+	loginGrid.add(usernameEntry);
+	loginGrid.add(passwordLabel);
+	loginGrid.add(passwordEntry);
+	loginGrid.add(loginButton);
+
+	loginButton.signal_clicked().connect( sigc::mem_fun(*this,
+              &MainWindow::on_login_click) );
+	
+	loginGrid.show();
+	usernameLabel.show();
+	usernameEntry.show();
+	passwordLabel.show();
+	passwordEntry.show();
+    	passwordEntry.set_visibility(false);
+	loginButton.show();
+
+	/************ END OF LOGIN PAGE ******/
 
 	outputTextview.set_editable(FALSE);
 	outputScrollWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
@@ -46,6 +73,7 @@ MainWindow::MainWindow()
 	uiGrid.set_orientation(Gtk::ORIENTATION_VERTICAL);
 	uiGrid.add(outputFrame);
 	uiGrid.add(commandFrame);
+	uiGrid.add(loginGrid);
 
 	//Adds the grid to the main window
 	add(uiGrid);	
@@ -62,23 +90,52 @@ MainWindow::MainWindow()
 	//Sets the focus on the command entry box when the program starts
 	set_focus_child(commandEntry);
 
-	show_all_children();
+	uiGrid.show();
+
+	//show_all_children();
 }
 
 MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::on_login_click()
+{
+	std::string username = usernameEntry.get_text();
+	std::string password = passwordEntry.get_text();
+	//NetMessage response = Game::login( "testUser1", "test1" );
+	NetMessage response = Game::login( username, password );
+
+	if(response.header == GameCode::CORRECT) {
+		
+		usernameLabel.hide();
+		usernameEntry.hide();
+		passwordLabel.hide();
+		passwordEntry.hide();
+		loginButton.hide();
+
+		outputScrollWindow.show();
+		outputTextview.show();
+		uiGrid.show();
+		commandEntry.show();
+		outputBox.show();
+		commandFrame.show();
+		outputFrame.show();
+
+	} else {
+		Gtk::MessageDialog dlg("Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+		
+       		dlg.set_title("Login Failed");
+		
+    		dlg.run();
+	}
+
+}
+
 void MainWindow::on_enter_pressed()
 {
 	std::string command = commandEntry.get_text();
 	Game::enact(command);
-	
-	//m_adjustment = outputScrollWindow.get_vadjustment();
-	//m_adjustment->set_value(m_adjustment->get_upper()); 
-
-	//outputTextBuffer->insert(outputTextBuffer->end(), "Response: " + Game::getFrontResponse().body + "\n");
-	//outputTextview.set_buffer(outputTextBuffer);
 
 	commandEntry.set_text("");
 }
@@ -88,15 +145,17 @@ void MainWindow::get_response_thread()
 	Glib::Threads::Mutex::Lock lock(m_Mutex);
 	while(true) {
 		NetMessage response = Game::getFrontResponse();
-	
-		Glib::usleep(500000); // microseconds
 		m_adjustment = outputScrollWindow.get_vadjustment();
 		m_adjustment->set_value(m_adjustment->get_upper()); 
+
+		
 	
 		if ( response.header != GameCode::NONE ) {
 			outputTextBuffer->insert(outputTextBuffer->end(), ">> " + response.body + "\n");
 		}
 
 		outputTextview.set_buffer(outputTextBuffer);
+
+		Glib::usleep(500000); // microseconds
 	}
 }
