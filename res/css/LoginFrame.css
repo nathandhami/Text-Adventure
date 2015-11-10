@@ -35,6 +35,7 @@ GtkEntry {
 	background: rgba( 0, 0, 0, 0.7 );
 	border: 1px solid #00CC00;
 	color: #00CC00;
+	transition: 150ms linear;
 }
 
 #button-login:hover {
