@@ -5,26 +5,34 @@
 GtkFrame {
 	background-image: url( "../img/bg_login.jpg" );
 	background-size: 100%;
+	font-weight: 500;
+}
+
+GtkGrid {
+	border: 1px solid #00CC00;
+	background: rgba( 0, 0, 0, 0.7 );
 }
 
 #label-username, #label-password {
-	color: white;
+	color: #00CC00;
 }
 
 GtkEntry {
 /*	width: 100;*/
-	border: 1px solid white;
+	border: 1px solid #00CC00;
+	border-radius: 0;
 	background: rgba( 0, 0, 0, 0.4 );
-	color: rgba( 255, 255, 255, 0.9 );
+	color: #00CC00;
 }
 
 #button-login {
-	border-radius: 4px;
+	border-radius: 0px;
 	background: rgba( 0, 0, 0, 0.7 );
-	border: none;
-	color: rgba( 255, 255, 255, 0.8 );
+	border: 1px solid #00CC00;
+	color: #00CC00;
 }
 
 #button-login:hover {
-	background: rgba( 0, 0, 0, 0.9 );
+	background: #00CC00;
+	color: rgba( 0, 0, 0, 0.8 );
 }

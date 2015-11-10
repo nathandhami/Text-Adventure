@@ -10,7 +10,7 @@
 
 // ------------------- PUBLIC -------------------
 
-LoginFrame::LoginFrame() : loginButton( "Login" ) {
+LoginFrame::LoginFrame() : loginButton( "Log In" ) {
 	const std::string PATH_CSS = "res/css/LoginFrame.css";
 	auto cssProvider = Gtk::CssProvider::create();
 	cssProvider->load_from_path( PATH_CSS );
@@ -37,7 +37,7 @@ void LoginFrame::prepareComponents() {
 	
 	Gdk::RGBA gridColor;
 	gridColor.set_rgba( 0.0, 0.0, 0.0, 0.5 );
-	this->layoutGrid.override_background_color( gridColor );
+//	this->layoutGrid.override_background_color( gridColor );
 	
 	this->setupLabels();
 	this->setupEntries();
