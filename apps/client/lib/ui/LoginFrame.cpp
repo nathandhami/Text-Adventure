@@ -3,6 +3,7 @@
 #include <GameCode.hpp>
 #include "Game.hpp"
 
+
 // ------------------- PUBLIC -------------------
 
 LoginFrame::LoginFrame() : loginButton( "Login" ) {
@@ -41,8 +42,6 @@ void LoginFrame::prepareComponents() {
 	this->layoutGrid.add( this->loginButton );
 
 	this->add( layoutGrid );
-
-//	this->show_all_children();
 }
 
 
@@ -60,11 +59,4 @@ void LoginFrame::loginButton_click() {
 		dlg.set_title( "Login Failed" );
 		dlg.run();
 	}
-
-	//	this->close();
-
-	/*Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
-	dlg.set_title( "Login Failed" );
-
-	dlg.run();*/
 }

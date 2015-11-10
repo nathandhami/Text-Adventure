@@ -18,13 +18,15 @@
 int main( int argc, char* argv[] ) {
 	Game::initialize();
 	Game::start();
+	
 	argc = 1;
-	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create( argc, argv, "com.gtkmm.tutorial1.base" );
+	Glib::RefPtr< Gtk::Application > app = Gtk::Application::create( argc, argv, "ca.sfu.cmpt373.textgaleonline" );
+	app->set_flags( Gio::ApplicationFlags::APPLICATION_NON_UNIQUE );
 	
 	MainWindow mainWindow;
 	app->run( mainWindow );
 	
-	Game::logout();
+	Game::stop();
 
 	return 0;
 }
