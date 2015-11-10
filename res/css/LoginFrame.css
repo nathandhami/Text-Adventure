@@ -21,7 +21,10 @@ GtkGrid {
 
 GtkEntry {
 /*	width: 100;*/
-	border: 1px solid #00CC00;
+	border: none;
+	border-bottom-width: 1px;
+	border-bottom-color: #00CC00;
+	border-bottom-style: solid;
 	border-radius: 0;
 	background: rgba( 0, 0, 0, 0.4 );
 	color: #00CC00;
