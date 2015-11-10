@@ -8,22 +8,6 @@
 #define FORM_HEIGHT 167
 
 
-
-static void stylize( Gtk::Widget* widget ) {
-	const std::string PATH_CSS = "res/css/LoginFrame.css";
-	
-	auto cssProvider = Gtk::CssProvider::create();
-	if( not cssProvider->load_from_path( PATH_CSS ) ) {
-		std::cout << "Failed to load css\n";
-		std::exit(1);
-	}
-	
-	auto screen = widget->get_screen();
-	auto cssContext = widget->get_style_context();
-	cssContext->add_provider_for_screen( screen, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION );
-}
-
-
 // ------------------- PUBLIC -------------------
 
 LoginFrame::LoginFrame() : loginButton( "Login" ) {
@@ -34,8 +18,6 @@ LoginFrame::LoginFrame() : loginButton( "Login" ) {
 	auto screen = Gdk::Screen::get_default();
 	auto cssContext = this->get_style_context();
 	cssContext->add_provider_for_screen( screen, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION );
-	
-//	stylize( this );
 
 	this->prepareComponents();
 
@@ -50,8 +32,8 @@ void LoginFrame::prepareComponents() {
 	this->layoutGrid.set_halign( Gtk::Align::ALIGN_CENTER );
 	this->layoutGrid.set_valign( Gtk::Align::ALIGN_CENTER );
 	this->layoutGrid.set_row_spacing( 10 );
-	this->layoutGrid.set_size_request( 300, 167 );
-	this->layoutGrid.set_row_homogeneous( false );
+	this->layoutGrid.set_size_request( 300, 187 );
+//	this->layoutGrid.set_padding( 0, 10 );
 	
 	Gdk::RGBA gridColor;
 	gridColor.set_rgba( 0.0, 0.0, 0.0, 0.5 );
@@ -78,6 +60,7 @@ void LoginFrame::setupLabels() {
 	this->usernameLabel.set_name( "label-username" );
 	this->usernameLabel.set_markup( "<span>Username:</span>" );
 	this->usernameLabel.set_size_request( 300 );
+	this->usernameLabel.set_margin_top( 10 );
 	
 	// Password
 	this->passwordLabel.set_name( "label-password" );
