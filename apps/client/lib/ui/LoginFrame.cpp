@@ -97,6 +97,7 @@ void LoginFrame::loginButton_click() {
 		this->hide();
 	} else {
 		Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		dlg.set_decorated( false );
 		dlg.set_title( "Login Failed" );
 		dlg.run();
 	}
