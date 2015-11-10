@@ -13,6 +13,7 @@ public:
 	
 private:
 	Gtk::Grid layoutGrid;
+//	Gtk::Box loginForm;
 
 	Gtk::Label usernameLabel;
 	Gtk::Label passwordLabel;
@@ -22,6 +23,12 @@ private:
 	Gtk::Button loginButton;
 
 	void prepareComponents();
+	void setupLabels();
+	void setupEntries();
+	
+	
+	
+	
 	void loginButton_click();
 	
 };

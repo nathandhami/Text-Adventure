@@ -4,10 +4,38 @@
 #include "Game.hpp"
 
 
+#define FORM_WIDTH 	300
+#define FORM_HEIGHT 167
+
+
+
+static void stylize( Gtk::Widget* widget ) {
+	const std::string PATH_CSS = "res/css/LoginFrame.css";
+	
+	auto cssProvider = Gtk::CssProvider::create();
+	if( not cssProvider->load_from_path( PATH_CSS ) ) {
+		std::cout << "Failed to load css\n";
+		std::exit(1);
+	}
+	
+	auto screen = widget->get_screen();
+	auto cssContext = widget->get_style_context();
+	cssContext->add_provider_for_screen( screen, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION );
+}
+
+
 // ------------------- PUBLIC -------------------
 
 LoginFrame::LoginFrame() : loginButton( "Login" ) {
+	const std::string PATH_CSS = "res/css/LoginFrame.css";
+	auto cssProvider = Gtk::CssProvider::create();
+	cssProvider->load_from_path( PATH_CSS );
 	
+	auto screen = Gdk::Screen::get_default();
+	auto cssContext = this->get_style_context();
+	cssContext->add_provider_for_screen( screen, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION );
+	
+//	stylize( this );
 
 	this->prepareComponents();
 
@@ -21,28 +49,58 @@ void LoginFrame::prepareComponents() {
 	this->layoutGrid.set_orientation( Gtk::ORIENTATION_VERTICAL );
 	this->layoutGrid.set_halign( Gtk::Align::ALIGN_CENTER );
 	this->layoutGrid.set_valign( Gtk::Align::ALIGN_CENTER );
-	this->layoutGrid.set_row_spacing( 10 );	
+	this->layoutGrid.set_row_spacing( 10 );
+	this->layoutGrid.set_size_request( 300, 167 );
+	this->layoutGrid.set_row_homogeneous( false );
+	
+	Gdk::RGBA gridColor;
+	gridColor.set_rgba( 0.0, 0.0, 0.0, 0.5 );
+	this->layoutGrid.override_background_color( gridColor );
+	
+	this->setupLabels();
+	this->setupEntries();
 
-
-	this->usernameLabel.set_text( "Username:" );
-	//	this->usernameLabel.set_halign( Gtk::Align::ALIGN_START );
-	this->passwordLabel.set_text( "Password:" );
-	//	this->passwordLabel.set_halign( Gtk::Align::ALIGN_START );
-	this->passwordEntry.set_visibility( false );
-
-	this->usernameEntry.signal_activate().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
-	this->passwordEntry.signal_activate().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
-
+	this->loginButton.set_name( "button-login" );
 	this->loginButton.signal_clicked().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
 
-	this->layoutGrid.add( usernameLabel );
-	this->layoutGrid.add( usernameEntry );
-	this->layoutGrid.add( passwordLabel );
-	this->layoutGrid.add( passwordEntry );
-	this->layoutGrid.add( this->loginButton );
+	this->layoutGrid.attach( this->usernameLabel, 0, 0, 3, 1 );
+	this->layoutGrid.attach( this->usernameEntry, 1, 1, 1, 1 );
+	this->layoutGrid.attach( this->passwordLabel, 0, 2, 3, 1 );
+	this->layoutGrid.attach( this->passwordEntry, 1, 3, 1, 1 );
+	this->layoutGrid.attach( this->loginButton, 1, 4, 1, 1  );
 
 	this->add( layoutGrid );
 }
+
+
+void LoginFrame::setupLabels() {
+	// Username
+	this->usernameLabel.set_name( "label-username" );
+	this->usernameLabel.set_markup( "<span>Username:</span>" );
+	this->usernameLabel.set_size_request( 300 );
+	
+	// Password
+	this->passwordLabel.set_name( "label-password" );
+	this->passwordLabel.set_markup( "<span>Password:</span>" );
+	this->passwordLabel.set_size_request( 300 );
+}
+
+
+void LoginFrame::setupEntries() {
+	const int ENTRY_WIDTH = 200;
+	Gdk::RGBA BG_COLOR;
+	BG_COLOR.set_rgba( 0.0, 0.0, 0.0, 0.3 );
+	
+	// Username
+	this->usernameEntry.set_alignment( 0.5 );
+	this->usernameEntry.signal_activate().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
+	
+	// Password
+	this->passwordEntry.set_alignment( 0.5 );
+	this->passwordEntry.set_visibility( false );
+	this->passwordEntry.signal_activate().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
+}
+
 
 
 void LoginFrame::loginButton_click() {

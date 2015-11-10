@@ -1,0 +1,30 @@
+#main-window {
+	border: 10px solid black;
+}
+
+GtkFrame {
+	background-image: url( "../img/bg_login.jpg" );
+	background-size: 100%;
+}
+
+#label-username, #label-password {
+	color: white;
+}
+
+GtkEntry {
+/*	width: 100;*/
+	border: 1px solid white;
+	background: rgba( 0, 0, 0, 0.4 );
+	color: rgba( 255, 255, 255, 0.9 );
+}
+
+#button-login {
+	border-radius: 4px;
+	background: rgba( 0, 0, 0, 0.7 );
+	border: none;
+	color: rgba( 255, 255, 255, 0.8 );
+}
+
+#button-login:hover {
+	background: rgba( 0, 0, 0, 0.9 );
+}
