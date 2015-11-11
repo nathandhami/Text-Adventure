@@ -5,7 +5,7 @@
 #define WIDTH_DEFAULT 	900
 #define HEIGHT_DEFAULT	500
 
-#define BORDER_WIDTH_DEFAULT 10
+#define BORDER_WIDTH_DEFAULT 1
 
 
 // ------------------- PUBLIC -------------------

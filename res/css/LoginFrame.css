@@ -1,5 +1,5 @@
 #main-window {
-	border: 10px solid black;
+	border: 1px solid #00CC00;
 }
 
 GtkFrame {
