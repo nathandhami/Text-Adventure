@@ -20,7 +20,7 @@ MainWindow::MainWindow() {
 
 	this->set_name( "main-window" );
 	
-	this->set_border_width( BORDER_WIDTH_DEFAULT );
+//	this->set_border_width( BORDER_WIDTH_DEFAULT );
 
 	this->prepareComponents();
 

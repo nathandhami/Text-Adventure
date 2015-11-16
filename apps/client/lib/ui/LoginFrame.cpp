@@ -11,6 +11,10 @@
 // ------------------- PUBLIC -------------------
 
 LoginFrame::LoginFrame() : loginButton( "Log In" ) {
+	this->set_margin_right( 1 );
+	this->set_margin_left( 1 );
+	this->set_margin_bottom( 1 );
+	
 	const std::string PATH_CSS = "res/css/LoginFrame.css";
 	auto cssProvider = Gtk::CssProvider::create();
 	cssProvider->load_from_path( PATH_CSS );
