@@ -12,9 +12,20 @@
 
 #include <iostream>
 
-namespace Authenticator {
-	int login( std::string data );
-	void logout( int userId );
-}
+#include "User.hpp"
+
+class Authenticator {
+public:
+	static int login( std::string data );
+	static bool login( User& user, std::string userCredentials );
+	static void logout( int userId );
+	static bool logout( User& user );
+	
+private:
+	Authenticator() {}
+	
+};
+
+
 
 #endif

@@ -18,17 +18,28 @@
 #include <map>
 //#include "CommandParser.hpp"
 
+//enum CommandHeader {WORLD, COMBAT, MESSENGER, INCOMPLETE, INVALID, CHARACTER, EDITOR};
 
+namespace CommandHeader {
+	static const int WORLD = 0;
+	static const int COMBAT = 1;
+	static const int MESSENGER = 2;
+	static const int INCOMPLETE = 3;
+	static const int INVALID = 4;
+	static const int CHARACTER = 5;
+	static const int EDITOR = 6;
+}
 
+using namespace CommandHeader;
 
 class DictionaryCmds {
     
 public:
 	
-	static const std::string INVALID_COMMAND;
+//	static const  int INVALID_COMMAND;
 	
 	// Interpret user's input and return parsable string
-	static std::string getParsableFromInput( std::string inputString );
+	static  int getParsableFromInput( std::string inputString );
     
 //    static int dictionarySize() const; // returns number of commands in dictionary
     
@@ -36,10 +47,10 @@ public:
                                                        // exists in the dictionary
     //getter function for commandsInDictionary map
 //    static std::map<std::string, std::string> getDictionary() const;
-  enum CommandHeader {WORLD, COMBAT, MESSENGER, INCOMPLETE, INVALID, CHARACTER, COMBAT};
+//  enum CommandHeader {WORLD, COMBAT, MESSENGER, INCOMPLETE, INVALID, CHARACTER, COMBAT};
 
 private:
-    static std::map <std::string, std::string> COMMAND_DICTIONARY;
+    static std::map <std::string,  int> COMMAND_DICTIONARY;
 };
 
 

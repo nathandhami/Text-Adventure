@@ -9,6 +9,7 @@
 #define HEADER_LOGIN 	"lgn"
 #define HEADER_LOGOUT	"lgo"
 #define HEADER_COMMAND	"cmd"
+#define HEADER_MESSAGE	"msg"
 
 #define HEADER_OK		"okk"
 #define HEADER_ERROR	"err"

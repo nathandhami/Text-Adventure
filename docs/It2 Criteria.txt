@@ -1,0 +1,60 @@
+Initial requirements for Iteration 2
+=====================================
+
+UI
+* A clean interface that separates the player’s text entry from the feedback from the server and allows them to proceed without interfering.
+
+Networking
+* The connection between clients and the server works
+* Multiple clients can connect
+
+World interaction tasks
+* Look
+* Look at keywords in room
+* Look at objects, players, or NPCs in room
+* Look at keywords associated with objects, players, or NPCs in room
+* Look at exits
+* Look at keywords associated with door
+* Look at objects in inventory
+* Look at keywords associated with objects in inventory
+
+* “go”, “move” <direction> or “go”, “move” door keyword
+* <direction> alone as shorthand
+* Doors are flexible and need not be one of the 4 cardinal, 4 intercardinal, or 2 vertical directions. If the “direction” of a door is “inside”, then typing “go inside” should take the player through that door. There is no limit on directions.
+
+* The player can get items from the room that they are in and collect them in an inventory
+* Items in the inventory that “fit” or can be “wielded” by the player can be worn and used by the player
+
+* As one player does things (gets items, fights NPCs, enters/exits a room) other players in the room should be updated/notified.
+
+Flexible commands
+* Connection between the spelling of a command and the action performed by that command can be specified via yaml
+* Some commands are only available to players with desired authentication levels
+
+World resets
+* Every area/zone resets by executing the specified reset commands with a frequency either specified as part of the area or as a configured default.
+
+World construction via commands
+* Players with appropriate administrative privileges can create new areas/zones, rooms, doors, objects, NPCs, reset commands, etc. OR modify existing ones
+
+Player attributes & development
+* Players have characteristics like
+* an inventory
+* appropriate items worn in appropriate places, e.g. a shirt on their torso.
+* strength, intelligence, dexterity, charisma
+* a measure of experience that can be affected by winning fights, completing quests, or other tasks
+* a current level that can change based on changes to experience
+* a description of what other players see when that look at a player
+* skills and associated proficiencies in those skills
+
+Combat
+* Players can fight NPCs
+* If a player wants to, they can opt in to fight & be fought by other willing players.
+* Rounds of a fight proceed until one party loses or flees
+* Damage and defence are determined by attributes & equipment of the player(s) and/or NPCs
+
+Configurability
+* There should be no magic values, so a configuration file controls
+* The port of the server to which players connect
+* The default reset time for areas
+* Any other global options
