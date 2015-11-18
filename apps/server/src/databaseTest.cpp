@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
       
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
-      //updateAttributesTest();
+      updateAttributesTest();
       //npcInstanceTest();
       //inventoryTest();
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 
       //charOnlineTest();
       //DatabaseTool::unEquip(1, "dagger");
-      lookTest();
+      //lookTest();
       //npcInstanceTest();
 
    }
@@ -145,10 +145,10 @@ void inventoryTest() {
 }
 
 void updateAttributesTest() {
-   Attributes attributes = DatabaseTool::getAttributes(1, Target::npc);
+   Attributes attributes = DatabaseTool::getAttributes(1, Target::character);
    attributes.print();
    attributes.level = 99;
-   DatabaseTool::updateAttributes(attributes, Target::npc);
+   DatabaseTool::updateAttributes(attributes, Target::character);
 
 }
 
