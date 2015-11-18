@@ -13,6 +13,7 @@
 #define VICTORY_NOTIFICATION "You defeated your opponent!\n"
 #define DEFEAT_NOTIFICATION "You were defeated!\n"
 
+
 using namespace std;
 
 class CombatInstance {
@@ -21,27 +22,30 @@ class CombatInstance {
 	static const int PLAYER_ONE = 0;
 	static const int PLAYER_TWO = 1;
 
-	static bool challengeAccepted;
-	static bool keepFighting;
-	static bool readyForCleanup;
+	bool challengeAccepted = false;
+	bool playerTwoPresent = false;
+	bool keepFighting = true;
+	bool readyForCleanup = false;
 
-	static int combatZoneID;
-	static int enemyType;
-	static int playerOneID;
-	static int playerTwoID;
+	int combatZoneID = 0;
+	int enemyType = 0;
+	int playerOneID = 0;
+	int playerTwoID = 0;
 
 	// For testing combat until we have equipment and attribute data
-	static int damageDealt;
-	static int playerOneHealthRemaining;
-	static int playerTwoHealthRemaining;
+	int damageDealt = 4;
+	int playerOneHealthRemaining = 60;
+	int playerTwoHealthRemaining = 55;
 
-	static std::thread combatThread;
+	thread combatThread;
 
-	static deque<deque<int>> playersActionQueue;
+	deque<deque<int>> playersActionQueue;
 
 
-	void removePlayersFromCombat(int playerID, int playerType);
-	void removePlayersFromCombat();
+	void removePlayerFromCombat(int playerID, int playerType, string message);
+	void removePlayersFromCombat(string message);
+
+	void pushPlayerAction(int player, int action);
 
 	void waitForChallengeAccept();
 
@@ -61,6 +65,10 @@ public:
 	bool isCombatant(int playerID);
 
 	bool inZone(int zoneID);
+
+	bool isStillFighting();
+
+	bool isReadyForCleanup();
 
 	void queuePlayerAction(int playerID, int action);
 

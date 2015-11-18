@@ -3,22 +3,52 @@
 
 // --------Private variables--------
 
-static vector<std::shared_ptr<CombatInstance>> combatInstances;
+vector<std::shared_ptr<CombatInstance>> Combat::combatInstances;
 
+bool Combat::cleanupThreadRunning = false;
+
+thread Combat::cleanupThread;
+
+mutex Combat::combatInstancesLock;
 
 // --------Private functions--------
 
+void Combat::cleanupCombats() {
+	while (true) {
+		combatInstancesLock.lock();
+		for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
+			if (!combatInstances[instanceIndex]->isStillFighting()) {
+				cout << "CLEANING UP COMBAT" << endl;
+				combatInstances[instanceIndex]->endCombat("");
+				combatInstances.erase(combatInstances.begin() + instanceIndex);
+			}
+		}
+		combatInstancesLock.unlock();
+	}
+}
+
+void Combat::startCombatThread() {
+	if (!cleanupThreadRunning) {
+		cleanupThread = std::thread(&Combat::cleanupCombats);
+		cleanupThreadRunning = true;
+	}
+}
+
 std::shared_ptr<CombatInstance> Combat::getCombatInstance(int playerID) {
+	combatInstancesLock.lock();
 	for (long instanceIndex = 0; instanceIndex < combatInstances.size(); instanceIndex++) {
 		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
+			combatInstancesLock.unlock();
 			return combatInstances[instanceIndex];
 		}
 	}
+	combatInstancesLock.unlock();
 	return NULL;
 }
 
 // Violates the idea of a function not taking many lines
 string Combat::startCombat(int playerID, string arguments) {
+	cout << "STARTING COMBAT" << endl;
 	if (Combat::isInCombat(playerID)) {
 		return "Finish your current fight before starting another, you barbarian.\n";
 	}
@@ -32,11 +62,12 @@ string Combat::startCombat(int playerID, string arguments) {
 	for (int parsedArgumentIndex = 0; parsedArgumentIndex < parsedArgument.size(); parsedArgumentIndex++) {
 		enemyName = parsedArgument.at(parsedArgumentIndex);
 		if (enemyName.find_first_not_of(' ') != std::string::npos) {
-			boost::to_lower(enemyName);
-			if (enemyName == "player") {
+			string disambiguityCheck = enemyName;
+			boost::to_lower(disambiguityCheck);
+			if (disambiguityCheck == "player") {
 				enemyType = PLAYER_ONLY;
 			}
-			else if (enemyName == "npc") {
+			else if (disambiguityCheck == "npc") {
 				enemyType = NPC_ONLY;
 			}
 			else {
@@ -65,18 +96,21 @@ string Combat::startCombat(int playerID, string arguments) {
 		if (Combat::isInCombat(enemyPlayerID, PLAYER_ONLY)) {
 			return enemyName + " is already in combat.\n";
 		}
+		combatInstancesLock.lock();
 		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyPlayerID, PLAYER_ONLY, DatabaseTool::getCharsLocation(playerID)));
+		combatInstancesLock.unlock();
 	}
 	else if (enemyNpcID > 0) {
 		if (Combat::isInCombat(enemyNpcID, NPC_ONLY)) {
 			return enemyName + " is already in combat.\n";
 		}
+		combatInstancesLock.lock();
 		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyNpcID, NPC_ONLY, DatabaseTool::getCharsLocation(playerID)));
+		combatInstancesLock.unlock();
 	}
 	else {
 		return "There is no " + enemyName + " in your zone.\n";
 	}
-
 	return "";
 }
 
@@ -150,6 +184,7 @@ bool Combat::isInCombat(int characterID, int characterType) {
 // --------Public functions--------
 
 string Combat::executeCommand(int playerID, Command givenCommand) {
+	startCombatThread();
 	string command = givenCommand.type;
 	string arguments = givenCommand.data;
 	boost::to_lower(command);
@@ -174,6 +209,7 @@ bool Combat::isInCombat(int playerID) {
 }
 
 void Combat::endCombat(int playerID, string message) {	
+	combatInstancesLock.lock();
 	for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
 		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
 			combatInstances[instanceIndex]->endCombat(message);
@@ -181,6 +217,7 @@ void Combat::endCombat(int playerID, string message) {
 			break;
 		}
 	}
+	combatInstancesLock.unlock();
 }
 
 void Combat::endCombat(int playerID) {
@@ -188,10 +225,13 @@ void Combat::endCombat(int playerID) {
 }
 
 void Combat::endAllCombat(string message) {
+	cout << "ENDING ALL COMBAT EVERYWHERE" << endl;
+	combatInstancesLock.lock();
 	while (!combatInstances.empty()) {
 		combatInstances.back()->endCombat(message);
 		combatInstances.pop_back();
 	}
+	combatInstancesLock.unlock();
 }
 
 void Combat::endAllCombat() {
@@ -199,8 +239,10 @@ void Combat::endAllCombat() {
 }
 
 void Combat::endAllCombat(int zoneID, string message) {
+	cout << "ENDING ALL COMBAT IN ZONE " << zoneID << endl;
 	// Have to do some silly stuff here to avoid race condition issues
 	bool keepGoing = true;
+	combatInstancesLock.lock();
 	while (keepGoing) {
 		for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
 			if (combatInstances[instanceIndex]->inZone(zoneID)) {
@@ -216,6 +258,7 @@ void Combat::endAllCombat(int zoneID, string message) {
 			}
 		}
 	}
+	combatInstancesLock.unlock();
 }
 
 void Combat::endAllCombat(int zoneID) {

@@ -8,14 +8,21 @@
 #include "Command.hpp"
 #include <deque>
 #include <boost/algorithm/string.hpp>
+#include <thread>
+#include <mutex>
 
 
 using namespace std;
 
 class Combat {
 
-	
+	static vector<std::shared_ptr<CombatInstance>> combatInstances;
+	static bool cleanupThreadRunning;
+	static thread cleanupThread;
+	static mutex combatInstancesLock;
 
+	static void cleanupCombats();
+	static void startCombatThread();
 
 	static std::shared_ptr<CombatInstance> getCombatInstance(int playerID);
 
