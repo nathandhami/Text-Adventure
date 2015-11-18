@@ -3,6 +3,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/regex.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
 #include <vector>
 #include <iostream>
@@ -19,18 +20,46 @@ static void parseToTokens( std::vector< std::string >& tokens, boost::regex patt
 }
 
 
-void ObjectEditor::createItem( int creatorId, std::string itemData ) {
-	const int EXPECTED_TOKEN_NUM = 4;
-	boost::regex pattern( "(~:)|(~;)" );
+// create item [item name] seen as [what you see] upclose [the long description] recognized as [keywords]
+std::string ObjectEditor::createItem( int creatorId, std::string itemData ) {
+	const std::string MSG_INVALID_CMD = "Incorrect creation command.";
+	const int NUM_EXP_ARGS = 4;
+	boost::regex PATTERN( "(\\]((?!\\]).)*?seen as.*?\\[)|(\\]((?!\\]).)*?upclose.*?\\[)|(\\]((?!\\]).)*?recognized as.*?\\[)" );
+	
+	boost::trim_if( itemData, boost::is_any_of( "[] " ) );
 	
 	std::vector< std::string > tokens;
-	parseToTokens( tokens, pattern, itemData );
+	boost::algorithm::split_regex( tokens, itemData, PATTERN );
 	
-	LOG( "Item name: " << tokens[0] );
-	LOG( "Long desc: " << tokens[1] );
-	LOG( "Desc: " << tokens[2] );
-	LOG( "Keywords: " << tokens[3] );
+	std::string responseMessage = MSG_INVALID_CMD;
+	if ( tokens.size() == NUM_EXP_ARGS ) {
+		std::string name = tokens[ 0 ];
+		std::string description = tokens[ 1 ];
+		std::string longDescription = tokens[ 2 ];
+		std::string keywords = tokens[ 3 ];
+		
+		//string shrtDesc, string desc, string lngDesc, string keywords 
+		int itemId = DatabaseTool::createNewItem( name, description, longDescription, keywords );
+		responseMessage = "Created item \"" + name + "\" [" + std::to_string( itemId ) + "]";
+	}
 	
-	int itemId = DatabaseTool::createNewItem( tokens[ 0 ], tokens[ 2 ], tokens[ 1 ], tokens[ 3 ] );
-	LOG( "Created item with ID: " << itemId );
+	return responseMessage;
+}
+
+
+std::string ObjectEditor::deleteObject( std::string objectData ) {
+	const std::string MSG_INVALID_CMD = "This is not a valid ID.";
+	
+	std::string responseMessage = MSG_INVALID_CMD;
+	try {
+		int objectId = boost::lexical_cast<int>( objectData );
+		if ( objectId ) {
+			DatabaseTool::deleteObject( objectId );
+			responseMessage = "Deleted object " + std::to_string( objectId );
+		}
+	} catch( boost::bad_lexical_cast const& ) {
+		std::cout << "Object ID can only be a number." << std::endl;
+	}
+	
+	return responseMessage;
 }

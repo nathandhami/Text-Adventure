@@ -112,10 +112,12 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
+
       //charOnlineTest();
-      DatabaseTool::unEquip(1, "dagger");
+      //DatabaseTool::unEquip(1, "dagger");
       lookTest();
       //npcInstanceTest();
+
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -132,7 +134,7 @@ void lookTest() {
    cout << DatabaseTool::look(1, "players") << endl << endl;
    cout << DatabaseTool::look(1, "inventory") << endl << endl;
    cout << DatabaseTool::look(1, "objects") << endl << endl;
-   // cout << DatabaseTool::look(1, "testChar1") << endl;
+
 }
 
 void inventoryTest() {

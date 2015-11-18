@@ -25,6 +25,7 @@ class World {
 	static string playerLookAt(int, string);
 
 	static string playerPickupItem(int playerID, string item);
+	static string playerDropItem(int playerID, string item);
 
 	static void runRespawn();
 

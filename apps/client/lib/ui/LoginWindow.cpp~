@@ -1,0 +1,58 @@
+#include "LoginWindow.hpp"
+#include "Game.hpp"
+#include <iostream>
+
+LoginWindow::LoginWindow()
+: commandFrame("Enter User Identifications"),
+  outputFrame("Server"),
+  m_WorkerThread(0)
+{	
+	//Initialize main window
+	set_default_size(900, 500);
+	set_title("Text Gale Online Login Page");
+	set_position(Gtk::WIN_POS_CENTER);
+	set_border_width(10);
+
+	m_WorkerThread = Glib::Threads::Thread::create(sigc::mem_fun(*this, &MainWindow::get_response_thread));
+
+	outputTextview.set_editable(FALSE);
+	outputScrollWindow.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
+	outputTextview.set_wrap_mode(Gtk::WRAP_CHAR);
+
+	//Adds the output text to scrollwindow parent
+	outputScrollWindow.add(outputTextview);
+
+	//This expands the scrollwindow vertically
+	outputScrollWindow.set_vexpand(true);
+
+	commandEntry.set_width_chars(85);
+	outputBox.set_border_width(5);
+
+	outputBox.pack_start(outputScrollWindow);
+
+	//Adds the entry box child to its own frame
+	commandFrame.add(commandEntry);
+	//Adds the output box child to its own frame
+	outputFrame.add(outputBox);
+
+	uiGrid.set_orientation(Gtk::ORIENTATION_VERTICAL);
+	uiGrid.add(outputFrame);
+	uiGrid.add(commandFrame);
+
+	//Adds the grid to the main window
+	add(uiGrid);	
+
+  	outputTextBuffer = Gtk::TextBuffer::create();
+	outputTextBuffer->set_text("What would you like to do?");
+	outputTextview.set_buffer(outputTextBuffer);
+
+	commandEntry.signal_activate().connect(sigc::mem_fun(*this, &LoginWindow::on_enter_pressed));
+
+	outputTextBuffer->insert(outputTextBuffer->end(), "\n");
+
+	show_all_children();
+}
+
+LoginWindow::~LoginWindow()
+{
+}

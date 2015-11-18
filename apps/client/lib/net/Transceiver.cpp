@@ -75,7 +75,7 @@ NetMessage Transceiver::readAndPopQueue() {
 
 
 void Transceiver::flushQueue() {
-	this->responseQueue = std::queue<NetMessage>{};
+	this->responseQueue = std::queue< NetMessage >{};
 }
 
 

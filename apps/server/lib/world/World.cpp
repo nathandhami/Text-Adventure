@@ -43,10 +43,20 @@ string World::playerPickupItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
 	if (DatabaseTool::pickUp(playerID, item)) {
-		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up the " + item + "\n");
-		return "You pick up the " + item + ".\n";
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item);
+		return "You pick up " + item;
 	}
 	return "The " + item + " is not in the room or cannot be picked up.\n";
+}
+
+string World::playerDropItem(int playerID, string item) {
+	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
+	boost::trim(item);
+	if (DatabaseTool::dropItem(playerID, item)) {
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item);
+		return "You dropped " + item;
+	}
+	return "You do not have " + item + " in your inventory.";
 }
 
 void World::runRespawn() {
@@ -79,8 +89,11 @@ string World::executeCommand(int playerID, Command givenCommand) {
 	else if (command == "look at") {
 		return playerLook(playerID, arguments);
 	}
-	else if (command == "pickup") {
+	else if (command == "pick up") {
 		return playerPickupItem(playerID, arguments);
+	}
+	else if (command == "drop") {
+		return playerDropItem(playerID, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
 }

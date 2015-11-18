@@ -892,22 +892,30 @@ bool DatabaseTool::addItem(Item item) {
 	}
 }
 
-vector<string> DatabaseTool::getItemsInInventory(int charID) {
-	vector<string> items;
+vector<Item> DatabaseTool::getItemsInInventory(int charID) {
+	vector<Item> items;
 	try {
 		databaseMutex.lock();
 		database db(DB_LOCATION);
 
-		db << "select shortDescription, isEquipped from items X, player_inventory Y where X.itemID = Y.itemID and charID =? order by isEquipped desc"
+		db << "select X.itemID, shortDescription, description, longDescription, keywords, isPickable, isEquippable, isStackable, isContainer, quantity, isEquipped from items X, player_inventory Y where X.itemID = Y.itemID and charID =?"
 		<<charID
-		>>[&](string desc, int isEquipped) {
-			if(isEquipped) {
-				desc = "{" + desc + "}";
-			}
-			items.push_back(desc);
-		};
+		>>[&](int itemID, string shortDescription, string description, string longDescription, string keywords, int isPickable, int isEquippable, int isStackable, int isContainer, int quantity, int isEquipped) {
+			vector<string> keywordsVector;
+			boost::split(keywordsVector, keywords, boost::is_any_of(" "));
 
+			Item item(itemID, longDescription, shortDescription, description, keywordsVector);
+			item.isPickable = isPickable;
+			item.isEquippable = isEquippable;
+			item.isStackable = isStackable;
+			item.isContainer = isContainer;
+			item.quantity = quantity;
+			item.isEquipped = isEquipped;
+			items.push_back(item);
+		};
 		databaseMutex.unlock();
+		//cout << "[DB] Got items" << endl;
+
 		return items;
 	} catch(sqlite_exception e) {
 		if(verbosity > 0) {
@@ -1334,6 +1342,39 @@ bool DatabaseTool::pickUp(int charID, string item) {
 	}
 }
 
+
+bool DatabaseTool::dropItem(int charID, string item) {
+	int foundItemID;
+	int foundInvID;
+	int zoneID;
+	try{
+		database db (DB_LOCATION);
+		db << "SELECT itm.shortDescription, itm.keywords, itm.itemID, inv.ownershipID FROM items itm, player_inventory inv, characters chr WHERE itm.itemID = inv.itemID AND chr.charID = ?;"
+		<<charID
+		>>[&](string shortdesc, string keywords, int itemID, int ownershipID) {
+			if((shortdesc.find(item) != string::npos) || (keywords.find(item) != string::npos)) {
+				foundItemID = itemID;
+				foundInvID = ownershipID;
+			}
+		};
+
+		zoneID = DatabaseTool::getCharsLocation( charID );
+		
+		db 	<< "INSERT INTO instanceOfItem (itemID,zoneID) VALUES (?, ?)"
+			<< foundItemID
+			<< zoneID;
+		
+		db 	<< "DELETE FROM player_inventory WHERE ownershipID = ?"
+			<< foundInvID;
+		
+		return true;
+	} catch(sqlite_exception e) {
+		cout << e.what() << endl;
+		return false;
+	}
+}
+
+
 string DatabaseTool::getSlot(int equiableTo) {
 	switch(equiableTo){
 		case 1:
@@ -1456,10 +1497,10 @@ string DatabaseTool::look(int charID, string word) {
 		string description = getZoneDesc(zoneID);
 		return description;
 	} else if(word == "inventory") {
-		vector<string> itemsInIneventory = getItemsInInventory(charID);
+		vector<Item> itemsInIneventory = getItemsInInventory(charID);
 		string items = "In your inventory you have: ";
 		for(auto& item: itemsInIneventory) {
-			items = items + item + ", ";
+			items = items + item.shortDesc + ", ";
 		}
 
 		if(items == "In your inventory you have: ") {
@@ -1937,6 +1978,21 @@ bool DatabaseTool::moveCharacterToZone( int charID, int zoneID ) {
 
 		databaseMutex.unlock();
 		return false;
+	}
+}
+
+
+void DatabaseTool::deleteObject( int objectID ) {
+	try {
+		database db(DB_LOCATION);
+
+		db << "PRAGMA foreign_keys = ON;";
+
+		db 	<< "DELETE FROM items WHERE itemID = ?;"
+			<< objectID;
+
+	} catch ( exception& e ) {
+		return;
 	}
 }
 

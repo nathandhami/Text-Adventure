@@ -14,6 +14,7 @@
 
 using namespace std;
 
+
 //struct Command{
 
 // std::string type;
@@ -40,7 +41,6 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "look at"			, WORLD },
 
 	// EDITOR commands
-
 	{ "create"			, INCOMPLETE },
 	{ "create zone"		, EDITOR },
 	{ "create door"		, EDITOR },
@@ -50,6 +50,7 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "delete"			, INCOMPLETE },
 	{ "delete zone"		, EDITOR },
 	{ "delete door"		, EDITOR },
+	{ "delete object"	, EDITOR },
 
 	{ "describe"		, INCOMPLETE },
 	{ "describe zone"	, EDITOR },
@@ -63,11 +64,14 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "accept"			, INCOMPLETE },
 
 	{ "equip"			, CHARACTER },
-	{ "pick up"			, CHARACTER },
+	{ "pick up"			, WORLD },
+		
+	{ "drop"			, WORLD },
 
 	{ "@"				, MESSENGER },
 	{ "#"				, MESSENGER }
 };
+
 
 
 
@@ -76,7 +80,7 @@ int DictionaryCmds::getParsableFromInput( std::string inputString ) {
 		return INVALID;
 	}
 	std::cout << "Parsable: " << DictionaryCmds::COMMAND_DICTIONARY[ inputString ] << std::endl;
-	return DictionaryCmds::COMMAND_DICTIONARY[ inputString ];
+	return DictionaryCmds::COMMAND_DICTIONARY[ inputString ]; // must return enum here
 }
 
 

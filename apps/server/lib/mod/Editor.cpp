@@ -16,6 +16,7 @@
 
 #define CMD_CREATE_ITEM		"create item"
 #define CMD_CREATE_DOODAD	"create doodad"
+#define CMD_DELETE_OBJECT	"delete object"
 
 
 std::string Editor::judgeAndPerform( int creatorId, int charId, Command command ) {
@@ -45,7 +46,7 @@ std::string Editor::judgeAndPerform( int creatorId, int charId, Command command 
 	std::string commandType = command.type;
 	std::string commandString = command.data;
 	
-	
+	// WorldEditor
 	if ( commandType == CMD_CREATE_ZONE ) {
 		editorResponse = WorldEditor::createZone( commandString );
 	} else if ( commandType == CMD_DESC_ZONE ) {
@@ -56,9 +57,13 @@ std::string Editor::judgeAndPerform( int creatorId, int charId, Command command 
 		editorResponse = WorldEditor::addDoorToZone( creatorId, commandString );
 	} else if ( commandType == CMD_DELETE_DOOR ) {
 		editorResponse = WorldEditor::deleteDoor( creatorId, commandString );
-	} else if ( commandType == CMD_CREATE_ITEM ) {
-		ObjectEditor::createItem( creatorId, commandString );
-	}else {
+	} 
+	// ObjectEditor
+	else if ( commandType == CMD_CREATE_ITEM ) {
+		editorResponse = ObjectEditor::createItem( creatorId, commandString );
+	} else if ( commandType == CMD_DELETE_OBJECT ) {
+		editorResponse = ObjectEditor::deleteObject( commandString );
+	} else {
 		std::cout << "What are we trying to do?\n";
 	}
 	
