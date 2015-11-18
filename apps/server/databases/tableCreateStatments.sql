@@ -158,12 +158,31 @@ CREATE TABLE instanceOfItem (
   FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
 );
 
-CREATE TABLE defensiveSpell (
-  defensiveSpellID integer primary key,
-  spellName text,
-  manaCost integer,
+CREATE TABLE statSpell (
+  spellName text primary key,
+  cost integer,
+  damage integer,
   duration integer,
-  
+  healthModifier integer,
+  strengthModifier integer, 
+  intelligenceModifier integer,
+  dexterityModifier integer,
+  charismaModifier integer,
+  numberOfTargets integer,
+  coolDown integer
+);
+
+CREATE TABLE knownSpells (
+  knownID integer primary key,
+  charID integer,
+  spellName text,
+  resetTime integer,
+  FOREIGN KEY(charID) REFERENCES characters(charID),
+  FOREIGN KEY(spellName) REFERENCES defensiveSpell(spellName)
+);
+
+CREATE TABLE commands (
+  commandID 
 );
 
 
