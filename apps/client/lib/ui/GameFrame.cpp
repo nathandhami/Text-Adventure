@@ -51,9 +51,17 @@ void GameFrame::prepareComponents() {
 	this->layoutGrid.add( this->scrolledWindow );
 //	this->layoutGrid.add( this->commandEntry );
 	this->layoutGrid.attach_next_to( this->commandEntry, this->scrolledWindow, Gtk::POS_BOTTOM, 1, 1);
-	
 
-	this->add( layoutGrid );
+//	this->add( layoutGrid );
+
+// ------------- NOTEBOOK ---------------------
+
+	this->gameFrameNotebook.append_page(layoutGrid, "Main");
+	this->gameFrameNotebook.append_page(outputTabLabel, "Commands");
+	this->gameFrameNotebook.append_page(statsTabLabel, "Stats");
+	this->gameFrameNotebook.append_page(inventoryTabLabel, "Inventory");
+	this->gameFrameNotebook.append_page(chatTabLabel, "Chat");
+	this->add( gameFrameNotebook);
 
 //	this->show_all_children();
 }

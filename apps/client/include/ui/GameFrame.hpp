@@ -20,6 +20,8 @@ private:
 	Gtk::ScrolledWindow scrolledWindow;
 	Gtk::Box responseBox;
 	Gtk::Entry commandEntry;
+	Gtk::Notebook gameFrameNotebook;
+	Gtk::Label outputTabLabel, inventoryTabLabel, chatTabLabel, statsTabLabel;
 	
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
