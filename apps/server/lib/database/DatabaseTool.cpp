@@ -517,16 +517,26 @@ bool DatabaseTool::addItem(Item item) {
 	}
 }
 
-vector<string> DatabaseTool::getItemsInInventory(int charID) {
-	vector<string> items;
+vector<Item> DatabaseTool::getItemsInInventory(int charID) {
+	vector<Item> items;
 	try {
 		database db(DB_LOCATION);
-		db << "select shortDescription from items X, player_inventory Y where X.itemID = Y.itemID and charID =?"
+		db << "select X.itemID, shortDescription, description, longDescription, keywords, isPickable, isEquippable, isStackable, isContainer, quantity, isEquipped from items X, player_inventory Y where X.itemID = Y.itemID and charID =?"
 		<<charID
-		>>[&](string desc) {
-			items.push_back(desc);
+		>>[&](int itemID, string shortDescription, string description, string longDescription, string keywords, int isPickable, int isEquippable, int isStackable, int isContainer, int quantity, int isEquipped) {
+			vector<string> keywordsVector;
+			boost::split(keywordsVector, keywords, boost::is_any_of(" "));
+
+			Item item(itemID, longDescription, shortDescription, description, keywordsVector);
+			item.isPickable = isPickable;
+			item.isEquippable = isEquippable;
+			item.isStackable = isStackable;
+			item.isContainer = isContainer;
+			item.quantity = quantity;
+			item.isEquipped = isEquipped;
+			items.push_back(item);
 		};
-		cout << "[DB] Got items" << endl;
+		//cout << "[DB] Got items" << endl;
 		return items;
 	} catch(sqlite_exception e) {
 		cout << e.what() << endl;
@@ -996,10 +1006,10 @@ string DatabaseTool::look(int charID, string word) {
 		string description = getZoneDesc(zoneID);
 		return description;
 	} else if(word == "inventory") {
-		vector<string> itemsInIneventory = getItemsInInventory(charID);
+		vector<Item> itemsInIneventory = getItemsInInventory(charID);
 		string items = "In your inventory you have: ";
 		for(auto& item: itemsInIneventory) {
-			items = items + item + ", ";
+			items = items + item.shortDesc + ", ";
 		}
 
 		if(items == "In your inventory you have: ") {

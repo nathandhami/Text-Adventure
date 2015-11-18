@@ -61,7 +61,8 @@ class Item{
 			this->shortDesc = shortDesc;
 			this->description = description;
 			this->keywords = keywords;
-			this->instanceID = 0;
+			this->quantity = 0;
+			this->isEquipped = 0;
 			this->isPickable = 0;
 			this->isEquippable = 0;
 			this->isStackable = 0;
@@ -70,11 +71,12 @@ class Item{
 		~Item(){
 		};
 		int itemID;
-		int instanceID;
 		string shortDesc;
 		string longDesc;
 		string description;
 		vector<string> keywords;
+		int quantity;
+		int isEquipped;
 		int isPickable;
 		int isEquippable;
 		int isStackable;
@@ -266,7 +268,7 @@ class DatabaseTool{
 
 		static bool addItem(Item item);
 
-		static vector<string> getItemsInInventory(int charID);
+		static vector<Item> getItemsInInventory(int charID);
 
 		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
 
@@ -292,7 +294,6 @@ class DatabaseTool{
 
 		static bool pickUp(int charID, string item);
 
-
 		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
 		static bool inCombat(int id, Target characterOrNpc);
@@ -308,6 +309,7 @@ class DatabaseTool{
 		static bool testValidity();
 	
 		static int createNewZone( string zoneName, string zoneDesc );
+
 		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
 	
 		static void deleteZone( int zoneID );
