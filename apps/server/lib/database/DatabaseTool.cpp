@@ -2132,6 +2132,27 @@ bool DatabaseTool::testValidity() {
 	}
 }
 
+bool DatabaseTool::setAllNotInCombat() {
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+
+		db << "update charactersOnline set inCombat = 0;";
+		db << "update instanceOfNpc set inCombat = 0;";
+
+		databaseMutex.unlock();
+		return true;
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return false;
+	}
+
+}
+
 
 
 

@@ -158,6 +158,14 @@ CREATE TABLE instanceOfItem (
   FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
 );
 
+CREATE TABLE defensiveSpell (
+  defensiveSpellID integer primary key,
+  spellName text,
+  manaCost integer,
+  duration integer,
+  
+);
+
 
 
 

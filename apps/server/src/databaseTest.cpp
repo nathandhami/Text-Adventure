@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
       
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
-      updateAttributesTest();
+      //updateAttributesTest();
       //npcInstanceTest();
       //inventoryTest();
 
@@ -114,9 +114,10 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
 
       //charOnlineTest();
-      //DatabaseTool::unEquip(1, "dagger");
+      //DatabaseTool::equipItem(1, "dagger");
       //lookTest();
       //npcInstanceTest();
+      DatabaseTool::setAllNotInCombat();
 
    }
    catch(runtime_error e){
@@ -126,14 +127,13 @@ int main(int argc, char* argv[])
 
 void lookTest() {
 
-   cout << DatabaseTool::look(1, "") << endl << endl;
-   cout << DatabaseTool::look(1, "odin") << endl << endl;
-   cout << DatabaseTool::look(1, "south") << endl << endl;
-   cout << DatabaseTool::look(1, "objects") << endl << endl;
-   cout << DatabaseTool::look(1, "people") << endl << endl;
-   cout << DatabaseTool::look(1, "players") << endl << endl;
+   // cout << DatabaseTool::look(1, "") << endl << endl;
+   // cout << DatabaseTool::look(1, "odin") << endl << endl;
+   // cout << DatabaseTool::look(1, "south") << endl << endl;
+   // cout << DatabaseTool::look(1, "objects") << endl << endl;
+   // cout << DatabaseTool::look(1, "people") << endl << endl;
+   // cout << DatabaseTool::look(1, "players") << endl << endl;
    cout << DatabaseTool::look(1, "inventory") << endl << endl;
-   cout << DatabaseTool::look(1, "objects") << endl << endl;
 
 }
 
