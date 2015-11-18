@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
       
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
-      //updateAttributesTest();
+      updateAttributesTest();
       //npcInstanceTest();
       //inventoryTest();
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
       //DatabaseTool::equipItem(1, "dagger");
       //lookTest();
       //npcInstanceTest();
-      DatabaseTool::setAllNotInCombat();
+      //DatabaseTool::setAllNotInCombat();
 
    }
    catch(runtime_error e){
