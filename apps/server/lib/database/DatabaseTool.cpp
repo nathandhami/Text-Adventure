@@ -468,7 +468,7 @@ int DatabaseTool::getDirectionID(int zoneID, string direction){
 
 string DatabaseTool::getDirectionDesc(int zoneID, string direction){
 	try {
-		string doorDescription = "";
+		string doorDescription = "There is nothing in that direction.";
 		database db( DB_LOCATION );
 		boost::to_lower(direction);
 		db << "select direction, keywords, description from doors where zoneID=?;"

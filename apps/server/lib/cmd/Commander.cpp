@@ -4,6 +4,7 @@
 #include "CarrierPigeon.hpp"
 #include <mod/Editor.hpp>
 #include "Combat.hpp"
+#include <char/Character.hpp>
 
 
 // ------------------- PRIVATE ------------------
@@ -47,6 +48,8 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 		
 		responseHeader = GameCode::COMBAT;
 		responseBody = combatMessage;
+	} else if ( commandHeader == CommandHeader::CHARACTER ) {
+		return Character::performCommand( user.getUserId(), command );
 	}
 	
 	return std::make_pair( responseHeader, responseBody );

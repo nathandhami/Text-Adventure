@@ -37,7 +37,8 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "northwest"		, WORLD },
 	{ "southeast"		, WORLD },
 	{ "southwest"		, WORLD },
-	{ "look"			, WORLD },
+//	{ "look"			, WORLD },
+	{ "look"			, CHARACTER },
 	{ "look at"			, WORLD },
 
 	// EDITOR commands
