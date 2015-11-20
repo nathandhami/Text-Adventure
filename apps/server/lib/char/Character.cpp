@@ -14,13 +14,19 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 	const std::string CMD_LOOK		= "look";
 	const std::string CMD_LOOK_AT	= "look at";
 	const std::string CMD_MOVE		= "move";
+	const std::string CMD_PICK_UP	= "pick up";
+	const std::string CMD_DROP		= "drop";
 	
 	if ( command.type == CMD_LOOK ) {
 		return std::make_pair( GameCode::DESCRIPTION, Character::look( charId, command.data ) );
 	} else if ( command.type == CMD_LOOK_AT ) {
 		return std::make_pair( GameCode::DESCRIPTION, Character::lookAt( charId, command.data ) );
 	} else if ( command.type == CMD_MOVE ) {
-		return std::make_pair( GameCode::DESCRIPTION, Character::move( charId, command.data ) );
+		return std::make_pair( GameCode::STATUS, Character::move( charId, command.data ) );
+	} else if ( command.type == CMD_PICK_UP ) {
+		return std::make_pair( GameCode::STATUS, Character::pickUpItem( charId, command.data ) );
+	} else if ( command.type == CMD_DROP ) {
+		return std::make_pair( GameCode::STATUS, Character::dropItem( charId, command.data ) );
 	}
 	
 	//TO-DO: add an 'else' for invalid action
@@ -120,7 +126,7 @@ std::string Character::move( int charId, std::string destination ) {
 	
 	int destinationZoneId = DatabaseTool::getDirectionID( currentZoneId, destination );
 	if ( !destinationZoneId ) {
-		return ( "You don't see any " + destination );
+		return ( "There is nothing there." );
 	} else {
 		DatabaseTool::putCharInZone( charId, destinationZoneId );
 		return Character::look( charId, "" ); //i think it'd be to replace this with "You are in ..."
@@ -130,11 +136,28 @@ std::string Character::move( int charId, std::string destination ) {
 
 std::string Character::pickUpItem( int charId, std::string keyword ) {
 	//TO-DO: add item to inventory
+	int currentZoneID = DatabaseTool::getCharsLocation( charId );
+	if ( !DatabaseTool::pickUp( charId, keyword ) ) {
+//		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item);
+		return "You grabbed the air as if something was in it, but your hand remained empty.";
+	}
+	
+	return ( "You picked up " + keyword );
+	
 	
 	Character::updateInventory( charId );
 	//return stuff
 }
 
+
+std::string Character::dropItem( int charId, std::string keyword ) {
+	int currentZoneID = DatabaseTool::getCharsLocation( charId );
+	if ( !DatabaseTool::dropItem( charId, keyword ) ) {
+//		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item);
+		return ( "You look through your bag, but you can't find any " + keyword + "." );
+	}
+	return ( "You dropped " + keyword + "." );
+}
 
 
 
