@@ -32,25 +32,9 @@ SubWindow::SubWindow() {
 
 void SubWindow::prepareComponents() {
 	
-	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &SubWindow::switchToGameFrame ) );
 	
-	
-	this->add( this->loginFrame );
-	this->loginFrame.show();
+	this->add( this->subFrame );
+	this->subFrame.show();
 	
 }
 
-
-void SubWindow::switchToGameFrame() {
-	/*Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
-	dlg.set_title( "Login Failed" );
-
-	dlg.run();*/
-//	(Gtk::Widget)(this->loginFrame).destroy();
-	this->remove();
-	this->add( gameFrame );
-	this->gameFrame.startReading();
-	
-	this->show_all_children();
-	
-}

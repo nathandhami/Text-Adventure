@@ -1,5 +1,5 @@
-#ifndef GTKMM_MAINWINDOW_HPP
-#define GTKMM_MAINWINDOW_HPP
+#ifndef GTKMM_SUBWINDOW_HPP
+#define GTKMM_SUBWINDOW_HPP
 
 #include <gtkmm.h>
 

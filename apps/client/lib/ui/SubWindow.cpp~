@@ -2,8 +2,8 @@
 #include <Locale.hpp>
 
 
-#define WIDTH_DEFAULT 	900
-#define HEIGHT_DEFAULT	100
+#define WIDTH_DEFAULT 	300
+#define HEIGHT_DEFAULT	300
 
 #define BORDER_WIDTH_DEFAULT 1
 
@@ -11,7 +11,7 @@
 // ------------------- PUBLIC -------------------
 
 SubWindow::SubWindow() {
-	this->set_title( GameLocale::TITLE );
+	this->set_title( GameLocale::SUBWINDOWTITLE );
 
 	this->set_position( Gtk::WIN_POS_CENTER );
 	this->set_default_size( WIDTH_DEFAULT, HEIGHT_DEFAULT );
@@ -32,25 +32,9 @@ SubWindow::SubWindow() {
 
 void SubWindow::prepareComponents() {
 	
-	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &SubWindow::switchToGameFrame ) );
 	
-	
-	this->add( this->loginFrame );
-	this->loginFrame.show();
+	this->add( this->subFrame );
+	this->subFrame.show();
 	
 }
 
-
-void SubWindow::switchToGameFrame() {
-	/*Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
-	dlg.set_title( "Login Failed" );
-
-	dlg.run();*/
-//	(Gtk::Widget)(this->loginFrame).destroy();
-	this->remove();
-	this->add( gameFrame );
-	this->gameFrame.startReading();
-	
-	this->show_all_children();
-	
-}
