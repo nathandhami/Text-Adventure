@@ -38,9 +38,27 @@ void Character::updateStats( int charId ) {
 }
 
 
+void Character::updateInventory( int charId ) {
+	std::string formattedInv;
+	
+	std::vector< Item > items = DatabaseTool::getItemsInInventory( charId );
+	std::vector< std::string > formattedItems;
+	
+	for ( Item& item: items ) {
+		formattedItems.push_back( item.shortDesc + ";" + std::to_string( item.quantity ) + ";" + std::to_string( item.isEquipped ) );
+	}
+	
+	formattedInv = boost::algorithm::join( formattedItems, "\n" );
+	
+	Server::sendMessageToCharacter( charId, GameCode::INVENTORY, formattedInv );
+}
+
+
 // ------------------- PRIVATE ------------------
 
 std::string Character::look( int charId, std::string direction ) {
+	Character::updateInventory( charId );
+	
 	int currentZoneId = DatabaseTool::getCharsLocation( charId );
 	std::string description = "";
 	
