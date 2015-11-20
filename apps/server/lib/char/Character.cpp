@@ -67,11 +67,29 @@ std::string Character::lookAt( int charId, std::string keyword ) {
 		return NOTHING_TO_LOOK_AT;
 	} else if ( keyword == KW_OBJECTS ) {
 		std::vector< std::string > objects = DatabaseTool::getItemsInZone( currentZoneId );
-		if ( objects.empty() ) return "You don't see any objects";
-		return ( "You see " + boost::algorithm::join( objects, ", " ) );
+		if ( objects.empty() ) return "You don't see anything of particular interest.";
+		return ( "You see " + boost::algorithm::join( objects, ", " ) + "." );
 	} else if ( keyword == KW_NPCS ) {
-		std::vector< std::string > npcs = 
-	} else {
-		return ( "You don't see any " + keyword + "." );
+		std::vector< std::string > npcs = DatabaseTool::getAllNPCsInZone( currentZoneId );
+		if ( npcs.empty() ) return "You don't see any local folk.";
+		return ( "You see " + boost::algorithm::join( npcs, ", " ) + "." );
+	} else if ( keyword == KW_PLAYERS ) {
+		std::vector< std::string > players = DatabaseTool::getAllPlayersInZone( charId, currentZoneId );
+		if ( players.empty() ) return "You don't see any adventurers.";
+		return ( "You see " + boost::algorithm::join( players, ", " ) + "." );
+	}else {
+		std::vector< std::string > kwDescriptions;
+		
+		std::string players = DatabaseTool::findPlayerDescription( charId, currentZoneId, keyword );
+		if ( !players.empty() ) kwDescriptions.push_back( players );
+		
+		std::string npcs = DatabaseTool::findNpcDescription( currentZoneId, keyword );
+		if ( !npcs.empty() ) kwDescriptions.push_back( npcs );
+		
+		std::string objects = DatabaseTool::findItemDescription( charId, currentZoneId, keyword );
+		if ( !objects.empty() ) kwDescriptions.push_back( objects );
+		
+		if( kwDescriptions.empty() ) return ( "You don't see any " + keyword + "." );
+		return ( "You see " + boost::algorithm::join( kwDescriptions, ", " ) + "." );
 	}
 }

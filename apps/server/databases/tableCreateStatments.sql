@@ -57,6 +57,8 @@ CREATE TABLE playerAttributes (
   level integer,
   experience integer,
   health integer,
+  maxHealth integer,
+  mana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -76,6 +78,8 @@ CREATE TABLE npcAttributes (
   level integer,
   experience integer,
   health integer,
+  maxHealth integer,
+  mana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -156,6 +160,33 @@ CREATE TABLE instanceOfItem (
 	FOREIGN KEY(itemID) REFERENCES items(itemID),
 	FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
   FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
+);
+
+CREATE TABLE statSpell (
+  spellName text primary key,
+  cost integer,
+  damage integer,
+  duration integer,
+  healthModifier integer,
+  strengthModifier integer, 
+  intelligenceModifier integer,
+  dexterityModifier integer,
+  charismaModifier integer,
+  numberOfTargets integer,
+  coolDown integer
+);
+
+CREATE TABLE knownSpells (
+  knownID integer primary key,
+  charID integer,
+  spellName text,
+  resetTime integer,
+  FOREIGN KEY(charID) REFERENCES characters(charID),
+  FOREIGN KEY(spellName) REFERENCES defensiveSpell(spellName)
+);
+
+CREATE TABLE commands (
+  commandID 
 );
 
 

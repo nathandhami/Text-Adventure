@@ -1,6 +1,8 @@
 #main-window {
 	border: 1px solid #00CC00;
 	border-top-width: 0;
+/*	font-family: Nimbus Sans L;*/
+	font-family: NanumBarunGorthic
 }
 
 GtkFrame {

@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
       
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
-      //updateAttributesTest();
+      updateAttributesTest();
       //npcInstanceTest();
       //inventoryTest();
 
@@ -112,9 +112,13 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
-  
+
+      //charOnlineTest();
+      //DatabaseTool::equipItem(1, "dagger");
       //lookTest();
-      DatabaseTool::executeCommands();
+      //npcInstanceTest();
+      //DatabaseTool::setAllNotInCombat();
+
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -123,8 +127,14 @@ int main(int argc, char* argv[])
 
 void lookTest() {
 
-   cout << DatabaseTool::look(1, "wizard") << endl << endl;
-   // cout << DatabaseTool::look(1, "testChar1") << endl;
+   // cout << DatabaseTool::look(1, "") << endl << endl;
+   // cout << DatabaseTool::look(1, "odin") << endl << endl;
+   // cout << DatabaseTool::look(1, "south") << endl << endl;
+   // cout << DatabaseTool::look(1, "objects") << endl << endl;
+   // cout << DatabaseTool::look(1, "people") << endl << endl;
+   // cout << DatabaseTool::look(1, "players") << endl << endl;
+   cout << DatabaseTool::look(1, "inventory") << endl << endl;
+
 }
 
 void inventoryTest() {
@@ -135,23 +145,15 @@ void inventoryTest() {
 }
 
 void updateAttributesTest() {
-   Attributes attributes = DatabaseTool::getAttributes(1, Target::npc);
+   Attributes attributes = DatabaseTool::getAttributes(1, Target::character);
    attributes.print();
    attributes.level = 99;
-   DatabaseTool::updateAttributes(attributes, Target::npc);
+   DatabaseTool::updateAttributes(attributes, Target::character);
 
 }
 
 void npcInstanceTest() {
-   vector<string> keywords;
-   keywords.push_back("wizard");
-   DatabaseTool::addNpc(3000, 
-       " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
-      keywords,
-      "A wizard walks around behind the counter, talking to himself.",
-      "the wizard");
 
-   DatabaseTool::createNpcInstance(3000, 3054);
    vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
       cout << DatabaseTool::getNpcDesc(npcInstanceID) << endl << endl;;
