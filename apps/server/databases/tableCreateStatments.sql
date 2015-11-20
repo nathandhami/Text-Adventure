@@ -56,9 +56,11 @@ CREATE TABLE playerAttributes (
   description text,
   level integer,
   experience integer,
+  requiredExp integer,
   health integer,
   maxHealth integer,
   mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -77,9 +79,11 @@ CREATE TABLE npcAttributes (
   npcInstanceID integer primary key,
   level integer,
   experience integer,
+  requiredExp integer,
   health integer,
   maxHealth integer,
   mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -162,18 +166,11 @@ CREATE TABLE instanceOfItem (
   FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
 );
 
-CREATE TABLE statSpell (
+CREATE TABLE spells (
   spellName text primary key,
   cost integer,
-  damage integer,
-  duration integer,
-  healthModifier integer,
-  strengthModifier integer, 
-  intelligenceModifier integer,
-  dexterityModifier integer,
-  charismaModifier integer,
-  numberOfTargets integer,
-  coolDown integer
+  archetypeID integer,
+  modifiers text
 );
 
 CREATE TABLE knownSpells (
@@ -185,8 +182,29 @@ CREATE TABLE knownSpells (
   FOREIGN KEY(spellName) REFERENCES defensiveSpell(spellName)
 );
 
+CREATE TABLE spellTeacher (
+  teacherID integer primary key,
+  npcInstanceID integer,
+  FOREIGN kEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID)
+);
+
+CREATE TABLE teachableSpells (
+  teachableID integer primary key,
+  teacherID integer,
+  spellName text,
+  FOREIGN KEY(teacherID) REFERENCES spellTeacher(teacherID),
+  FOREIGN KEY(spellName) REFERENCES spells(spellName)
+);
+
 CREATE TABLE commands (
-  commandID 
+  commandID integer primary key,
+  command text,
+  header integer
+);
+
+CREATE TABLE requiredExp (
+  level integer primary key,
+  requiredExp integer
 );
 
 

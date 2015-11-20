@@ -159,7 +159,7 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		<<INITIAL_ZONE;
 		int charID = db.last_insert_rowid();
 
-		db << "INSERT INTO playerAttributes VALUES (?, ?, 1, 0, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		db << "INSERT INTO playerAttributes VALUES (?, ?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 		<<charID
 		<<description;
 
@@ -450,7 +450,7 @@ bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 
 		int npcInstanceID = db.last_insert_rowid();
 
-		db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 		<<npcInstanceID;
 
 		databaseMutex.unlock();
@@ -1176,17 +1176,17 @@ Attributes DatabaseTool::getAttributes(int id, Target characterOrNpc){
 		database db(DB_LOCATION);
 
 		if(characterOrNpc == Target::character) {
-			db << "select charID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
+			db << "select charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
 			<< id
-			>>[&](int charID, int level, int experience, int health, int maxHealth, int mana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-				Attributes characterAttributes(charID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+			>>[&](int charID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+				Attributes characterAttributes(charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
 				attributes = characterAttributes;
 			};
 		} else if(characterOrNpc == Target::npc) {
-			db << "select npcInstanceID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
+			db << "select npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
 			<< id
-			>>[&](int npcInstanceID, int level, int experience, int health, int maxHealth, int mana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-				Attributes npcAttributes(npcInstanceID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+			>>[&](int npcInstanceID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+				Attributes npcAttributes(npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
 				attributes = npcAttributes;
 			};
 		}
@@ -1210,12 +1210,14 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 		database db(DB_LOCATION);
 
 		if(characterOrNpc == Target::character) {
-			db << "UPDATE playerAttributes SET level = ?, experience = ?, health = ?, maxHealth = ?, mana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
+			db << "UPDATE playerAttributes SET level = ?, experience = ?, requiredExp = ?, health = ?, maxHealth = ?, mana = ?, maxMana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
 			<<attributes.level
 			<<attributes.experience
+			<<attributes.requiredExperience
 			<<attributes.health
 			<<attributes.maxHealth
 			<<attributes.mana
+			<<attributes.maxMana
 			<<attributes.strength
 			<<attributes.intelligence
 			<<attributes.dexterity
@@ -1229,12 +1231,14 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 			<<attributes.weponSlot
 			<<attributes.id;
 		} else if(characterOrNpc == Target::npc) {
-			db << "UPDATE npcAttributes SET level = ?, experience = ?, health = ?, maxHealth = ?, mana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
+			db << "UPDATE npcAttributes SET level = ?, experience = ?, requiredExp = ?, health = ?, maxHealth = ?, mana = ?, maxMana =?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
 			<<attributes.level
 			<<attributes.experience
+			<<attributes.requiredExperience
 			<<attributes.health
 			<<attributes.maxHealth
 			<<attributes.mana
+			<<attributes.maxMana
 			<<attributes.strength
 			<<attributes.intelligence
 			<<attributes.dexterity
@@ -1697,21 +1701,21 @@ void DatabaseTool::executeCommands() {
 		>>[&](string action, int id, int room) {
 
 			try {
-				// if(action == "npc") {
-				// 	db << "insert into instanceOfNpc values (NULL, ?, ?, 1, 0)"
-				// 	<<id
-				// 	<<room;
-				// 	int npcInstanceID = db.last_insert_rowid();
-				// 	db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
-				// 	<<npcInstanceID;
-
-				// } else  
-				if(action == "object") {
-					db << "insert into instanceOfItem values (NULL, ?, ?,NULL)"
+				if(action == "npc") {
+					db << "insert into instanceOfNpc values (NULL, ?, ?, 1, 0)"
 					<<id
 					<<room;
+					int npcInstanceID = db.last_insert_rowid();
+					db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+					<<npcInstanceID;
 
-				}
+				} //else  
+				// if(action == "object") {
+				// 	db << "insert into instanceOfItem values (NULL, ?, ?,NULL)"
+				// 	<<id
+				// 	<<room;
+
+				// }
 			} catch (sqlite_exception e) {
 
 			}

@@ -89,9 +89,11 @@ class Attributes {
 			this->id = 0;
 			this->level = 0;
 			this->experience = 0;
+			this->requiredExperience = 0;
 			this->health = 0;
 			this->maxHealth = 0;
 			this->mana = 0;
+			this-> maxMana = 0;
 			this->strength = 0;
 			this->intelligence = 0;
 			this->dexterity = 0;
@@ -104,13 +106,15 @@ class Attributes {
 			this->handSlot = 0;
 			this->weponSlot = 0;
 		}
-		Attributes(int id, int level, int experience, int health, int maxHealth, int mana, int strength, int intelligence, int dexterity, int charisma, int ringslot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot){
+		Attributes(int id, int level, int experience, int requiredExperience, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringslot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot){
 			this->id = id;
 			this->level = level;
 			this->experience = experience;
+			this->requiredExperience = requiredExperience;
 			this->health = health;
 			this->maxHealth = maxHealth;
 			this->mana = mana;
+			this->maxMana = maxMana;
 			this->strength = strength;
 			this->intelligence = intelligence;
 			this->dexterity = dexterity;
@@ -128,9 +132,11 @@ class Attributes {
 		int id;
 		int level;
 		int experience;
+		int requiredExperience;
 		int health;
 		int maxHealth;
 		int mana;
+		int maxMana;
 		int strength;
 		int intelligence;
 		int dexterity;
@@ -146,9 +152,11 @@ class Attributes {
 			cout << "id: " << this->id << endl;
 			cout << "level: " << this->level << endl;
 			cout << "experience: " << this->experience << endl;
+			cout << "RequiredExperience: " << this->experience << endl;
 			cout << "health: " << this->health << endl;
 			cout << "maxHealth: " << this ->maxHealth << endl;
 			cout << "mana: " << this->mana << endl;
+			cout << "maxMana: " << this->mana << endl;
 			cout << "strength: " << this->strength << endl;
 			cout << "intelligence: " << this->intelligence << endl;
 			cout << "dexterity: " << this->dexterity << endl;
