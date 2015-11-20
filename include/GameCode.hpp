@@ -7,6 +7,7 @@
 namespace GameCode {
 	// Sent by client
 	// Request headers
+	const std::string REGISTER 		= "reg";
 	const std::string LOGIN 		= "lgn";
 	const std::string LOGOUT 		= "lgo";
 	const std::string CHAR_CREATE 	= "ccr";

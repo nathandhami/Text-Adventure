@@ -21,20 +21,19 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 }
 
 
-std::string Character::getStats( int charId ) {
-	Attributes attributes = DatabaseTool::getAttributes( charId, Target::character );
-	
-	std::string formattedStats = "";
-	
-	std::cout << formattedStats << std::endl;
-	return formattedStats;
-}
-
-
 void Character::updateStats( int charId ) {
-	std::string formattedStats;
+	Attributes stats = DatabaseTool::getAttributes( charId, Target::character );
+	std::string formattedStats =
+		"Strength:" 	+ std::to_string( stats.strength ) + "\n" +
+		"Intelligence:" + std::to_string( stats.intelligence ) + "\n" +
+		"Dexterity:" 	+ std::to_string( stats.dexterity ) + "\n" +
+		"Charisma:" 	+ std::to_string( stats.charisma ) + "\n" +
+		"HP:"			+ std::to_string( stats.health ) + "/" + std::to_string( stats.maxHealth ) + "\n" +
+		"MP:"			+ std::to_string( stats.mana ) + "/" + "what" + "\n" +
+		"XP:"			+ std::to_string( stats.experience ) + "/" + "what" + "\n" +
+		"Level:"		+ std::to_string( stats.level );
 	
-	Server::sendMessageToCharacter( charId, GameCode::CHAT_PRIVATE, formattedStats );
+	Server::sendMessageToCharacter( charId, GameCode::ATTRIBUTES, formattedStats );
 }
 
 
@@ -57,7 +56,7 @@ void Character::updateInventory( int charId ) {
 // ------------------- PRIVATE ------------------
 
 std::string Character::look( int charId, std::string direction ) {
-	Character::updateInventory( charId );
+	Character::updateStats( charId );
 	
 	int currentZoneId = DatabaseTool::getCharsLocation( charId );
 	std::string description = "";
