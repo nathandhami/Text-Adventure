@@ -3,6 +3,9 @@
 #include <GameCode.hpp>
 #include "Server.hpp"
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string.hpp>
+
 
 // ------------------- PUBLIC -------------------
 
@@ -12,12 +15,14 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 	
 	if ( command.type == CMD_LOOK ) {
 		return std::make_pair( GameCode::STATUS, Character::look( charId, command.data ) );
+	} else if ( command.type == CMD_LOOK_AT ) {
+		return std::make_pair( GameCode::STATUS, Character::lookAt( charId, command.data ) );
 	}
 }
 
 
 std::string Character::getStats( int charId ) {
-	Attributes attributes = DatabaseTool::getAttributes( charId, Target:character );
+	Attributes attributes = DatabaseTool::getAttributes( charId, Target::character );
 	
 	std::string formattedStats = "";
 	
@@ -29,7 +34,7 @@ std::string Character::getStats( int charId ) {
 void Character::updateStats( int charId ) {
 	std::string formattedStats;
 	
-	Server::sendMessageToCharacter( recipientId, GameCode::CHAT_PRIVATE, formattedMessage );
+	Server::sendMessageToCharacter( charId, GameCode::CHAT_PRIVATE, formattedStats );
 }
 
 
@@ -43,5 +48,30 @@ std::string Character::look( int charId, std::string direction ) {
 		return DatabaseTool::getZoneDesc( currentZoneId );
 	} else {
 		return DatabaseTool::getDirectionDesc( currentZoneId, direction );
+	}
+}
+
+
+std::string Character::lookAt( int charId, std::string keyword ) {
+	const std::string NOTHING_TO_LOOK_AT = "Quite indecisive, aren't we?";
+	const std::string KW_INVENTORY	= "inventory";
+	const std::string KW_OBJECTS 	= "objects";
+	const std::string KW_NPCS		= "people";
+	const std::string KW_PLAYERS	= "players";
+	
+	
+	int currentZoneId = DatabaseTool::getCharsLocation( charId );
+	std::string description = "";
+	
+	if ( keyword == "" ) {
+		return NOTHING_TO_LOOK_AT;
+	} else if ( keyword == KW_OBJECTS ) {
+		std::vector< std::string > objects = DatabaseTool::getItemsInZone( currentZoneId );
+		if ( objects.empty() ) return "You don't see any objects";
+		return ( "You see " + boost::algorithm::join( objects, ", " ) );
+	} else if ( keyword == KW_NPCS ) {
+		std::vector< std::string > npcs = 
+	} else {
+		return ( "You don't see any " + keyword + "." );
 	}
 }

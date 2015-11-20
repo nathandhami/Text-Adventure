@@ -1455,14 +1455,30 @@ bool DatabaseTool::testValidity() {
 	try {
 		database db( DB_LOCATION );
 		return true;
-	} catch(sqlite_exception e) {
+	} catch( sqlite_exception e ) {
 		std::cerr << e.what() << std::endl;
 		return false;
 	}
 }
 
 
-
+vector< string > DatabaseTool::getAllNPCsInZone( zoneId ) {
+	vector< string > npcs;
+	
+	try {
+		database db(DB_LOCATION);
+		
+		
+		db	<< "select shortDesc from npcs N, instanceOfNpc I where N.npcID == I.npcID and I.zoneID = ?"
+			<< zoneID
+			>> [ & ]( string npc ) {
+				npcs.push_back( npc );
+			};
+	} catch( sqlite_exception e ) {
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
 
 
 

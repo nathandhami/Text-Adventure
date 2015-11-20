@@ -330,6 +330,8 @@ class DatabaseTool{
 		static void clearAllSessions();
 		static void signOffAllUsers();
 	
+		static vector< string > getAllNPCsInZone( zoneId );
+	
 //		static bool dropItem( int charID, string item );
 	
 	

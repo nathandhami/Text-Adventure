@@ -27,6 +27,10 @@ namespace GameCode {
 	const std::string ALERT 		= "alr";
 	const std::string COMBAT 		= "cmb";
 	
+	// Update headers
+	const std::string INVENTORY 	= "inv";
+	const std::string ATTRIBUTES 	= "atr";
+	
 	// Chat headers
 	const std::string CHAT_ZONE 	= "chz";
 	const std::string CHAT_PRIVATE 	= "chp";

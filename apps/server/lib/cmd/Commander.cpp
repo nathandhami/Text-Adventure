@@ -24,33 +24,39 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 	int commandHeader = std::get< 0 >( parserResponse );
 	Command command = std::get< 1 >( parserResponse );
 	
-	if ( commandHeader == CommandHeader::WORLD ) {
-		std::string worldResponse =  World::executeCommand( user.getUserId(), command );
-		responseHeader = GameCode::DESCRIPTION;
-		responseBody = worldResponse;
-	} else if ( commandHeader == CommandHeader::MESSENGER ) {
-		int numSentTo = CarrierPigeon::deliverPackage( user.getUserId(), command );
-		
-		if ( !numSentTo ) {
-			responseHeader = GameCode::STATUS;
-			responseBody = "There is nobody to send this to.";
-		} else {
-			responseHeader = GameCode::OK;
-			responseBody = "Message delivered to " + std::to_string( numSentTo ) + " players.";
-		}
-	} else if ( commandHeader == CommandHeader::EDITOR ) {
-		std::string worthyMessage = Editor::judgeAndPerform( user.getUserId(), user.getUserId(), command );
-		
-		responseHeader = GameCode::STATUS;
-		responseBody = worthyMessage;
-	} else if ( commandHeader == CommandHeader::COMBAT ) {
-		std::string combatMessage = Combat::executeCommand( user.getUserId(), command );
-		
-		responseHeader = GameCode::COMBAT;
-		responseBody = combatMessage;
-	} else if ( commandHeader == CommandHeader::CHARACTER ) {
+	std::cout << "Got command." << std::endl;
+	
+	if ( commandHeader == CommandHeader::CHARACTER ) {
 		return Character::performCommand( user.getUserId(), command );
 	}
+	
+//	if ( commandHeader == CommandHeader::WORLD ) {
+//		std::string worldResponse =  World::executeCommand( user.getUserId(), command );
+//		responseHeader = GameCode::DESCRIPTION;
+//		responseBody = worldResponse;
+//	} else if ( commandHeader == CommandHeader::MESSENGER ) {
+//		int numSentTo = CarrierPigeon::deliverPackage( user.getUserId(), command );
+//		
+//		if ( !numSentTo ) {
+//			responseHeader = GameCode::STATUS;
+//			responseBody = "There is nobody to send this to.";
+//		} else {
+//			responseHeader = GameCode::OK;
+//			responseBody = "Message delivered to " + std::to_string( numSentTo ) + " players.";
+//		}
+//	} else if ( commandHeader == CommandHeader::EDITOR ) {
+//		std::string worthyMessage = Editor::judgeAndPerform( user.getUserId(), user.getUserId(), command );
+//		
+//		responseHeader = GameCode::STATUS;
+//		responseBody = worthyMessage;
+//	} else if ( commandHeader == CommandHeader::COMBAT ) {
+//		std::string combatMessage = Combat::executeCommand( user.getUserId(), command );
+//		
+//		responseHeader = GameCode::COMBAT;
+//		responseBody = combatMessage;
+//	} else if ( commandHeader == CommandHeader::CHARACTER ) {
+//		return Character::performCommand( user.getUserId(), command );
+//	}
 	
 	return std::make_pair( responseHeader, responseBody );
 }
