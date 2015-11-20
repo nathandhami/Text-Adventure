@@ -323,6 +323,8 @@ class DatabaseTool{
 		static bool dropItem(int charID, string item);
 
 		static bool setAllNotInCombat();
+
+		static int checkCommand(string command);
 	
 		// TMP NEW THINGS ----------------------------------------------
 	

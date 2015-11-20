@@ -118,7 +118,9 @@ int main(int argc, char* argv[])
       //lookTest();
       //npcInstanceTest();
       //DatabaseTool::setAllNotInCombat();
-      DatabaseTool::executeCommands();
+      cout << DatabaseTool::checkCommand("move") << endl;
+      cout << DatabaseTool::checkCommand("delete") << endl;
+      cout << DatabaseTool::checkCommand("@") << endl;
 
    }
    catch(runtime_error e){

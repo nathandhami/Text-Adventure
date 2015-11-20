@@ -16,6 +16,7 @@ const string INITIAL_ZONE = "3054";
 const string FOREIGN_KEY_ON = "PRAGMA foreign_keys = ON;";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
+const int INVALID_COMMAND = 4;
 
 static std::mutex databaseMutex;
 
@@ -2157,6 +2158,27 @@ bool DatabaseTool::setAllNotInCombat() {
 		return false;
 	}
 
+}
+
+int DatabaseTool::checkCommand(string command) {
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		int header;
+		db << "select header from commands where command = ?;"
+		<<command
+		>> header;
+
+		databaseMutex.unlock();
+		return header;
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return INVALID_COMMAND;
+	}
 }
 
 
