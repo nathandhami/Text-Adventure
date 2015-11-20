@@ -15,4 +15,7 @@ target_link_libraries( GameFrame ${GTKMM_LIBRARIES} Game )
 add_library( MainWindow MainWindow.cpp )
 target_link_libraries ( MainWindow LoginFrame GameFrame )
 
+add_library( SubWindow SubWindow.cpp )
+target_link_libraries ( SubWindow LoginFrame GameFrame )
+
 #target_link_libraries ( LoginWindow GameWindow )

@@ -25,9 +25,14 @@ int main( int argc, char* argv[] ) {
 	app->set_flags( Gio::ApplicationFlags::APPLICATION_NON_UNIQUE );
 	
 	MainWindow mainWindow;
-	//app->run( mainWindow );
-	SubWindow subWindow;
-	app->run ( subWindow );
+	app->run( mainWindow );
+
+	//argc = 1;
+	//Glib::RefPtr< Gtk::Application > app2 = Gtk::Application::create( argc, argv, "ca.sfu.cmpt373.textgaleonlinesub" );
+	//app->set_flags( Gio::ApplicationFlags::APPLICATION_NON_UNIQUE );
+
+	//SubWindow subWindow;
+	//app2->run ( subWindow );
 	
 	Game::stop();
 

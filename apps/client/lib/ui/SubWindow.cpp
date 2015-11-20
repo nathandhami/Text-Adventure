@@ -2,8 +2,8 @@
 #include <Locale.hpp>
 
 
-#define WIDTH_DEFAULT 	900
-#define HEIGHT_DEFAULT	100
+#define WIDTH_DEFAULT 	300
+#define HEIGHT_DEFAULT	300
 
 #define BORDER_WIDTH_DEFAULT 1
 
@@ -11,7 +11,7 @@
 // ------------------- PUBLIC -------------------
 
 SubWindow::SubWindow() {
-	this->set_title( GameLocale::TITLE );
+	this->set_title( GameLocale::SUBWINDOWTITLE );
 
 	this->set_position( Gtk::WIN_POS_CENTER );
 	this->set_default_size( WIDTH_DEFAULT, HEIGHT_DEFAULT );

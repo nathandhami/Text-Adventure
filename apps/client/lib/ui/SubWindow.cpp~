@@ -32,7 +32,7 @@ SubWindow::SubWindow() {
 
 void SubWindow::prepareComponents() {
 	
-	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &MainWindow::switchToGameFrame ) );
+	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &SubWindow::switchToGameFrame ) );
 	
 	
 	this->add( this->loginFrame );

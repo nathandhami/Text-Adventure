@@ -5,7 +5,6 @@
 #include <gtkmm.h>
 #include <ui/LoginFrame.hpp>
 #include <ui/GameFrame.hpp>
-#include <ui/SubWindow.hpp>
 
 //#include <ui/GameWindow.hpp>
 
