@@ -207,6 +207,22 @@ CREATE TABLE requiredExp (
   requiredExp integer
 );
 
+CREATE TABLE statModifiers (
+  modifierID integer primary key,
+  charID integer,
+  equippedItemID integer,
+  spellName text,
+  healthModifier integer,
+  manaModifier integer,
+  strengthModifer integer,
+  intelligenceModifier integer,
+  dexterityModifier integer,
+  charismaModifier integer,
+  FOREIGN kEY(charID) REFERENCES characters(charID),
+  FOREIGN kEY(equippedItemID) REFERENCES player_inventory(ownershipID),
+  FOREIGN KEY(spellName) REFERENCES spells(spellName)
+);
+
 
 
 
