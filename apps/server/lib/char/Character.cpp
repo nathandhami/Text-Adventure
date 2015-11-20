@@ -10,14 +10,20 @@
 // ------------------- PUBLIC -------------------
 
 std::pair< std::string, std::string > Character::performCommand( int charId, Command command ) {
+	const std::string NOT_ALLOWED = "You cannot do that!";
 	const std::string CMD_LOOK		= "look";
 	const std::string CMD_LOOK_AT	= "look at";
+	const std::string CMD_MOVE		= "move";
 	
 	if ( command.type == CMD_LOOK ) {
-		return std::make_pair( GameCode::STATUS, Character::look( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::look( charId, command.data ) );
 	} else if ( command.type == CMD_LOOK_AT ) {
-		return std::make_pair( GameCode::STATUS, Character::lookAt( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::lookAt( charId, command.data ) );
+	} else if ( command.type == CMD_MOVE ) {
+		return std::make_pair( GameCode::DESCRIPTION, Character::move( charId, command.data ) );
 	}
+	
+	//TO-DO: add an 'else' for invalid action
 }
 
 
@@ -38,16 +44,13 @@ void Character::updateStats( int charId ) {
 
 
 void Character::updateInventory( int charId ) {
-	std::string formattedInv;
-	
 	std::vector< Item > items = DatabaseTool::getItemsInInventory( charId );
 	std::vector< std::string > formattedItems;
 	
 	for ( Item& item: items ) {
 		formattedItems.push_back( item.shortDesc + ";" + std::to_string( item.quantity ) + ";" + std::to_string( item.isEquipped ) );
 	}
-	
-	formattedInv = boost::algorithm::join( formattedItems, "\n" );
+	std::string formattedInv = boost::algorithm::join( formattedItems, "\n" );
 	
 	Server::sendMessageToCharacter( charId, GameCode::INVENTORY, formattedInv );
 }
@@ -78,7 +81,7 @@ std::string Character::lookAt( int charId, std::string keyword ) {
 	
 	
 	int currentZoneId = DatabaseTool::getCharsLocation( charId );
-	std::string description = "";
+//	std::string description = "";
 	
 	if ( keyword == "" ) {
 		return NOTHING_TO_LOOK_AT;
@@ -110,3 +113,34 @@ std::string Character::lookAt( int charId, std::string keyword ) {
 		return ( "You see " + boost::algorithm::join( kwDescriptions, ", " ) + "." );
 	}
 }
+
+
+std::string Character::move( int charId, std::string destination ) {
+	int currentZoneId = DatabaseTool::getCharsLocation( charId );
+	
+	int destinationZoneId = DatabaseTool::getDirectionID( currentZoneId, destination );
+	if ( !destinationZoneId ) {
+		return ( "You don't see any " + destination );
+	} else {
+		DatabaseTool::putCharInZone( charId, destinationZoneId );
+		return Character::look( charId, "" ); //i think it'd be to replace this with "You are in ..."
+	}
+}
+
+
+std::string Character::pickUpItem( int charId, std::string keyword ) {
+	//TO-DO: add item to inventory
+	
+	Character::updateInventory( charId );
+	//return stuff
+}
+
+
+
+
+
+
+
+
+
+
