@@ -18,9 +18,10 @@ void Combat::cleanupCombats() {
 		combatInstancesLock.lock();
 		for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
 			if (!combatInstances[instanceIndex]->isStillFighting()) {
-				cout << "CLEANING UP COMBAT" << endl;
 				combatInstances[instanceIndex]->endCombat("");
-				combatInstances.erase(combatInstances.begin() + instanceIndex);
+				if (combatInstances[instanceIndex]->isReadyForCleanup()) {
+					combatInstances.erase(combatInstances.begin() + instanceIndex);
+				}
 			}
 		}
 		combatInstancesLock.unlock();
@@ -34,21 +35,44 @@ void Combat::startCombatThread() {
 	}
 }
 
-std::shared_ptr<CombatInstance> Combat::getCombatInstance(int playerID) {
+std::shared_ptr<CombatInstance> Combat::getCombatInstance(int playerID, int opponentID) {
 	combatInstancesLock.lock();
 	for (long instanceIndex = 0; instanceIndex < combatInstances.size(); instanceIndex++) {
-		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
-			combatInstancesLock.unlock();
-			return combatInstances[instanceIndex];
+		if ((opponentID == -1) || combatInstances[instanceIndex]->isCombatant(opponentID)) {
+			if (combatInstances[instanceIndex]->isCombatant(playerID)) {
+				combatInstancesLock.unlock();
+				return combatInstances[instanceIndex];
+			}
 		}
 	}
 	combatInstancesLock.unlock();
 	return NULL;
 }
 
+std::shared_ptr<CombatInstance> Combat::getCombatInstance(int playerID) {
+	return Combat::getCombatInstance(playerID, -1);
+}
+
+void Combat::isolateCombatInstance(int playerID, int opponentID) {
+	combatInstancesLock.lock();
+	for (long instanceIndex = 0; instanceIndex < combatInstances.size(); instanceIndex++) {
+		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
+			if (!combatInstances[instanceIndex]->isCombatant(opponentID)) {
+				combatInstances[instanceIndex]->rejectChallenge();
+			}
+		}
+		else if (combatInstances[instanceIndex]->isCombatant(opponentID)) {
+			if (!combatInstances[instanceIndex]->isCombatant(playerID)) {
+				combatInstances[instanceIndex]->rejectChallenge();	
+			}
+		}
+
+	}
+	combatInstancesLock.unlock();
+}
+
 // Violates the idea of a function not taking many lines
 string Combat::startCombat(int playerID, string arguments) {
-	cout << "STARTING COMBAT" << endl;
 	if (Combat::isInCombat(playerID)) {
 		return "Finish your current fight before starting another, you barbarian.\n";
 	}
@@ -83,6 +107,9 @@ string Combat::startCombat(int playerID, string arguments) {
 	int enemyPlayerID = 0;
 	if (enemyType == PLAYER_OR_NPC || enemyType == PLAYER_ONLY) {
 		enemyPlayerID = DatabaseTool::getCharIDFromName(enemyName);
+		if (!DatabaseTool::isCharOnline(enemyPlayerID) || (DatabaseTool::getCharsLocation(playerID) != DatabaseTool::getCharsLocation(enemyPlayerID))) {
+			enemyPlayerID = 0;
+		}
 	}
 	int enemyNpcID = 0;
 	if (enemyType == PLAYER_OR_NPC || enemyType == NPC_ONLY) {
@@ -93,6 +120,9 @@ string Combat::startCombat(int playerID, string arguments) {
 		return "Do you want to attack the player named " + enemyName + " or the NPC named " + enemyName + "?\nPlease clarify by using one of these commands\n    fight player <name>\n    fight npc <name>\n";
 	}
 	else if (enemyPlayerID > 0) {
+		if (playerID == enemyPlayerID) {
+			return "You punch yourself in the face.\n";
+		}
 		if (Combat::isInCombat(enemyPlayerID, PLAYER_ONLY)) {
 			return enemyName + " is already in combat.\n";
 		}
@@ -142,10 +172,10 @@ string Combat::retreat(int playerID) {
 	return "";
 }
 
-string Combat::acceptChallenge(int playerID, string arguments) {
-	if (Combat::isInCombat(playerID)) {
+string Combat::respondToChallenge(int playerID, string command, string arguments) {
+	/*if (Combat::isInCombat(playerID)) {
 		return "Finish your current fight before starting another, you barbarian.\n";
-	}
+	}*/
 
 	boost::trim(arguments);
 
@@ -160,14 +190,40 @@ string Combat::acceptChallenge(int playerID, string arguments) {
 		}
 	}
 	
-	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(DatabaseTool::getCharIDFromName(enemyName));
+	int opponentID = DatabaseTool::getCharIDFromName(enemyName);
+	if (playerID == opponentID) {
+		return "You must specify the opponent's name, not your own.\n";
+	}
+	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(playerID, opponentID);
 	if (instance == NULL) {
-		return "The challenge timed out.\n";
+		return "You have no active challenges with " + enemyName + ".\n";
 	}
-	if (!instance->inZone(DatabaseTool::getCharsLocation(playerID))) {
-		return "You are no longer in the same zone as " + enemyName + "\n"; 
+
+	if (command == "accept challenge") {
+		if (!instance->isInitiator(playerID)) {
+			Combat::isolateCombatInstance(playerID, opponentID);
+			instance->acceptChallenge();
+		}
+		else {
+			return "Patience, you have to let THEM accept YOUR challenge\n";
+		}
 	}
-	instance->acceptChallenge();
+	else if (command == "reject challenge") {
+		if (!instance->isInitiator(playerID)) {
+			instance->rejectChallenge();
+		}
+		else {
+			return "If you want to retract your challenge to " + enemyName + " use the following command\n    retract challenge " + enemyName + "\n";
+		}
+	}
+	else if (command == "retract challenge") {
+		if (instance->isInitiator(playerID)) {
+			instance->retractChallenge();
+		}
+		else {
+			return "If you want to reject " + enemyName + "'s challenge use the following command\n    reject challenge " + enemyName + "\n";
+		}
+	}
 	return "";
 }
 
@@ -176,7 +232,7 @@ bool Combat::isInCombat(int characterID, int characterType) {
 		return DatabaseTool::inCombat(characterID, Target::character);
 	}
 	else if (characterType == NPC_ONLY) {
-		return DatabaseTool::inCombat(characterID, Target::character);
+		return DatabaseTool::inCombat(characterID, Target::npc);
 	}
 	return true;
 }
@@ -198,8 +254,8 @@ string Combat::executeCommand(int playerID, Command givenCommand) {
 	else if (command == "retreat") {
 		return Combat::retreat(playerID);
 	}
-	else if (command == "acceptchallenge") {
-		return Combat::acceptChallenge(playerID, arguments);
+	else if (command == "accept challenge" || command == "reject challenge" || command == "retract challenge") {
+		return Combat::respondToChallenge(playerID, command, arguments);
 	}
 	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
 }
@@ -214,7 +270,6 @@ void Combat::endCombat(int playerID, string message) {
 		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
 			combatInstances[instanceIndex]->endCombat(message);
 			combatInstances.erase(combatInstances.begin() + instanceIndex);
-			break;
 		}
 	}
 	combatInstancesLock.unlock();
@@ -263,4 +318,14 @@ void Combat::endAllCombat(int zoneID, string message) {
 
 void Combat::endAllCombat(int zoneID) {
 	Combat::endAllCombat(zoneID, "Your combat has been ended prematurely.\n");
+}
+
+void Combat::playerDisconnect(int playerID) {
+	combatInstancesLock.lock();
+	for (long instanceIndex = (long)combatInstances.size() - 1; instanceIndex >= 0; instanceIndex--) {
+		if (combatInstances[instanceIndex]->isCombatant(playerID)) {
+			combatInstances[instanceIndex]->playerDisconnect(playerID);
+		}
+	}
+	combatInstancesLock.unlock();
 }

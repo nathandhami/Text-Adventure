@@ -25,6 +25,7 @@ class CombatInstance {
 	bool challengeAccepted = false;
 	bool playerTwoPresent = false;
 	bool keepFighting = true;
+	bool endingCombat = false;
 	bool readyForCleanup = false;
 
 	int combatZoneID = 0;
@@ -51,6 +52,9 @@ class CombatInstance {
 
 	void notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
 	
+	void playerWin(int playerID);
+	void playerLose(int playerID);
+
 	void executePlayerAttack(int player, int characterType);
 	
 	void executePlayerRetreat(int player);
@@ -63,6 +67,7 @@ class CombatInstance {
 public:
 
 	bool isCombatant(int playerID);
+	bool isInitiator(int playerID);
 
 	bool inZone(int zoneID);
 
@@ -73,8 +78,12 @@ public:
 	void queuePlayerAction(int playerID, int action);
 
 	void acceptChallenge();
+	void rejectChallenge();
+	void retractChallenge();
 
 	void endCombat(string message);
+
+	void playerDisconnect(int playerID);
 	
 	CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID);
 

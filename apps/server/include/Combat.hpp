@@ -24,7 +24,10 @@ class Combat {
 	static void cleanupCombats();
 	static void startCombatThread();
 
+	static std::shared_ptr<CombatInstance> getCombatInstance(int playerID, int opponentID);
 	static std::shared_ptr<CombatInstance> getCombatInstance(int playerID);
+
+	static void isolateCombatInstance(int playerID, int opponentID);
 
 	static string startCombat(int playerID, string arguments);
 
@@ -32,7 +35,7 @@ class Combat {
 
 	static string retreat(int playerID);
 
-	static string acceptChallenge(int playerID, string arguments);
+	static string respondToChallenge(int playerID, string command, string arguments);
 
 	static bool isInCombat(int characterID, int characterType);
 
@@ -50,6 +53,8 @@ public:
 	
 	static void endAllCombat(int zoneID, string message);
 	static void endAllCombat(int zoneID);
+
+	static void playerDisconnect(int playerID);
 };
 
 #endif

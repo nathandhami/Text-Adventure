@@ -15,9 +15,6 @@ string World::movePlayer(int playerID, string destination) {
 	if ( destinationZoneID == 0 ) {
 		return "Unable to move " + destination + "\n";
 	}
-	if (!Zone::roomForMorePlayers(destinationZoneID)) {
-		return "Unable to move " + destination + ", it is full.\n";
-	}
 
 	Combat::endCombat(playerID, "");
 
@@ -43,7 +40,7 @@ string World::playerPickupItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
 	if (DatabaseTool::pickUp(playerID, item)) {
-		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item);
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item, vector<int>(playerID));
 		return "You pick up " + item;
 	}
 	return "The " + item + " is not in the room or cannot be picked up.\n";
@@ -53,7 +50,7 @@ string World::playerDropItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
 	if (DatabaseTool::dropItem(playerID, item)) {
-		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item);
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item, vector<int>(playerID));
 		return "You dropped " + item;
 	}
 	return "You do not have " + item + " in your inventory.";
