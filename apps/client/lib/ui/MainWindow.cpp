@@ -57,10 +57,11 @@ void MainWindow::switchToGameFrame() {
 	subWindow = 0;
 	subWindow = new SubWindow;
 	subWindow->signal_hide().connect(sigc::mem_fun(*this, &MainWindow::closeSubWindow));
-	subWindow->show();
+	//subWindow->show();
 
 	this->add( gameFrame );
 	this->gameFrame.startReading();
+	this->gameFrame.startSubFrame(subWindow);
 	
 	this->show_all_children();
 	

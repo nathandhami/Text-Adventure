@@ -12,8 +12,7 @@ public:
 	GameFrame();
 	
 	void startReading();
-	void startSubFrame(SubWindow *subWindow);
-	void closeSubWindow();
+
 	
 private:
 	Gtk::Grid layoutGrid;
@@ -27,6 +26,8 @@ private:
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
 	
+	void startSubFrame(SubWindow *subWindow);
+	void closeSubWindow();
 
 	void prepareComponents();
 	
