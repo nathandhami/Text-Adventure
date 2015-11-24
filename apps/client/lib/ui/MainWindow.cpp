@@ -22,7 +22,8 @@ MainWindow::MainWindow() {
 	
 //	this->set_border_width( BORDER_WIDTH_DEFAULT );
 
-	this->prepareComponents();
+	this->setupStyleSheet();
+	this->setupComponents();
 
 //	this->show_all_children();
 }
@@ -30,7 +31,18 @@ MainWindow::MainWindow() {
 
 // ------------------- PRIVATE ------------------
 
-void MainWindow::prepareComponents() {
+void MainWindow::setupStyleSheet() {
+	const std::string PATH_CSS = "res/css/main.css";
+	auto cssProvider = Gtk::CssProvider::create();
+	cssProvider->load_from_path( PATH_CSS );
+
+	auto screen = Gdk::Screen::get_default();
+	auto cssContext = this->get_style_context();
+	cssContext->add_provider_for_screen( screen, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION );
+}
+
+
+void MainWindow::setupComponents() {
 	
 	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &MainWindow::switchToGameFrame ) );
 	

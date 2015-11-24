@@ -22,7 +22,9 @@ private:
 
 	Gtk::Button loginButton;
 
-	void prepareComponents();
+	void setupComponents();
+	
+	void setupGrid();
 	void setupLabels();
 	void setupEntries();
 	

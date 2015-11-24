@@ -19,7 +19,9 @@ private:
 	LoginFrame loginFrame;
 	GameFrame gameFrame;
 	
-	void prepareComponents();
+	void setupStyleSheet();
+	void setupComponents();
+	
 	void switchToGameFrame();
 	
 };

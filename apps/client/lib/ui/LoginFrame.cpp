@@ -11,19 +11,15 @@
 // ------------------- PUBLIC -------------------
 
 LoginFrame::LoginFrame() : loginButton( "Log In" ) {
+	const std::string CSS_ID = "frame-login";
+	
 	this->set_margin_right( 1 );
 	this->set_margin_left( 1 );
 	this->set_margin_bottom( 1 );
 	
-	const std::string PATH_CSS = "res/css/LoginFrame.css";
-	auto cssProvider = Gtk::CssProvider::create();
-	cssProvider->load_from_path( PATH_CSS );
-	
-	auto screen = Gdk::Screen::get_default();
-	auto cssContext = this->get_style_context();
-	cssContext->add_provider_for_screen( screen, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION );
+	this->set_name( CSS_ID );
 
-	this->prepareComponents();
+	this->setupComponents();
 
 	this->show_all_children();
 }
@@ -31,18 +27,8 @@ LoginFrame::LoginFrame() : loginButton( "Log In" ) {
 
 // ------------------- PRIVATE ------------------
 
-void LoginFrame::prepareComponents() {
-	this->layoutGrid.set_orientation( Gtk::ORIENTATION_VERTICAL );
-	this->layoutGrid.set_halign( Gtk::Align::ALIGN_CENTER );
-	this->layoutGrid.set_valign( Gtk::Align::ALIGN_CENTER );
-	this->layoutGrid.set_row_spacing( 10 );
-	this->layoutGrid.set_size_request( 300, 187 );
-//	this->layoutGrid.set_padding( 0, 10 );
-	
-	Gdk::RGBA gridColor;
-	gridColor.set_rgba( 0.0, 0.0, 0.0, 0.5 );
-//	this->layoutGrid.override_background_color( gridColor );
-	
+void LoginFrame::setupComponents() {
+	this->setupGrid();
 	this->setupLabels();
 	this->setupEntries();
 
@@ -56,6 +42,15 @@ void LoginFrame::prepareComponents() {
 	this->layoutGrid.attach( this->loginButton, 1, 4, 1, 1  );
 
 	this->add( layoutGrid );
+}
+
+
+void LoginFrame::setupGrid() {
+	this->layoutGrid.set_orientation( Gtk::ORIENTATION_VERTICAL );
+	this->layoutGrid.set_halign( Gtk::Align::ALIGN_CENTER );
+	this->layoutGrid.set_valign( Gtk::Align::ALIGN_CENTER );
+	this->layoutGrid.set_row_spacing( 10 );
+	this->layoutGrid.set_size_request( 300, 187 );
 }
 
 

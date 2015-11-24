@@ -1,0 +1,12 @@
+GtkButton {
+	border-radius: 0px;
+	background: rgba( 0, 0, 0, 0.7 );
+	border: 1px solid @color_main_green;
+	color: @color_main_green;
+	transition: 150ms linear;
+}
+
+GtkButton:hover {
+	background: @color_main_green;
+	color: rgba( 0, 0, 0, 0.8 );
+}
