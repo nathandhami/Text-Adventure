@@ -51,7 +51,7 @@ private:
 	std::string identifierString;
 	bool terminating = false;
 	
-	// theads
+	// threads
 	std::thread readerThread;
 	std::thread writerThread;
 	
@@ -62,6 +62,7 @@ private:
 	std::queue< NetMessage > responseMessageQueue;
 	std::mutex messageQueueLock;
 	bool writeInProgress = false;
+	int requestCounter;
 	
 	//Autherization data
 	User currentUser;

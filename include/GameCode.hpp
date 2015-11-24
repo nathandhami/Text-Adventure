@@ -42,6 +42,7 @@ namespace GameCode {
 	const std::string NONE		 	= "non";
 	const std::string FAUX_HEADER	= "fhd";
 	const std::string OK			= "ok_";
+	const std::string ERROR			= "err";
 
 }
 

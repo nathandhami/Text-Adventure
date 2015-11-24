@@ -51,3 +51,22 @@ bool Authenticator::logout( User& user ) {
 	
 	return false;
 }
+
+
+std::pair< std::string, std::string > Authenticator::registerAccount( std::string userCredentials ) {
+	const int NUM_EXP_ARGS = 3;
+	
+	std::vector< std::string > credentials;
+	boost::split( credentials, userCredentials, boost::is_any_of( ";" ) );
+	if ( credentials.size() != NUM_EXP_ARGS ) return std::make_pair( GameCode::INVALID, "Client error detected. Please redownload your client." );
+	
+	std::string username = credentials[ 0 ];
+	std::string password = credentials[ 1 ];
+	std::string passwordRep = credentials[ 2 ];
+	if ( username.empty() || password.empty() ) return std::make_pair( GameCode::INVALID, "Required fields are empty." );
+	//TO-DO: check if username already exists
+	if ( password != passwordRep ) return std::make_pair( GameCode::INVALID, "Passwords do not match." );
+	
+	//TO-DO: save user credentials to the database
+	return std::make_pair( GameCode::OK, "You have successfully registered!" );
+}

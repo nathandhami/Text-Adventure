@@ -10,7 +10,7 @@
 
 // ------------------- PUBLIC -------------------
 
-LoginFrame::LoginFrame() : loginButton( "Log In" ) {
+LoginFrame::LoginFrame() : loginButton( "Log In" ), registerButton( "Register" ) {
 	const std::string CSS_ID = "frame-login";
 	
 	this->set_margin_right( 1 );
@@ -31,15 +31,14 @@ void LoginFrame::setupComponents() {
 	this->setupGrid();
 	this->setupLabels();
 	this->setupEntries();
+	this->setupButtons();
 
-	this->loginButton.set_name( "button-login" );
-	this->loginButton.signal_clicked().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
-
-	this->layoutGrid.attach( this->usernameLabel, 0, 0, 3, 1 );
-	this->layoutGrid.attach( this->usernameEntry, 1, 1, 1, 1 );
-	this->layoutGrid.attach( this->passwordLabel, 0, 2, 3, 1 );
-	this->layoutGrid.attach( this->passwordEntry, 1, 3, 1, 1 );
-	this->layoutGrid.attach( this->loginButton, 1, 4, 1, 1  );
+	this->layoutGrid.attach( this->usernameLabel, 0, 0, 5, 1 );
+	this->layoutGrid.attach( this->usernameEntry, 1, 1, 3, 1 );
+	this->layoutGrid.attach( this->passwordLabel, 0, 2, 5, 1 );
+	this->layoutGrid.attach( this->passwordEntry, 1, 3, 3, 1 );
+	this->layoutGrid.attach( this->loginButton, 2, 4, 2, 1  );
+	this->layoutGrid.attach( this->registerButton, 1, 4, 1, 1  );
 
 	this->add( layoutGrid );
 }
@@ -50,6 +49,7 @@ void LoginFrame::setupGrid() {
 	this->layoutGrid.set_halign( Gtk::Align::ALIGN_CENTER );
 	this->layoutGrid.set_valign( Gtk::Align::ALIGN_CENTER );
 	this->layoutGrid.set_row_spacing( 10 );
+	this->layoutGrid.set_column_spacing( 10 );
 	this->layoutGrid.set_size_request( 300, 187 );
 }
 
@@ -83,6 +83,11 @@ void LoginFrame::setupEntries() {
 	this->passwordEntry.signal_activate().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
 }
 
+
+void LoginFrame::setupButtons() {
+	//	this->loginButton.set_name( "button-login" );
+	this->loginButton.signal_clicked().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
+}
 
 
 void LoginFrame::loginButton_click() {

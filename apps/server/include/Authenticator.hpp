@@ -11,15 +11,16 @@
 //**********************************************************************
 
 #include <iostream>
+#include <utility>
 
 #include "User.hpp"
 
 class Authenticator {
 public:
-	static int login( std::string data );
 	static bool login( User& user, std::string userCredentials );
-	static void logout( int userId );
 	static bool logout( User& user );
+	
+	static std::pair< std::string, std::string > registerAccount( std::string userCredentials );
 	
 private:
 	Authenticator() {}
