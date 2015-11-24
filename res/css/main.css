@@ -3,11 +3,14 @@
 #main-window {
 	border: 1px solid @color_main_green;
 	border-top-width: 0;
-	/*	font-family: Nimbus Sans L;*/
-	font-family: NanumBarunGorthic;
+	background-image: url( "../img/bg_login.jpg" );
+	background-size: 100%;
+	font-family: Sans;
+/*	font-family: NanumBarunGorthic;*/
 	color: @color_main_green;
 }
 
 @import url( "frames/_LoginFrame.css" );
 @import url( "components/_Button.css" );
+@import url( "components/_Label.css" );
 @import url( "components/_Dialog.css" );

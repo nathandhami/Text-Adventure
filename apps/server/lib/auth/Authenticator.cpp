@@ -1,5 +1,6 @@
 #include "Authenticator.hpp"
 #include "DatabaseTool.hpp"
+#include <GameCode.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <vector>

@@ -29,6 +29,14 @@ MainWindow::MainWindow() {
 }
 
 
+
+
+void MainWindow::openLoginFrame() {
+	this->add( this->loginFrame );
+	this->show_all_children();
+}
+
+
 // ------------------- PRIVATE ------------------
 
 void MainWindow::setupStyleSheet() {
@@ -44,11 +52,13 @@ void MainWindow::setupStyleSheet() {
 
 void MainWindow::setupComponents() {
 	
-	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &MainWindow::switchToGameFrame ) );
+//	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &MainWindow::switchToGameFrame ) );
 	
 	
-	this->add( this->loginFrame );
-	this->loginFrame.show();
+//	this->add( this->loginFrame );
+//	this->loginFrame.show();
+	this->add( this->registerFrame );
+	this->registerFrame.show();
 	
 }
 

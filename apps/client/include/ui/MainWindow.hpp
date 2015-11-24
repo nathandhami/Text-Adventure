@@ -4,6 +4,7 @@
 
 #include <gtkmm.h>
 #include <ui/LoginFrame.hpp>
+#include <ui/RegisterFrame.hpp>
 #include <ui/GameFrame.hpp>
 
 //#include <ui/GameWindow.hpp>
@@ -14,9 +15,11 @@ class MainWindow: public Gtk::Window {
 public:	
 	MainWindow();
 
+	void openLoginFrame();
 
 private:
 	LoginFrame loginFrame;
+	RegisterFrame registerFrame;
 	GameFrame gameFrame;
 	
 	void setupStyleSheet();
