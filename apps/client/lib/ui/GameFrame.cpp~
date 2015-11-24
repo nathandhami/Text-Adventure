@@ -28,9 +28,15 @@ GameFrame::GameFrame() {
 // ------------------- PRIVATE ------------------
 
 void GameFrame::prepareComponents() {
-//	this->layoutGrid.set_orientation( Gtk::ORIENTATION_VERTICAL );
-//	this->layoutGrid.set_halign( Gtk::Align::ALIGN_CENTER );
-//	this->layoutGrid.set_valign( Gtk::Align::ALIGN_CENTER );
+
+	this->subFrameNotebook.override_background_color( Gdk::RGBA("white"));
+	this->subFrameNotebook.set_size_request( 220, 380 );
+	this->subFrameNotebook.set_border_width( 5 );
+
+	this->subFrameNotebook.append_page(statsTabLabel, "Stats");
+	this->subFrameNotebook.append_page(inventoryTabLabel, "Inventory");
+	this->subFrameNotebook.append_page(chatTabLabel, "Chat");
+
 	this->layoutGrid.set_row_spacing( 10 );	
 	
 //	Gtk::Button* pButton = Gtk::manage(new Gtk::Button("Test"));
@@ -44,14 +50,11 @@ void GameFrame::prepareComponents() {
 	
 	this->scrolledWindow.override_background_color( Gdk::RGBA("white"));
 	
-	
-	
-	
 	this->scrolledWindow.add( this->responseBox );
-	this->scrolledWindow.set_size_request( 880, 380 );
+	this->scrolledWindow.set_size_request( 680, 380 );
 	this->scrolledWindow.set_border_width( 5 );
 //	this->scrolledWindow.set_valign( Gtk::Align::ALIGN_START );
-	this->commandEntry.set_size_request( 880, 40 );
+	this->commandEntry.set_size_request( 680, 40 );
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
 	
 	this->updateDispatcher.connect( sigc::mem_fun( *this, &GameFrame::updateResponses ) );
@@ -59,6 +62,7 @@ void GameFrame::prepareComponents() {
 	this->layoutGrid.add( this->scrolledWindow );
 //	this->layoutGrid.add( this->commandEntry );
 	this->layoutGrid.attach_next_to( this->commandEntry, this->scrolledWindow, Gtk::POS_BOTTOM, 1, 1);
+	this->layoutGrid.attach( this->subFrameNotebook, 1, 0, 1, 1);
 
 //	this->add( layoutGrid );
 
@@ -66,9 +70,9 @@ void GameFrame::prepareComponents() {
 
 	this->gameFrameNotebook.append_page(layoutGrid, "Main");
 	this->gameFrameNotebook.append_page(outputTabLabel, "Commands");
-	this->gameFrameNotebook.append_page(statsTabLabel, "Stats");
-	this->gameFrameNotebook.append_page(inventoryTabLabel, "Inventory");
-	this->gameFrameNotebook.append_page(chatTabLabel, "Chat");
+	//this->gameFrameNotebook.append_page(statsTabLabel, "Stats");
+	//this->gameFrameNotebook.append_page(inventoryTabLabel, "Inventory");
+	//this->gameFrameNotebook.append_page(chatTabLabel, "Chat");
 	this->add( gameFrameNotebook);
 
 //	this->show_all_children();
@@ -77,7 +81,7 @@ void GameFrame::prepareComponents() {
 
 void GameFrame::startReading() {
 	this->readerThread = Glib::Thread::create(sigc::mem_fun(*this, &GameFrame::readResponses_thread), true);
-	startSubFrame();
+
 //	this->readerThread->dispatch();
 }
 

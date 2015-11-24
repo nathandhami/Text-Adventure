@@ -17,15 +17,20 @@ public:
 	
 private:
 	Gtk::Grid layoutGrid;
+	Gtk::Grid subGrid;
+	Gtk::ScrolledWindow subWindow;
 	
 	Gtk::ScrolledWindow scrolledWindow;
 	Gtk::Box responseBox;
 	Gtk::Entry commandEntry;
 	Gtk::Notebook gameFrameNotebook;
-	Gtk::Label outputTabLabel, inventoryTabLabel, chatTabLabel, statsTabLabel;
+	Gtk::Label outputTabLabel;
 	
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
+
+	Gtk::Notebook subFrameNotebook;
+	Gtk::Label inventoryTabLabel, chatTabLabel, statsTabLabel;
 	
 
 	void prepareComponents();
