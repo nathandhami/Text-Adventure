@@ -127,8 +127,7 @@ class Attributes {
 			this->handSlot = handSlot;
 			this->weponSlot = weponSlot;
 		};
-		~Attributes(){
-		};
+		~Attributes(){};
 		int id;
 		int level;
 		int experience;
@@ -183,8 +182,7 @@ class ResetCommand{
 			this-> state = state;
 			this->container = container;
 		}
-		~ResetCommand(){
-		};
+		~ResetCommand(){};
 		string action;
 		int id;
 		int slot;
@@ -194,7 +192,29 @@ class ResetCommand{
 		int container;
 };
 
-
+class spell{
+	public:
+		spell();
+		spell(string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
+			this->spellName = spellName;
+			this->minLevel = minLevel;
+			this->cost = cost;
+			this->archetypeID = archetypeID;
+			this->effect = effect;
+			this->hitChar = hitChar;
+			this->hitRoom = hitRoom;
+			this->hitVict = hitVict;
+		}
+		~spell(){};
+		string spellName;
+		int minLevel;
+		int cost;
+		int archetypeID;
+		string effect;
+		string hitChar;
+		string hitRoom;
+		string hitVict;
+};
 
 class DatabaseTool{
 	public:
