@@ -80,6 +80,7 @@ private:
 	typedef std::map< std::string, ExecuteFunction > ExecFuncMap;
 	
 	ExecFuncMap funcMap = {
+		{ GameCode::REGISTER	, &Session::registerUser },
 		{ GameCode::LOGIN		, &Session::login },
 		{ GameCode::LOGOUT		, &Session::logout },
 		{ GameCode::COMMAND		, &Session::doGameCommand }
@@ -87,6 +88,7 @@ private:
 	
 //	NetMessage stripAndExecute( std::string header, std::string body );
 	
+	void registerUser( const std::string& credentials );
 	void login( const std::string& credentials );
 	void logout( const std::string& placeholder );
 	

@@ -18,6 +18,8 @@ public:
 	static void start();
 	static void stop();
 	static NetMessage getFrontResponse();
+	
+	static NetMessage registerUser( std::string userName, std::string password, std::string passwordRep );
 	static NetMessage login( std::string userName, std::string password );
 	static void logout();
 	static void enact( std::string userInputString );

@@ -106,13 +106,27 @@ void RegisterFrame::setupEntries() {
 void RegisterFrame::setupButtons() {
 	//	this->loginButton.set_name( "button-login" );
 //	this->loginButton.signal_clicked().connect( sigc::mem_fun( *this, &RegisterFrame::loginButton_click ) );
-	this->registerButton.signal_clicked().connect( sigc::mem_fun( *this, &RegisterFrame::cancelButton_click ) );
+	this->registerButton.signal_clicked().connect( sigc::mem_fun( *this, &RegisterFrame::registerButton_click ) );
 	this->cancelButton.signal_clicked().connect( sigc::mem_fun( *this, &RegisterFrame::cancelButton_click ) );
 }
 
 
 void RegisterFrame::registerButton_click() {
+	std::string username = this->usernameEntry.get_text();
+	std::string password = this->passwordEntry.get_text();
+	std::string passwordRep = this->passwordRepEntry.get_text();
 	
+	NetMessage msg = Game::registerUser( username, password, passwordRep );
+	
+	if ( msg.header == GameCode::OK ) {
+		//TO-DO: go to character creation screen
+//		this->hide();
+	} else {
+		Gtk::MessageDialog dlg( msg.body, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		dlg.set_decorated( false );
+		dlg.set_title( "Registration Failed" );
+		dlg.run();
+	}
 }
 
 

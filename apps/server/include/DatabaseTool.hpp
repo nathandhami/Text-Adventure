@@ -357,6 +357,8 @@ class DatabaseTool{
 		static string findNpcDescription(int zoneID, string word);
 		static string findItemDescription(int charID, int zoneID, string word);
 	
+		static bool userExists( string userName );
+	
 //		static bool dropItem( int charID, string item );
 	
 	

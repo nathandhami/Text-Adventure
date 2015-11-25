@@ -61,13 +61,14 @@ std::pair< std::string, std::string > Authenticator::registerAccount( std::strin
 	boost::split( credentials, userCredentials, boost::is_any_of( ";" ) );
 	if ( credentials.size() != NUM_EXP_ARGS ) return std::make_pair( GameCode::INVALID, "Client error detected. Please redownload your client." );
 	
-	std::string username = credentials[ 0 ];
+	std::string userName = credentials[ 0 ];
 	std::string password = credentials[ 1 ];
 	std::string passwordRep = credentials[ 2 ];
-	if ( username.empty() || password.empty() ) return std::make_pair( GameCode::INVALID, "Required fields are empty." );
-	//TO-DO: check if username already exists
+	if ( userName.empty() || password.empty() ) return std::make_pair( GameCode::INVALID, "Required fields are empty." );
+	if ( DatabaseTool::userExists( userName ) ) return std::make_pair( GameCode::INVALID, "User with this name already exists." );
 	if ( password != passwordRep ) return std::make_pair( GameCode::INVALID, "Passwords do not match." );
 	
-	//TO-DO: save user credentials to the database
+	if ( !DatabaseTool::addUser( userName, password ) ) return std::make_pair( GameCode::ERROR, "Internal server error occurred." );
+	
 	return std::make_pair( GameCode::OK, "You have successfully registered!" );
 }

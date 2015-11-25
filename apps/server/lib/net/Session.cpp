@@ -157,6 +157,15 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 
 // ------------- De-headed functions
 
+
+void Session::registerUser( const std::string& credentials ) {
+	LOG( "Register happened" );
+	
+	std::pair< std::string, std::string > regResult = Authenticator::registerAccount( credentials );
+	this->writeToClient( regResult.first, regResult.second );
+}
+
+
 void Session::login( const std::string& credentials ) {
 	LOG( "Login happened." );
 	

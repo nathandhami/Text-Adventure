@@ -36,6 +36,12 @@ void MainWindow::openLoginFrame() {
 	this->show_all_children();
 }
 
+void MainWindow::openRegisterFrame() {
+	this->remove();
+	this->add( this->registerFrame );
+	this->registerFrame.show();
+}
+
 
 // ------------------- PRIVATE ------------------
 
@@ -57,8 +63,8 @@ void MainWindow::setupComponents() {
 	
 //	this->add( this->loginFrame );
 //	this->loginFrame.show();
-	this->add( this->registerFrame );
-	this->registerFrame.show();
+	this->add( this->loginFrame );
+	this->loginFrame.show();
 	
 }
 

@@ -16,6 +16,7 @@ public:
 	MainWindow();
 
 	void openLoginFrame();
+	void openRegisterFrame();
 
 private:
 	LoginFrame loginFrame;

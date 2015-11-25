@@ -2,6 +2,7 @@
 #include <NetMessage.hpp>
 #include <GameCode.hpp>
 #include "Game.hpp"
+#include <ui/MainWindow.hpp>
 
 
 #define FORM_WIDTH 	300
@@ -87,6 +88,7 @@ void LoginFrame::setupEntries() {
 void LoginFrame::setupButtons() {
 	//	this->loginButton.set_name( "button-login" );
 	this->loginButton.signal_clicked().connect( sigc::mem_fun( *this, &LoginFrame::loginButton_click ) );
+	this->registerButton.signal_clicked().connect( sigc::mem_fun( *this, &LoginFrame::registerButton_click ) );
 }
 
 
@@ -104,5 +106,13 @@ void LoginFrame::loginButton_click() {
 		dlg.set_decorated( false );
 		dlg.set_title( "Login Failed" );
 		dlg.run();
+	}
+}
+
+
+void LoginFrame::registerButton_click() {
+	MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+	if ( p_parentWindow ) {
+		p_parentWindow->openRegisterFrame();
 	}
 }

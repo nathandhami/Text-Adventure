@@ -2189,8 +2189,8 @@ vector< string > DatabaseTool::getAllPlayersInZone( int charID, int zoneID ) {
 			<< charID
 			<< zoneID
 			>> [ & ]( string player ) {
-			players.push_back( player );
-		};
+				players.push_back( player );
+			};
 
 		return players;
 	} catch( sqlite_exception e ) {
@@ -2199,3 +2199,25 @@ vector< string > DatabaseTool::getAllPlayersInZone( int charID, int zoneID ) {
 	}
 }
 
+
+bool DatabaseTool::userExists( string userName ) {
+	try {
+		int userID = 0;
+		
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+		
+		db	<< "SELECT userID FROM users WHERE userName = ?;"
+			<< userName
+			>> userID;
+		databaseMutex.unlock();
+		
+		return userID;
+		
+	} catch ( sqlite_exception e ) {
+		databaseMutex.unlock();
+		
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}

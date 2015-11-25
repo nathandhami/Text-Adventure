@@ -35,6 +35,17 @@ NetMessage Game::getFrontResponse() {
 	return responseMessage;
 }
 
+// BLOCKING
+NetMessage Game::registerUser( std::string userName, std::string password, std::string passwordRep ) {
+	std::vector< std::string > credentialTokens = { userName, password, passwordRep };
+	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+	
+	Game::transceiver->writeToServer( GameCode::REGISTER, joinedCredentials );
+	
+	while ( Game::transceiver->queueEmpty() ) {}
+	return Game::transceiver->readAndPopQueue();
+}
+
 
 // BLOCKING
 NetMessage Game::login( std::string userName, std::string password ) {
