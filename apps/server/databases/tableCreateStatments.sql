@@ -168,9 +168,15 @@ CREATE TABLE instanceOfItem (
 
 CREATE TABLE spells (
   spellName text primary key,
+  minLevel integer,
   cost integer,
+  duration integer,
   archetypeID integer,
-  modifiers text
+  modifiers text,
+  effect text,
+  hitChar text,
+  hitRoom text,
+  hitVict text
 );
 
 CREATE TABLE knownSpells (
