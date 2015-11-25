@@ -2181,6 +2181,52 @@ int DatabaseTool::checkCommand(string command) {
 	}
 }
 
+bool DatabaseTool::knowsSpell(int charID, string spellName) {
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+
+		db << "select knownID from knownSpells where charID = ? and spellName = ?"
+		<< charID
+		<<spellName;
+
+		databaseMutex.unlock();
+		return true;
+
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return false;
+	}
+}
+
+Spell DatabaseTool::getSpell(string spellName) {
+	Spell spell;
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "select * from spells where spellName = ?"
+		<<spellName
+		>>[&](string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
+			Spell spellToGet(spellName, minLevel, cost, archetypeID, effect, hitChar, hitRoom, hitVict);
+			spell = spellToGet;
+		};
+
+		databaseMutex.unlock();
+		return spell;
+
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return spell;
+	}
+}
 
 
 

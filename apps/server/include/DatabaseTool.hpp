@@ -192,10 +192,10 @@ class ResetCommand{
 		int container;
 };
 
-class spell{
+class Spell{
 	public:
-		spell();
-		spell(string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
+		Spell() {};
+		Spell(string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
 			this->spellName = spellName;
 			this->minLevel = minLevel;
 			this->cost = cost;
@@ -205,7 +205,7 @@ class spell{
 			this->hitRoom = hitRoom;
 			this->hitVict = hitVict;
 		}
-		~spell(){};
+		~Spell(){};
 		string spellName;
 		int minLevel;
 		int cost;
@@ -379,8 +379,10 @@ class DatabaseTool{
 		static void clearAllSessions();
 
 		static void signOffAllUsers();
-	
-//		static bool dropItem( int charID, string item );
+
+		static bool knowsSpell(int charID, string spellName);
+
+		static Spell getSpell(string spellName);
 	
 	
 	private:
