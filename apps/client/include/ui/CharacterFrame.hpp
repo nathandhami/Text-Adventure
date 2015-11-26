@@ -13,6 +13,7 @@ public:
 	
 private:
 	Gtk::Grid layoutGrid;
+	Gtk::Box characterList;
 	
 	void setupComponents();
 	
@@ -20,3 +21,5 @@ private:
 
 
 #endif
+
+//m_button1.signal_clicked().connect( sigc::bind<Glib::ustring>( sigc::mem_fun(*this, &HelloWorld::on_button_clicked), "button 1") );
