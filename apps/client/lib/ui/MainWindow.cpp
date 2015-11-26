@@ -18,7 +18,7 @@ MainWindow::MainWindow() {
 	this->set_size_request( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 	this->set_resizable( false );
 
-	this->set_name( "main-window" );
+	this->set_name( "window-character" );
 	
 //	this->set_border_width( BORDER_WIDTH_DEFAULT );
 
@@ -63,8 +63,9 @@ void MainWindow::setupComponents() {
 	
 //	this->add( this->loginFrame );
 //	this->loginFrame.show();
-	this->add( this->loginFrame );
-	this->loginFrame.show();
+	this->add( this->characterFrame );
+	this->characterFrame.updateCharacterList( "testchar1|9|zone,world|some random description;;testchar2|1|zone3,world|doesn't like truffles" );
+	this->characterFrame.show();
 	
 }
 

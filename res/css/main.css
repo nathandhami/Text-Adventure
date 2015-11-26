@@ -1,6 +1,6 @@
 @import url( "util/_Color.css" );
 
-#main-window {
+GtkWindow {
 	border: 1px solid @color_main_green;
 	border-top-width: 0;
 	background-image: url( "../img/bg_login.jpg" );
@@ -10,7 +10,21 @@
 	color: @color_main_green;
 }
 
+#window-login {
+	background-image: url( "../img/bg_login.jpg" );
+}
+
+#window-character {
+	background-image: url( "../img/bg_char.jpg" );
+}
+
+GtkFrame {
+	border: 1px solid @color_main_green;
+	border-top: none;
+}
+
 @import url( "frames/_LoginFrame.css" );
+@import url( "frames/_CharacterFrame.css" );
 @import url( "components/_Button.css" );
 @import url( "components/_Label.css" );
 @import url( "components/_Dialog.css" );

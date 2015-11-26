@@ -5,6 +5,7 @@
 #include <gtkmm.h>
 #include <ui/LoginFrame.hpp>
 #include <ui/RegisterFrame.hpp>
+#include <ui/CharacterFrame.hpp>
 #include <ui/GameFrame.hpp>
 
 //#include <ui/GameWindow.hpp>
@@ -17,10 +18,12 @@ public:
 
 	void openLoginFrame();
 	void openRegisterFrame();
+	void openCharacterFrame();
 
 private:
 	LoginFrame loginFrame;
 	RegisterFrame registerFrame;
+	CharacterFrame characterFrame;
 	GameFrame gameFrame;
 	
 	void setupStyleSheet();

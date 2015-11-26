@@ -3,6 +3,7 @@
 
 
 #include <gtkmm.h>
+#include <string>
 
 
 class CharacterFrame: public Gtk::Frame {
@@ -10,12 +11,21 @@ class CharacterFrame: public Gtk::Frame {
 public:
 	CharacterFrame();
 	
+	void updateCharacterList( std::string );
+	
 	
 private:
 	Gtk::Grid layoutGrid;
-	Gtk::Box characterList;
+	Gtk::ScrolledWindow characterList;
+	
+	Gtk::Box infoBox;
+	Gtk::Label nameLabel;
+	Gtk::Label locationLabel;
+	Gtk::Label descriptionLabel;
 	
 	void setupComponents();
+	void setupLayout();
+	void setupCharList();
 	
 };
 
