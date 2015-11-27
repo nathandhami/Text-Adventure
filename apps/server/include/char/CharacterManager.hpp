@@ -13,6 +13,7 @@ namespace CharacterManager {
 	bool deselectCurrentCharacter( User& user );
 	
 	std::string getCharacterList( int userId );
+	std::string deleteCharacter( int userId, std::string charName );
 	
 }
 

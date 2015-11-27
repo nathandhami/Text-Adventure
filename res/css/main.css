@@ -16,6 +16,7 @@ GtkWindow {
 
 #window-character {
 	background-image: url( "../img/bg_char.jpg" );
+/*	background-image: url( "../img/bg_anim_char.gif" );*/
 }
 
 GtkFrame {

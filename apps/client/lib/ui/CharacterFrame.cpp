@@ -1,4 +1,6 @@
 #include <ui/CharacterFrame.hpp>
+#include <ui/MainWindow.hpp>
+#include "Game.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <vector>
@@ -111,8 +113,10 @@ void CharacterFrame::setupButtons() {
 	Gtk::Fixed* p_selectButtonContainer = Gtk::manage( new Gtk::Fixed() );
 	p_selectButtonContainer->set_halign( Gtk::Align::ALIGN_END );
 	
+	// LOGOUT Button
 	Gtk::Button* p_logoutButton = Gtk::manage( new Gtk::Button( "Log Out" ) );
 	p_logoutButton->set_size_request( BTN_WIDTH, -1 );
+	p_logoutButton->signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::logoutButton_click ) );
 	
 	Gtk::Button* p_deleteButton = Gtk::manage( new Gtk::Button( "Delete" ) );
 	p_deleteButton->set_size_request( BTN_WIDTH, -1 );
@@ -198,6 +202,13 @@ void CharacterFrame::addAddCharButton() {
 }
 
 
+void CharacterFrame::logoutButton_click() {
+	Game::logout();
+	MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+	if ( p_parentWindow ) {
+		p_parentWindow->openLoginFrame();
+	}
+}
 
 
 

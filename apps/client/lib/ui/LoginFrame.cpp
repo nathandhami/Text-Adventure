@@ -100,7 +100,10 @@ void LoginFrame::loginButton_click() {
 	NetMessage msg = Game::login( username, password );
 	
 	if ( msg.header == GameCode::CORRECT ) {
-		this->hide();
+		MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+		if ( p_parentWindow ) {
+			p_parentWindow->openCharacterFrame( msg.body );
+		}
 	} else {
 		Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
 		dlg.set_decorated( false );

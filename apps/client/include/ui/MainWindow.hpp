@@ -18,7 +18,7 @@ public:
 
 	void openLoginFrame();
 	void openRegisterFrame();
-	void openCharacterFrame();
+	void openCharacterFrame( std::string charList );
 
 private:
 	LoginFrame loginFrame;

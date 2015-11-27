@@ -18,7 +18,6 @@ public:
 private:
 	struct CharacterInfo {
 		CharacterInfo( std::string location, std::string description ): location( location ), description( description ) {}
-		
 		std::string location;
 		std::string description;
 	};
@@ -46,6 +45,7 @@ private:
 	void addAddCharButton();
 	void selectCharacter( std::string name );
 	
+	void logoutButton_click();
 };
 
 
