@@ -2221,3 +2221,53 @@ bool DatabaseTool::userExists( string userName ) {
 		return false;
 	}
 }
+
+
+vector< int > DatabaseTool::getAllUserCharIDs( int userID ) {
+	vector< int > charIDs;
+	
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+		
+		db	<< "SELECT charID FROM characters WHERE userID = ?"
+			<< userID
+			>> [ & ]( int charID ) {
+				charIDs.push_back( charID );
+			};
+		
+		databaseMutex.unlock();
+		return charIDs;
+	} catch ( sqlite_exception e ) {
+		std::cerr << e.what() << std::endl;
+		databaseMutex.unlock();
+		return charIDs;
+	}
+}
+
+
+string DatabaseTool::getCharDescription( int charID ) {
+	try {
+		string desc;
+		
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+
+		db	<< "SELECT description FROM characters WHERE charID = ?"
+			<< charID
+			>> desc;
+
+		databaseMutex.unlock();
+		return desc;
+	} catch ( sqlite_exception e ) {
+		std::cerr << e.what() << std::endl;
+		databaseMutex.unlock();
+		return "";
+	}
+}
+
+
+
+
+
+

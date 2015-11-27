@@ -8,19 +8,88 @@
 }
 
 #frame-character > GtkGrid > GtkScrolledWindow {
-	background: rgba( 0, 0, 0, 0.4 );
+/*	background: rgba( 0, 0, 0, 0.4 );*/
+	background-image: -gtk-gradient (linear,
+		0 0, 0 1,
+		color-stop( 0.8, rgba( 0, 0, 0, 0.4 ) ),
+		color-stop( 1.0, rgba( 0, 0, 0, 0.0 ) )
+	);
 }
 
 #frame-character > GtkGrid > GtkBox > GtkLabel {
-	background: rgba( 0, 0, 0, 0.6 );
 	padding: 5px;
 	padding-left: 15px;
 }
 
 #label-character-name {
 	font-size: 30px;
+	background: rgba( 0, 0, 0, 0.6 );
 }
 
 #label-character-location {
 	font-size: 16px;
+	background: rgba( 0, 0, 0, 0.6 );
+}
+
+#label-character-desc {
+/*	background: url( "../../img/bg-char-info.png" );*/
+	background-image: -gtk-gradient (linear,
+		0 0, 0 1,
+		color-stop( 0.8, rgba( 0, 0, 0, 0.6 ) ),
+		color-stop( 1.0, rgba( 0, 0, 0, 0.0 ) )
+	);
+}
+
+#button-toggle-char {
+/*	padding: 10px;*/
+/*	color: @color-main-green;*/
+	border: none;
+	background-color: rgba( 0, 0, 0, 0.3 );
+	transition: none;
+}
+
+#button-toggle-char:hover {
+	color: #00CC00;
+	background-color: rgba( 0, 0, 0, 0.5 );
+}
+
+#button-toggle-char:active {
+	color: #00CC00;
+	background-color: rgba( 0, 0, 0, 0.7 );
+}
+
+#char-pane {
+	
+}
+
+#char-name {
+	font-size: 16px;
+	padding: 5px;
+}
+
+#char-level {
+	font-size: 10px;
+	padding-left: 3px;
+	padding-right: 3px;
+	background-color: #00CC00;
+	border-radius: 3px;
+	color: black;
+}
+
+#button-add-char {
+	border: none;
+	transition: none;
+	background-color: rgba( 0, 0, 0, 0.3 );
+	background-image: url( "../../img/add_char.png" );
+	background-size: 40px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#button-add-char:hover {
+	background-color: rgba( 0, 0, 0, 0.5 );
+}
+
+#button-add-char:active {
+	background-color: rgba( 0, 0, 0, 0.7 );
 }

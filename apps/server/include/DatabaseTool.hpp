@@ -358,7 +358,8 @@ class DatabaseTool{
 		static string findItemDescription(int charID, int zoneID, string word);
 	
 		static bool userExists( string userName );
-	
+		static vector< int > getAllUserCharIDs( int userID );
+		static string getCharDescription( int charID );
 //		static bool dropItem( int charID, string item );
 	
 	

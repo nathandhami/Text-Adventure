@@ -1,6 +1,6 @@
 #include <ui/MainWindow.hpp>
 #include <Locale.hpp>
-
+#include "Game.hpp"
 
 #define WIDTH_DEFAULT 	900
 #define HEIGHT_DEFAULT	500
@@ -64,7 +64,9 @@ void MainWindow::setupComponents() {
 //	this->add( this->loginFrame );
 //	this->loginFrame.show();
 	this->add( this->characterFrame );
-	this->characterFrame.updateCharacterList( "testchar1|9|zone,world|some random description;;testchar2|1|zone3,world|doesn't like truffles" );
+	NetMessage msg = Game::login( "testUser1", "test1" );
+	std::cout << msg.body << std::endl;
+	this->characterFrame.updateCharacterList( msg.body );
 	this->characterFrame.show();
 	
 }

@@ -4,6 +4,7 @@
 
 #include <gtkmm.h>
 #include <string>
+#include <map>
 
 
 class CharacterFrame: public Gtk::Frame {
@@ -15,8 +16,20 @@ public:
 	
 	
 private:
+	struct CharacterInfo {
+		CharacterInfo( std::string location, std::string description ): location( location ), description( description ) {}
+		
+		std::string location;
+		std::string description;
+	};
+	std::map< std::string, CharacterInfo > charInfList;
+	std::string selectedCharName;
+	
+	
 	Gtk::Grid layoutGrid;
 	Gtk::ScrolledWindow characterList;
+	Gtk::Grid charContainer;
+	Gtk::RadioButton::Group charRBGroup;
 	
 	Gtk::Box infoBox;
 	Gtk::Label nameLabel;
@@ -26,6 +39,12 @@ private:
 	void setupComponents();
 	void setupLayout();
 	void setupCharList();
+	void setupButtons();
+	
+	void addCharacter( std::string data );
+	void addCharacterButton( std::string charName, std::string charLevel );
+	void addAddCharButton();
+	void selectCharacter( std::string name );
 	
 };
 

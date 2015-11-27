@@ -10,3 +10,8 @@ GtkButton:hover {
 	background: @color_main_green;
 	color: rgba( 0, 0, 0, 0.8 );
 }
+
+GtkButton:insensitive {
+	color: #00CC00;
+	opacity: 0.3;
+}

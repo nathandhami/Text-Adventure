@@ -8,6 +8,7 @@
 #include "CarrierPigeon.hpp"
 #include <mod/Editor.hpp>
 #include <cmd/Commander.hpp>
+#include <char/CharacterManager.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -181,7 +182,7 @@ void Session::login( const std::string& credentials ) {
 		return;
 	}
 	DatabaseTool::setCharOnline( this->currentUser.getUserId(), this->identifierString );
-	this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
+	this->writeToClient( GameCode::CORRECT, CharacterManager::getCharacterList( this->currentUser.getUserId() ) );
 }
 
 void Session::logout( const std::string& credentials ) {

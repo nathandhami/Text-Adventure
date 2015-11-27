@@ -5,6 +5,7 @@
 class User {
 public:
 	friend class Authenticator;
+//	friend class CharacterManager;
 	
 	User() {}
 	

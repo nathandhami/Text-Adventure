@@ -19,6 +19,6 @@ target_link_libraries( GameFrame ${GTKMM_LIBRARIES} Game )
 #target_link_libraries ( UIReader ConsoleReader )
 
 add_library( MainWindow MainWindow.cpp )
-target_link_libraries ( MainWindow LoginFrame RegisterFrame CharacterFrame GameFrame )
+target_link_libraries ( MainWindow LoginFrame RegisterFrame CharacterFrame GameFrame Game )
 
 #target_link_libraries ( LoginWindow GameWindow )
