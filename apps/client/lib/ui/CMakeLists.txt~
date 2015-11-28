@@ -12,10 +12,13 @@ add_library( GameFrame GameFrame.cpp )
 target_link_libraries( GameFrame ${GTKMM_LIBRARIES} Game )
 #target_link_libraries ( UIReader ConsoleReader )
 
+add_library( SubFrame SubFrame.cpp )
+target_link_libraries( SubFrame ${GTKMM_LIBRARIES} Game )
+
 add_library( MainWindow MainWindow.cpp )
 target_link_libraries ( MainWindow LoginFrame GameFrame )
 
 add_library( SubWindow SubWindow.cpp )
-target_link_libraries ( SubWindow LoginFrame GameFrame )
+target_link_libraries ( SubWindow SubFrame GameFrame )
 
 #target_link_libraries ( LoginWindow GameWindow )

@@ -73,7 +73,9 @@ void GameFrame::prepareComponents() {
 	//this->gameFrameNotebook.append_page(statsTabLabel, "Stats");
 	//this->gameFrameNotebook.append_page(inventoryTabLabel, "Inventory");
 	//this->gameFrameNotebook.append_page(chatTabLabel, "Chat");
-	this->add( gameFrameNotebook);
+	//this->add( gameFrameNotebook);
+
+	this->layoutGrid.attach( this->gameFrameNotebook, 0, 0, 1, 1);
 
 //	this->show_all_children();
 }
@@ -96,7 +98,7 @@ void GameFrame::readResponses_thread() {
 }
 
 void GameFrame::startSubFrame(SubWindow *subWindow) {
-	subWindow->show();
+	//subWindow->show();
 }
 
 void GameFrame::closeSubWindow() {
