@@ -23,14 +23,16 @@ private:
 	Gtk::ScrolledWindow scrolledWindow;
 	Gtk::Box responseBox;
 	Gtk::Entry commandEntry;
-	Gtk::Notebook gameFrameNotebook;
+	Gtk::Button commandEntryButton;
 	Gtk::Label outputTabLabel;
 	
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
 
 	Gtk::Notebook subFrameNotebook;
-	Gtk::Label inventoryTabLabel, chatTabLabel, statsTabLabel;
+	Gtk::Notebook sideNotebook;
+	Gtk::Label worldTabLabel, combatTabLabel, chatTabLabel;
+	Gtk::Label statsTabLabel, inventoryTabLabel;
 	
 
 	void prepareComponents();

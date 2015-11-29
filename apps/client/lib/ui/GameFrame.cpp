@@ -16,7 +16,7 @@
 #define BORDER_WIDTH_DEFAULT 1
 // ------------------- PUBLIC -------------------
 
-GameFrame::GameFrame() {
+GameFrame::GameFrame(){
 	
 
 	this->prepareComponents();
@@ -29,13 +29,12 @@ GameFrame::GameFrame() {
 
 void GameFrame::prepareComponents() {
 
-	this->subFrameNotebook.override_background_color( Gdk::RGBA("white"));
+	/*this->subFrameNotebook.override_background_color( Gdk::RGBA("white"));
 	this->subFrameNotebook.set_size_request( 220, 380 );
 	this->subFrameNotebook.set_border_width( 5 );
 
-	this->subFrameNotebook.append_page(statsTabLabel, "Stats");
 	this->subFrameNotebook.append_page(inventoryTabLabel, "Inventory");
-	this->subFrameNotebook.append_page(chatTabLabel, "Chat");
+	this->subFrameNotebook.append_page(chatTabLabel, "Chat");*/
 
 	this->layoutGrid.set_row_spacing( 10 );	
 	
@@ -58,22 +57,28 @@ void GameFrame::prepareComponents() {
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
 	
 	this->updateDispatcher.connect( sigc::mem_fun( *this, &GameFrame::updateResponses ) );
+
+	this->subFrameNotebook.append_page(this->scrolledWindow, "All");
+	this->subFrameNotebook.append_page(this->worldTabLabel, "World");
+	this->subFrameNotebook.append_page(this->combatTabLabel, "Combat");
+	this->subFrameNotebook.append_page(this->chatTabLabel, "Chat");
+
+	this->sideNotebook.set_size_request( 220, 120 );
+	//this->sideNotebook.set_border_width( 5 );
 	
-	this->layoutGrid.add( this->scrolledWindow );
-//	this->layoutGrid.add( this->commandEntry );
-	this->layoutGrid.attach_next_to( this->commandEntry, this->scrolledWindow, Gtk::POS_BOTTOM, 1, 1);
-	this->layoutGrid.attach( this->subFrameNotebook, 1, 0, 1, 1);
+	this->sideNotebook.append_page(this->statsTabLabel, "Stats");
+	this->sideNotebook.append_page(this->inventoryTabLabel, "Chat");
+	
+	//this->layoutGrid.add( this->subFrameNotebook );
+	//this->layoutGrid.add( this->sideNotebook );
+	//this->layoutGrid.add( this->commandEntry );
+	//this->layoutGrid.add( this->commandEntry );
+	//this->layoutGrid.attach_next_to( this->subFrameNotebook, this->commandEntry, Gtk::POS_BOTTOM, 1, 1);
+	this->layoutGrid.attach( this->subFrameNotebook, 0, 0, 1, 1 );
+	this->layoutGrid.attach( this->commandEntry, 0, 1, 1, 1 );
+	this->layoutGrid.attach( this->sideNotebook, 1, 0, 1, 1 );
 
-//	this->add( layoutGrid );
-
-// ------------- NOTEBOOK ---------------------
-
-	this->gameFrameNotebook.append_page(layoutGrid, "Main");
-	this->gameFrameNotebook.append_page(outputTabLabel, "Commands");
-	//this->gameFrameNotebook.append_page(statsTabLabel, "Stats");
-	//this->gameFrameNotebook.append_page(inventoryTabLabel, "Inventory");
-	//this->gameFrameNotebook.append_page(chatTabLabel, "Chat");
-	this->add( gameFrameNotebook);
+	this->add( layoutGrid );
 
 //	this->show_all_children();
 }
