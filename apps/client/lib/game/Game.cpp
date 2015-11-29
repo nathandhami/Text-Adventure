@@ -75,11 +75,13 @@ void Game::logout() {
 
 
 // BLOCKING
-// TO-DO: make blocking
-/*void Game::selectCharacter( std::string charNameOrNumber ) {
-	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charNameOrNumber );
-	std::cout << "- Tried to select a char." << std::endl;
-}*/
+NetMessage Game::selectCharacter( std::string charName ) {
+	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charName );
+	std::cout << "[Game] Tried to select a char." << std::endl;
+	
+	while ( Game::transceiver->queueEmpty() ) {}
+	return Game::transceiver->readAndPopQueue();
+}
 
 
 void Game::enact( std::string userInputString ) {

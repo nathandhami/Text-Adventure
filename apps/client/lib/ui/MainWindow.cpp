@@ -1,6 +1,6 @@
 #include <ui/MainWindow.hpp>
 #include <Locale.hpp>
-
+#include "Game.hpp"
 
 #define WIDTH_DEFAULT 	900
 #define HEIGHT_DEFAULT	500
@@ -17,14 +17,13 @@ MainWindow::MainWindow() {
 	this->set_default_size( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 	this->set_size_request( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 	this->set_resizable( false );
-
-	this->set_name( "main-window" );
 	
 //	this->set_border_width( BORDER_WIDTH_DEFAULT );
 
 	this->setupStyleSheet();
-	this->setupComponents();
-
+//	this->setupComponents();
+	this->openLoginFrame();
+	
 //	this->show_all_children();
 }
 
@@ -32,14 +31,24 @@ MainWindow::MainWindow() {
 
 
 void MainWindow::openLoginFrame() {
+	this->remove();
 	this->add( this->loginFrame );
 	this->show_all_children();
+	this->set_name( "window-login" );
 }
 
 void MainWindow::openRegisterFrame() {
 	this->remove();
 	this->add( this->registerFrame );
 	this->registerFrame.show();
+}
+
+void MainWindow::openCharacterFrame( std::string charList ) {
+	this->remove();
+	this->add( this->characterFrame );
+	this->characterFrame.updateCharacterList( charList );
+	this->characterFrame.show();
+	this->set_name( "window-character" );
 }
 
 
@@ -61,8 +70,6 @@ void MainWindow::setupComponents() {
 //	this->loginFrame.signal_hide().connect( sigc::mem_fun( *this, &MainWindow::switchToGameFrame ) );
 	
 	
-//	this->add( this->loginFrame );
-//	this->loginFrame.show();
 	this->add( this->loginFrame );
 	this->loginFrame.show();
 	

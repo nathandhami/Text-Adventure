@@ -11,6 +11,7 @@ CREATE TABLE characters (
   name varchar(30) unique,
   userID integer,
   location integer,
+  description text,
   FOREIGN KEY(userID) REFERENCES users(userID),
   FOREIGN KEY(location) REFERENCES zones(zoneID)
 );

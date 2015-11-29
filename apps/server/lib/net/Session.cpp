@@ -8,6 +8,7 @@
 #include "CarrierPigeon.hpp"
 #include <mod/Editor.hpp>
 #include <cmd/Commander.hpp>
+#include <char/CharacterManager.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -176,12 +177,8 @@ void Session::login( const std::string& credentials ) {
 	}
 	
 	std::cout << "Login success." << std::endl;
-	if ( DatabaseTool::isCharOnline( this->currentUser.getUserId() ) ) {
-		this->writeToClient( GameCode::INVALID, "Already logged in." );
-		return;
-	}
-	DatabaseTool::setCharOnline( this->currentUser.getUserId(), this->identifierString );
-	this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
+	
+	this->writeToClient( GameCode::CORRECT, CharacterManager::getCharacterList( this->currentUser.getUserId() ) );
 }
 
 void Session::logout( const std::string& credentials ) {
@@ -194,6 +191,17 @@ void Session::logout( const std::string& credentials ) {
 	}
 	
 	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
+}
+
+
+void Session::selectCharacter( const std::string& charName ) {
+	LOG( "Char-select happened." );
+	
+	if ( CharacterManager::selectCharacter( this->currentUser, charName, this->identifierString ) ) {
+		this->writeToClient( GameCode::OK, "Character " + charName + " selected." );
+	} else {
+		this->writeToClient( GameCode::ERROR, "Could not select " + charName + ", internal server error occurred." );
+	}
 }
 
 
