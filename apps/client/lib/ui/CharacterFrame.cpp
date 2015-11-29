@@ -124,6 +124,7 @@ void CharacterFrame::setupButtons() {
 	
 	Gtk::Button* p_selectButton = Gtk::manage( new Gtk::Button( "Enter World" ) );
 	p_selectButton->set_size_request( BTN_WIDTH, -1 );
+	p_selectButton->signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::selectButton_click ) );
 	
 	p_logOutButtonContainer->put( *p_logoutButton, 0, 0 );
 	p_selectButtonContainer->put( *p_deleteButton, 0, 0 );
@@ -207,6 +208,20 @@ void CharacterFrame::logoutButton_click() {
 	MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
 	if ( p_parentWindow ) {
 		p_parentWindow->openLoginFrame();
+	}
+}
+
+
+void CharacterFrame::selectButton_click() {
+	NetMessage msg = Game::selectCharacter( this->selectedCharName );
+	
+	if ( msg.header == GameCode::OK ) {
+		MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+		if ( p_parentWindow ) {
+			p_parentWindow->openGameFrame();
+		}
+	} else {
+		
 	}
 }
 

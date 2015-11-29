@@ -19,6 +19,7 @@ public:
 	void openLoginFrame();
 	void openRegisterFrame();
 	void openCharacterFrame( std::string charList );
+	void openGameFrame();
 
 private:
 	LoginFrame loginFrame;

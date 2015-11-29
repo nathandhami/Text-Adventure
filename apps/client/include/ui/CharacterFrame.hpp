@@ -46,6 +46,7 @@ private:
 	void selectCharacter( std::string name );
 	
 	void logoutButton_click();
+	void selectButton_click();
 };
 
 

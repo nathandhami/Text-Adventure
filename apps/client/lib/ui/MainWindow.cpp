@@ -52,6 +52,14 @@ void MainWindow::openCharacterFrame( std::string charList ) {
 }
 
 
+void MainWindow::openGameFrame() {
+	this->remove();
+	this->add( this->gameFrame );
+	this->gameFrame.startReading();
+	this->gameFrame.show();
+}
+
+
 // ------------------- PRIVATE ------------------
 
 void MainWindow::setupStyleSheet() {

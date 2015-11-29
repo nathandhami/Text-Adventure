@@ -7,15 +7,19 @@
 #include "User.hpp"
 
 
-namespace CharacterManager {
+class CharacterManager {
+
+public:	
+	static bool selectCharacter( User& user, std::string name, std::string sessionIdString );
+	static bool deselectCurrentCharacter( User& user );
+
+	static std::string getCharacterList( int userId );
+	static std::string deleteCharacter( int userId, std::string charName );
 	
-	bool selectCharacter( User& user, std::string name, std::string sessionIdString );
-	bool deselectCurrentCharacter( User& user );
+private:
+	CharacterManager() {}
 	
-	std::string getCharacterList( int userId );
-	std::string deleteCharacter( int userId, std::string charName );
-	
-}
+};
 
 
 #endif

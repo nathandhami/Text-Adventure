@@ -3,9 +3,10 @@
 
 
 class User {
+friend class Authenticator;
+friend class CharacterManager;
+
 public:
-	friend class Authenticator;
-//	friend class CharacterManager;
 	
 	User() {}
 	

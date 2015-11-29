@@ -14,5 +14,5 @@ int User::getUserId() const {
 
 int getSelectedCharacterId() {
 	
-	return 0;
+	return 0;//
 }

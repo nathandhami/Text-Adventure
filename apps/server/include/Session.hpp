@@ -83,7 +83,7 @@ private:
 		{ GameCode::REGISTER	, &Session::registerUser },
 		{ GameCode::LOGIN		, &Session::login },
 		{ GameCode::LOGOUT		, &Session::logout },
-		{ GameCode::CHAR_SELECT	, &Session::selectCharacter }
+		{ GameCode::CHAR_SELECT	, &Session::selectCharacter },
 		{ GameCode::COMMAND		, &Session::doGameCommand }
 	};
 	

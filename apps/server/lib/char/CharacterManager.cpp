@@ -27,7 +27,7 @@ std::string CharacterManager::getCharacterList( int userId ) {
 }
 
 
-bool selectCharacter( User& user, std::string name, std::string sessionIdString ) {
+bool CharacterManager::selectCharacter( User& user, std::string name, std::string sessionIdString ) {
 	int charId = DatabaseTool::getCharIDFromName( name );
 	
 	if ( !charId ) return false;
