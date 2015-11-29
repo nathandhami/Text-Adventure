@@ -33,3 +33,6 @@ void UIFrame::readResponses_thread() {
 		
 }
 
+void enterCommand_signal(){
+}
+

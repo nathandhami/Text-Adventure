@@ -1,13 +1,13 @@
-#ifndef UIFRAME_HPP
-#define UIFRAME_HPP
+#ifndef UINOTEBOOK_HPP
+#define UINOTEBOOK_HPP
 
 #include <gtkmm.h>
 #include <thread>
 
-class UIFrame: public Gtk::Frame {
+class UINotebook: public Gtk::Notebook {
 
 public:
-	UIFrame();
+	UINotebook();
 	
 private:
 

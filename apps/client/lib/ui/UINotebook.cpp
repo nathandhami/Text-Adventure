@@ -1,4 +1,4 @@
-#include <ui/UIFrame.hpp>
+#include <ui/UINotebook.hpp>
 #include <NetMessage.hpp>
 #include <GameCode.hpp>
 #include "Game.hpp"
@@ -10,7 +10,7 @@
 
 // ------------------- UI Frame parent class -------------------
 
-UIFrame::UIFrame() {
+UINotebook::UINotebook() {
 	
 
 	this->prepareComponents();
@@ -18,21 +18,21 @@ UIFrame::UIFrame() {
 	this->show_all_children();
 }
 
-void UIFrame::prepareComponents() {
+void UINotebook::prepareComponents() {
 
 }
 
 
-void UIFrame::startReading() {
+void UINotebook::startReading() {
 
 }
 
 
-void UIFrame::readResponses_thread() {
+void UINotebook::readResponses_thread() {
 
 		
 }
 
-void enterCommand_signal(){
+void UINotebook::enterCommand_signal(){
 }
 

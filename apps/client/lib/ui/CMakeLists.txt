@@ -8,8 +8,8 @@
 add_library( LoginFrame LoginFrame.cpp )
 target_link_libraries( LoginFrame ${GTKMM_LIBRARIES} Game )
 
-add_library( UIFrame UIFrame.cpp )
-target_link_libraries( UIFrame ${GTKMM_LIBRARIES} Game )
+add_library( UINotebook UINotebook.cpp )
+target_link_libraries( UINotebook ${GTKMM_LIBRARIES} Game )
 
 add_library( GameFrame GameFrame.cpp )
 target_link_libraries( GameFrame ${GTKMM_LIBRARIES} Game )
