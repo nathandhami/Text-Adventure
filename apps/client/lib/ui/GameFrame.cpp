@@ -16,9 +16,9 @@
 #define BORDER_WIDTH_DEFAULT 1
 // ------------------- PUBLIC -------------------
 
-GameFrame::GameFrame(){
-	
-
+GameFrame::GameFrame()
+: commandEntryButton("Send")
+{
 	this->prepareComponents();
 
 	this->show_all_children();
@@ -28,7 +28,6 @@ GameFrame::GameFrame(){
 // ------------------- PRIVATE ------------------
 
 void GameFrame::prepareComponents() {
-
 	/*this->subFrameNotebook.override_background_color( Gdk::RGBA("white"));
 	this->subFrameNotebook.set_size_request( 220, 380 );
 	this->subFrameNotebook.set_border_width( 5 );
@@ -55,6 +54,7 @@ void GameFrame::prepareComponents() {
 //	this->scrolledWindow.set_valign( Gtk::Align::ALIGN_START );
 	this->commandEntry.set_size_request( 680, 40 );
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
+	this->commandEntryButton.signal_clicked().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
 	
 	this->updateDispatcher.connect( sigc::mem_fun( *this, &GameFrame::updateResponses ) );
 
@@ -76,7 +76,8 @@ void GameFrame::prepareComponents() {
 	//this->layoutGrid.attach_next_to( this->subFrameNotebook, this->commandEntry, Gtk::POS_BOTTOM, 1, 1);
 	this->layoutGrid.attach( this->subFrameNotebook, 0, 0, 1, 1 );
 	this->layoutGrid.attach( this->commandEntry, 0, 1, 1, 1 );
-	this->layoutGrid.attach( this->sideNotebook, 1, 0, 1, 1 );
+	this->layoutGrid.attach( this->sideNotebook, 1, 0, 1, 1 );	
+	this->layoutGrid.attach( this->commandEntryButton, 1, 1, 1, 1 );
 
 	this->add( layoutGrid );
 
