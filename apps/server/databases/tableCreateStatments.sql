@@ -56,7 +56,11 @@ CREATE TABLE playerAttributes (
   description text,
   level integer,
   experience integer,
+  requiredExp integer,
   health integer,
+  maxHealth integer,
+  mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -75,7 +79,11 @@ CREATE TABLE npcAttributes (
   npcInstanceID integer primary key,
   level integer,
   experience integer,
+  requiredExp integer,
   health integer,
+  maxHealth integer,
+  mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -156,6 +164,69 @@ CREATE TABLE instanceOfItem (
 	FOREIGN KEY(itemID) REFERENCES items(itemID),
 	FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
   FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
+);
+
+CREATE TABLE spells (
+  spellName text primary key,
+  minLevel integer,
+  cost integer,
+  duration integer,
+  archetypeID integer,
+  modifiers text,
+  effect text,
+  hitChar text,
+  hitRoom text,
+  hitVict text
+);
+
+CREATE TABLE knownSpells (
+  knownID integer primary key,
+  charID integer,
+  spellName text,
+  resetTime integer,
+  FOREIGN KEY(charID) REFERENCES characters(charID),
+  FOREIGN KEY(spellName) REFERENCES defensiveSpell(spellName)
+);
+
+CREATE TABLE spellTeacher (
+  teacherID integer primary key,
+  npcInstanceID integer,
+  FOREIGN kEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID)
+);
+
+CREATE TABLE teachableSpells (
+  teachableID integer primary key,
+  teacherID integer,
+  spellName text,
+  FOREIGN KEY(teacherID) REFERENCES spellTeacher(teacherID),
+  FOREIGN KEY(spellName) REFERENCES spells(spellName)
+);
+
+CREATE TABLE commands (
+  commandID integer primary key,
+  command text,
+  header integer
+);
+
+CREATE TABLE requiredExp (
+  level integer primary key,
+  requiredExp integer
+);
+
+CREATE TABLE statModifiers (
+  modifierID integer primary key,
+  charID integer,
+  equippedItemID integer,
+  spellName text,
+  healthModifier integer,
+  manaModifier integer,
+  strengthModifer integer,
+  intelligenceModifier integer,
+  dexterityModifier integer,
+  charismaModifier integer,
+  FOREIGN kEY(charID) REFERENCES characters(charID),
+  FOREIGN kEY(equippedItemID) REFERENCES player_inventory(ownershipID),
+  FOREIGN KEY(spellName) REFERENCES spells(spellName)
 );
 
 
