@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <thread>
 
-#define RETREAT_NOTIFICATION "Your opponent turns to flee.\n"
+#define RETREAT_NOTIFICATION "Your opponent ran away.\n"
 #define VICTORY_NOTIFICATION "You defeated your opponent!\n"
 #define DEFEAT_NOTIFICATION "You were defeated!\n"
 
@@ -42,6 +42,7 @@ class CombatInstance {
 
 	deque<deque<int>> playersActionQueue;
 
+	void getTargetFromType(int characterType);
 
 	void removePlayerFromCombat(int playerID, int playerType, string message);
 	void removePlayersFromCombat(string message);
@@ -55,7 +56,7 @@ class CombatInstance {
 	void playerWin(int playerID);
 	void playerLose(int playerID);
 
-	void executePlayerAttack(int player, int characterType);
+	void executePlayerAttack(int attacker, int characterType);
 	
 	void executePlayerRetreat(int player);
 

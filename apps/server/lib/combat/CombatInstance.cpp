@@ -7,6 +7,16 @@
 
 // --------Private functions--------
 
+Target getTargetFromType(int characterType) {
+	if (characterType == PLAYER_ONLY) {
+		return Target::character;
+	}
+	else if (characterType == NPC_ONLY) {
+		return Target::npc;
+	}
+	return NULL;
+}
+
 void CombatInstance::removePlayerFromCombat(int playerID, int playerType, string message = "") {
 	if (playerType == PLAYER_ONLY) {
 		DatabaseTool::setCombatFlag(playerID, false, Target::character);
@@ -80,12 +90,14 @@ void CombatInstance::notifyAttack(int player, int characterType, int damageDealt
 }
 
 void CombatInstance::playerWin(int playerID) {
+	keepFighting = false;
 	if ((playerID != playerTwoID) || (enemyType != NPC_ONLY)) {
 		Server::sendMessageToCharacter(playerID, GameCode::COMBAT, VICTORY_NOTIFICATION);
 	}
 }
 
 void CombatInstance::playerLose(int playerID) {
+	keepFighting = false;
 	if ((playerID == playerTwoID) && (enemyType == NPC_ONLY)) {
 		DatabaseTool::murderNpc(playerTwoID);
 	}
@@ -94,12 +106,19 @@ void CombatInstance::playerLose(int playerID) {
 	}
 }
 
-// Waiting on equipment and attributes data
-// In the meantime no actual death (unless NPC) or saved health for players
-void CombatInstance::executePlayerAttack(int player, int characterType) {
+// Waiting on equipment
+void CombatInstance::executePlayerAttack(int attacker, int characterType) {
+	Target attackerTarget = getTargetFromType(characterType);
+	Attributes attackerAttributes = DatabaseTool::getAttributes(attacker, attackerTarget);
+	int damageDealt = -attackerAttributes.strength * 2;    // Until we have weapons and armour we'll just do this for damage
+
+	Target defenderTarget;
+	int defender = 0;
 	
-	// Temporary, rigged just to show messaging works.
-	if (player == PLAYER_ONE) {
+	if (attacker == PLAYER_ONE) {
+		defenderTarget = getTargetFromType(enemyType);
+		defender = playerTwoID;
+		/*
 		playerTwoHealthRemaining -= damageDealt;
 		notifyAttack(player, characterType, damageDealt, playerTwoHealthRemaining);
 		if (playerTwoHealthRemaining <= 0) {
@@ -107,8 +126,12 @@ void CombatInstance::executePlayerAttack(int player, int characterType) {
 			playerWin(playerOneID);
 			playerLose(playerTwoID);
 		}
+		*/
 	}
 	else {
+		defenderTarget = getTargetFromType(PLAYER_ONLY);
+		defender = playerOneID;
+		/*
 		playerOneHealthRemaining -= damageDealt;
 		notifyAttack(player, characterType, damageDealt, playerOneHealthRemaining);
 		if (playerOneHealthRemaining <= 0) {
@@ -116,6 +139,20 @@ void CombatInstance::executePlayerAttack(int player, int characterType) {
 			playerWin(playerTwoID);
 			playerLose(playerOneID);
 		}
+		*/
+	}
+
+	Attributes defenderAttributesModifier = Attributes();
+	defenderAttributesModifier.id = defender;
+	defenderAttributesModifier.health = damageDealt;  
+	DatabaseTool::updateAttributes(defenderAttributesModifier, defenderTarget);
+
+	int healthRemaining = DatabaseTool::getAttributes(defender, defenderTarget).health;
+	notifyAttack(attacker, characterType, damageDealt, healthRemaining);
+
+	if (healthRemaining <= 0) {
+		playerWin(attacker);
+		playerLose(defender);
 	}
 
 	/*
@@ -147,10 +184,16 @@ void CombatInstance::executePlayerAttack(int player, int characterType) {
 void CombatInstance::executePlayerRetreat(int player) {
 	keepFighting = false;
 	if (player == PLAYER_ONE && enemyType == PLAYER_ONLY) {
-		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+		if (DatabaseTool::getAttributes(player, getTargetFromType(PLAYER_ONLY)).health > 0) {
+			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You run away.");
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+		}
 	}
 	else if (player == PLAYER_TWO) {
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+		if (DatabaseTool::getAttributes(player, getTargetFromType(enemyType)).health > 0) {
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You run away.");
+			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+		}
 	}
 }
 
