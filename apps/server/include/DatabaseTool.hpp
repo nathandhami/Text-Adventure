@@ -194,7 +194,10 @@ class ResetCommand{
 
 class Spell{
 	public:
-		Spell() {};
+		Spell() {
+			this->spellName = "";
+			this-> archetypeID = 0;
+		};
 		Spell(string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
 			this->spellName = spellName;
 			this->minLevel = minLevel;
@@ -218,6 +221,8 @@ class Spell{
 
 class DatabaseTool{
 	public:
+
+		//user queries
 		static bool addUser(string userName, string password);
 
 		static int getUserID(string userName, string password);
@@ -229,6 +234,8 @@ class DatabaseTool{
 		static string getPassword(int userID);
 
 		static vector<string> getCharactersNames(int userID);
+
+		//character queries
 
 		static int getCharIDFromName(string name);
 
