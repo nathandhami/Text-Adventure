@@ -23,11 +23,10 @@ MainWindow::MainWindow() {
 	this->setupStyleSheet();
 //	this->setupComponents();
 	this->openLoginFrame();
+//	this->openCreateFrame();
 	
 //	this->show_all_children();
 }
-
-
 
 
 void MainWindow::openLoginFrame() {
@@ -37,17 +36,36 @@ void MainWindow::openLoginFrame() {
 	this->set_name( "window-login" );
 }
 
+
 void MainWindow::openRegisterFrame() {
 	this->remove();
 	this->add( this->registerFrame );
 	this->registerFrame.show();
 }
 
+
+
+void MainWindow::openCharacterFrame() {
+	this->remove();
+	this->add( this->characterFrame );
+	this->characterFrame.show();
+	this->set_name( "window-character" );
+}
+
+
 void MainWindow::openCharacterFrame( std::string charList ) {
 	this->remove();
 	this->add( this->characterFrame );
 	this->characterFrame.updateCharacterList( charList );
 	this->characterFrame.show();
+	this->set_name( "window-character" );
+}
+
+
+void MainWindow::openCreateFrame() {
+	this->remove();
+	this->add( this->createFrame );
+	this->createFrame.show();
 	this->set_name( "window-character" );
 }
 

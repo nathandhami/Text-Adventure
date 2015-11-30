@@ -112,17 +112,30 @@ void RegisterFrame::setupButtons() {
 
 
 void RegisterFrame::registerButton_click() {
-	std::string username = this->usernameEntry.get_text();
+	std::string userName = this->usernameEntry.get_text();
 	std::string password = this->passwordEntry.get_text();
 	std::string passwordRep = this->passwordRepEntry.get_text();
 	
-	NetMessage msg = Game::registerUser( username, password, passwordRep );
+	NetMessage regResponse = Game::registerUser( userName, password, passwordRep );
 	
-	if ( msg.header == GameCode::OK ) {
+	if ( regResponse.header == GameCode::OK ) {
 		//TO-DO: go to character creation screen
-//		this->hide();
+		NetMessage loginResponse = Game::login( userName, password );
+		if ( loginResponse.header == GameCode::CORRECT ) {
+			MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+			if ( p_parentWindow ) {
+				std::cout << "[UI] Logged: " << loginResponse.body << std::endl;
+				p_parentWindow->openCharacterFrame( loginResponse.body );
+				std::cout << "[UI] Logged: " << loginResponse.header << std::endl;
+			}
+		} else {
+			Gtk::MessageDialog dlg( loginResponse.body, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+			dlg.set_decorated( false );
+			dlg.set_title( "Unable to Log In" );
+			dlg.run();
+		}
 	} else {
-		Gtk::MessageDialog dlg( msg.body, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		Gtk::MessageDialog dlg( regResponse.body, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
 		dlg.set_decorated( false );
 		dlg.set_title( "Registration Failed" );
 		dlg.run();

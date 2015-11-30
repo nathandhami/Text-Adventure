@@ -35,10 +35,14 @@ private:
 	Gtk::Label locationLabel;
 	Gtk::Label descriptionLabel;
 	
+	Gtk::Button selectButton;
+	Gtk::Button deleteButton;
+	
 	void setupComponents();
 	void setupLayout();
 	void setupCharList();
 	void setupButtons();
+	void setupLabels();
 	
 	void addCharacter( std::string data );
 	void addCharacterButton( std::string charName, std::string charLevel );
@@ -47,6 +51,7 @@ private:
 	
 	void logoutButton_click();
 	void selectButton_click();
+	void addCharButton_click();
 };
 
 

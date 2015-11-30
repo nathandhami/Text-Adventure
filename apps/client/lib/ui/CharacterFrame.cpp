@@ -21,6 +21,10 @@ CharacterFrame::CharacterFrame() {
 
 void CharacterFrame::updateCharacterList( std::string list ) {
 	// remove all chars
+	this->infoBox.set_opacity( 0 );
+	this->deleteButton.set_sensitive( false );
+	this->selectButton.set_sensitive( false );
+	
 	this->charInfList.clear();
 	std::vector< Gtk::Widget* > widgets = this->charContainer.get_children();
 	for (  Gtk::Widget* widget: widgets ) {
@@ -31,10 +35,16 @@ void CharacterFrame::updateCharacterList( std::string list ) {
 	std::vector< std::string > listTokens;
 	boost::split( listTokens, list, boost::is_any_of( "~" ) );
 	//TO-DO: replace with regex match for multi-char delimeter
-	for ( std::string& character: listTokens ) {
-		this->addCharacter( character );
+	if ( !listTokens.empty() && !listTokens[ 0 ].empty() ) {
+		for ( std::string& character: listTokens ) {
+			this->addCharacter( character );
+		}
+		this->selectCharacter( this->charInfList.begin()->first );
+		this->infoBox.set_opacity( 1 );
+		this->deleteButton.set_sensitive( true );
+		this->selectButton.set_sensitive( true );
 	}
-	this->selectCharacter( this->charInfList.begin()->first );
+	
 	this->addAddCharButton();
 	this->show_all_children();
 }
@@ -46,35 +56,8 @@ void CharacterFrame::setupComponents() {
 	this->setupLayout();
 	this->setupCharList();
 	this->setupButtons();
-	
-	
-	
-	this->infoBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
-	
-	this->nameLabel.set_size_request( 580, 70 );
-	this->nameLabel.set_text( "Some name" );
-	this->nameLabel.set_alignment( 0.0 );
-	this->nameLabel.set_name( "label-character-name" );
-//	this->nameLabel.set_margin_bottom( 10 );
-	this->infoBox.pack_start( this->nameLabel );
-	
-	this->locationLabel.set_size_request( 580, -1 );
-	this->locationLabel.set_text( "Currently in: dafuq" );
-	this->locationLabel.set_alignment( 0.0 );
-//	this->locationLabel.set_margin_bottom( 10 );
-	this->locationLabel.set_name( "label-character-location" );
-	this->infoBox.pack_start( this->locationLabel );
-	
-	this->descriptionLabel.set_size_request( 580, 300 );
-	this->descriptionLabel.set_text( "What am i doing with my life?" );
-	this->descriptionLabel.set_alignment( 0.0, 0.0 );
-	this->descriptionLabel.set_name( "label-character-desc" );
-	this->infoBox.pack_start( this->descriptionLabel );
+	this->setupLabels();
 
-	this->infoBox.set_name( "box-info" );
-	this->layoutGrid.attach( this->infoBox, 0, 0, 1, 1 );
-	
-	this->layoutGrid.attach( this->characterList, 1, 0, 1, 1 );
 	this->add( layoutGrid );
 }
 
@@ -101,7 +84,7 @@ void CharacterFrame::setupCharList() {
 	this->characterList.set_size_request( 290, 440 );
 	this->charContainer.set_orientation( Gtk::ORIENTATION_VERTICAL );
 	this->characterList.add ( this->charContainer );
-//	this->characterList.set_halign( Gtk::Align::ALIGN_CENTER );
+	this->layoutGrid.attach( this->characterList, 1, 0, 1, 1 );
 }
 
 
@@ -118,24 +101,52 @@ void CharacterFrame::setupButtons() {
 	p_logoutButton->set_size_request( BTN_WIDTH, -1 );
 	p_logoutButton->signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::logoutButton_click ) );
 	
-	Gtk::Button* p_deleteButton = Gtk::manage( new Gtk::Button( "Delete" ) );
-	p_deleteButton->set_size_request( BTN_WIDTH, -1 );
-	p_deleteButton->set_sensitive( false );
+	this->deleteButton.set_label( "Delete" );
+	this->deleteButton.set_size_request( BTN_WIDTH, -1 );
 	
-	Gtk::Button* p_selectButton = Gtk::manage( new Gtk::Button( "Enter World" ) );
-	p_selectButton->set_size_request( BTN_WIDTH, -1 );
-	p_selectButton->signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::selectButton_click ) );
+	
+	this->selectButton.set_label( "Enter World" );
+	this->selectButton.set_size_request( BTN_WIDTH, -1 );
+	this->selectButton.signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::selectButton_click ) );
 	
 	p_logOutButtonContainer->put( *p_logoutButton, 0, 0 );
-	p_selectButtonContainer->put( *p_deleteButton, 0, 0 );
-	p_selectButtonContainer->put( *p_selectButton, BTN_WIDTH + BTN_PADDING, 0 );
+	p_selectButtonContainer->put( this->deleteButton, 0, 0 );
+	p_selectButtonContainer->put( this->selectButton, BTN_WIDTH + BTN_PADDING, 0 );
 	this->layoutGrid.attach( *p_logOutButtonContainer, 0, 1, 1, 1 );
 	this->layoutGrid.attach( *p_selectButtonContainer, 1, 1, 1, 1 );
 }
 
 
+void CharacterFrame::setupLabels() {
+	this->infoBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
+
+	this->nameLabel.set_size_request( 580, 70 );
+	this->nameLabel.set_text( "Some name" );
+	this->nameLabel.set_alignment( 0.0 );
+	this->nameLabel.set_name( "label-character-name" );
+	this->infoBox.pack_start( this->nameLabel );
+
+	this->locationLabel.set_size_request( 580, -1 );
+	this->locationLabel.set_text( "Currently in: dafuq" );
+	this->locationLabel.set_alignment( 0.0 );
+	this->locationLabel.set_name( "label-character-location" );
+	this->infoBox.pack_start( this->locationLabel );
+
+	this->descriptionLabel.set_size_request( 580, 300 );
+	this->descriptionLabel.set_text( "What am i doing with my life?" );
+	this->descriptionLabel.set_alignment( 0.0, 0.0 );
+	this->descriptionLabel.set_name( "label-character-desc" );
+	this->infoBox.pack_start( this->descriptionLabel );
+
+	this->infoBox.set_name( "box-info" );
+	this->layoutGrid.attach( this->infoBox, 0, 0, 1, 1 );
+}
+
+
 void CharacterFrame::addCharacter( std::string data ) {
 	const int NUM_ARGS_EXP = 4;
+	
+	if ( data.empty() ) return;
 	
 	std::vector< std::string > dataTokens;
 	boost::split( dataTokens, data, boost::is_any_of( "|" ) );
@@ -188,6 +199,7 @@ void CharacterFrame::addCharacterButton( std::string charName, std::string charL
 
 
 void CharacterFrame::selectCharacter( std::string name ) {
+	if ( name == "" ) return;
 	this->nameLabel.set_text( name );
 	this->locationLabel.set_text( "Location: " + this->charInfList.find( name )->second.location );
 	this->descriptionLabel.set_text( this->charInfList.find( name )->second.description );
@@ -197,8 +209,9 @@ void CharacterFrame::selectCharacter( std::string name ) {
 
 void CharacterFrame::addAddCharButton() {
 	Gtk::Button* p_addCharButton = Gtk::manage( new Gtk::Button() );
-	p_addCharButton->set_size_request( 277, 60 );
+	p_addCharButton->set_size_request( 290, 60 );
 	p_addCharButton->set_name( "button-add-char" );
+	p_addCharButton->signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::addCharButton_click ) );
 	this->charContainer.add( *p_addCharButton );
 }
 
@@ -225,6 +238,12 @@ void CharacterFrame::selectButton_click() {
 	}
 }
 
+void CharacterFrame::addCharButton_click() {
+	MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+	if ( p_parentWindow ) {
+		p_parentWindow->openCreateFrame();
+	}
+}
 
 
 

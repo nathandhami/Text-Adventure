@@ -147,7 +147,7 @@ string DatabaseTool::getPassword(int userID) {
 
 }
 
-bool DatabaseTool::addCharacter(string name, int userID, string description){
+/*bool DatabaseTool::addCharacter(string name, int userID, string description){
 	try {
 		databaseMutex.lock();
 		database db(DB_LOCATION);
@@ -171,6 +171,35 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		}
 
 		databaseMutex.unlock();
+		return false;
+	}
+}*/
+
+bool DatabaseTool::addCharacter(string name, int userID, int locationID, string description){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+		
+		db	<< FOREIGN_KEY_ON;
+		db 	<< "INSERT INTO characters (name, userID, location, description) VALUES (?, ?, ?, ?);"
+			<< name
+			<< userID
+			<< locationID
+			<< description;
+		
+		int charID = db.last_insert_rowid();
+		
+		db	<< "INSERT INTO playerAttributes VALUES (?, 'stuff', 1, 0, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+			<< charID;
+		
+		databaseMutex.unlock();
+		return true;
+	} catch ( sqlite_exception e ) {
+		databaseMutex.unlock();
+		
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
 		return false;
 	}
 }

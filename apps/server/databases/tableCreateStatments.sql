@@ -60,6 +60,7 @@ CREATE TABLE playerAttributes (
   health integer,
   maxHealth integer,
   mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,

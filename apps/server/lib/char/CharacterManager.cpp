@@ -39,4 +39,10 @@ bool CharacterManager::selectCharacter( User& user, std::string name, std::strin
 }
 
 
+std::string CharacterManager::createCharacter( int userId, std::string charName ) {
+	const int STARTING_ZONE_ID = 3054;
+	const std::string STARTING_BASE_STATS = "5, 5, 5, 5";
+	const std::string STARTING_EQUIPMENT = "";
+}
+
 // ------------------- PRIVATE ------------------

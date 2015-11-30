@@ -26,6 +26,7 @@ GtkFrame {
 
 @import url( "frames/_LoginFrame.css" );
 @import url( "frames/_CharacterFrame.css" );
+@import url( "frames/_CreateFrame.css" );
 @import url( "components/_Button.css" );
 @import url( "components/_Label.css" );
 @import url( "components/_Dialog.css" );
