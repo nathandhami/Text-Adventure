@@ -1,5 +1,6 @@
 #include <char/CharacterManager.hpp>
 #include "DatabaseTool.hpp"
+#include <GameCode.hpp>
 
 #include <vector>
 #include <boost/algorithm/string.hpp>
@@ -39,10 +40,23 @@ bool CharacterManager::selectCharacter( User& user, std::string name, std::strin
 }
 
 
-std::string CharacterManager::createCharacter( int userId, std::string charName ) {
+std::pair< std::string, std::string > CharacterManager::createCharacter( int userId, std::string charData ) {
 	const int STARTING_ZONE_ID = 3054;
-	const std::string STARTING_BASE_STATS = "5, 5, 5, 5";
-	const std::string STARTING_EQUIPMENT = "";
+	const int STARTING_ITEM_ID = 10003;
+	const int NUM_ARGS_EXP = 2;
+	
+	std::vector< std::string > charTokens;
+	boost::split( charTokens, charData, boost::is_any_of( "|" ) );
+	
+	if ( charTokens.size() != NUM_ARGS_EXP ) return std::make_pair( GameCode::ERROR, "Input error: missing arguments." );
+	std::string charName = charTokens[ 0 ];
+	std::string charDescription = charTokens[ 1 ];
+	
+	if ( DatabaseTool::addCharacter( charName, userId, charDescription ) ) {
+		return std::make_pair( GameCode::OK, CharacterManager::getCharacterList( userId ) );
+	} else {
+		return std::make_pair( GameCode::ERROR, "Internal server error: unable to save character." );
+	}
 }
 
 // ------------------- PRIVATE ------------------

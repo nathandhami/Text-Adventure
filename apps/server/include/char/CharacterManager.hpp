@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <utility>
 
 #include "User.hpp"
 
@@ -14,7 +15,7 @@ public:
 	static bool deselectCurrentCharacter( User& user );
 
 	static std::string getCharacterList( int userId );
-	static std::string createCharacter( int userId, std::string charName );
+	static std::pair< std::string, std::string > createCharacter( int userId, std::string charName );
 	static std::string deleteCharacter( int userId, std::string charName );
 	
 private:

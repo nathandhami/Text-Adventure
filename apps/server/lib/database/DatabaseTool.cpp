@@ -175,22 +175,32 @@ string DatabaseTool::getPassword(int userID) {
 	}
 }*/
 
-bool DatabaseTool::addCharacter(string name, int userID, int locationID, string description){
+bool DatabaseTool::addCharacter(string name, int userID, string description){
 	try {
+		const int STARTING_ITEM_ID = 10003;
+		const string STARTING_ITEM = "an old cotton robe";
+		
 		databaseMutex.lock();
 		database db(DB_LOCATION);
 		
 		db	<< FOREIGN_KEY_ON;
-		db 	<< "INSERT INTO characters (name, userID, location, description) VALUES (?, ?, ?, ?);"
+		db 	<< "INSERT INTO characters (name, userID, location, description) VALUES (?, ?, 3054, ?);"
 			<< name
 			<< userID
-			<< locationID
 			<< description;
 		
 		int charID = db.last_insert_rowid();
 		
-		db	<< "INSERT INTO playerAttributes VALUES (?, 'stuff', 1, 0, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		db	<< "INSERT INTO playerAttributes VALUES (?, 'stuff', 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 100, 100);"
 			<< charID;
+		
+		db	<< "insert into player_inventory (charID, itemID, quantity, isEquipped) values ( ?, ?, 1, 0)"
+			<< charID
+			<< STARTING_ITEM_ID;
+		
+//		std::cout << "[DB] did not pull out .\n";
+//		DatabaseTool::equipItem( charID, STARTING_ITEM );
+//		std::cout << "[DB] done db insertion if you know what i mean.\n";
 		
 		databaseMutex.unlock();
 		return true;

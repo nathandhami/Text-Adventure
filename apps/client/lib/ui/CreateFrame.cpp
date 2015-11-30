@@ -1,5 +1,8 @@
 #include <ui/CreateFrame.hpp>
 #include <ui/MainWindow.hpp>
+#include <GameCode.hpp>
+#include <NetMessage.hpp>
+#include "Game.hpp"
 
 
 #define UNIVERSAL_PADDING 10
@@ -106,5 +109,20 @@ void CreateFrame::cancelButton_click() {
 
 
 void CreateFrame::createButton_click() {
+	std::string charName = this->nameEntry.get_text();
+	std::string charDesc = this->bioEntry.get_buffer()->get_text();
 	
+	NetMessage createResponse = Game::createCharacter( charName, charDesc );
+	
+	if ( createResponse.header == GameCode::OK ) {
+		MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+		if ( p_parentWindow ) {
+			p_parentWindow->openCharacterFrame( createResponse.body );
+		}
+	} else {
+		Gtk::MessageDialog dlg( createResponse.body, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		dlg.set_decorated( false );
+		dlg.set_title( "Login Failed" );
+		dlg.run();
+	}
 }

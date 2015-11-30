@@ -194,6 +194,14 @@ void Session::logout( const std::string& credentials ) {
 }
 
 
+void Session::createCharacter( const std::string& charData ) {
+	LOG( "CHar-create happened." );
+	
+	std::pair< std::string, std::string > createResponse = CharacterManager::createCharacter( this->currentUser.getUserId(), charData );
+	this->writeToClient( createResponse.first, createResponse.second );
+}
+
+
 void Session::selectCharacter( const std::string& charName ) {
 	LOG( "Char-select happened." );
 	

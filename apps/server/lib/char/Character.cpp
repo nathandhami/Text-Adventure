@@ -142,10 +142,8 @@ std::string Character::pickUpItem( int charId, std::string keyword ) {
 		return "You grabbed the air as if something was in it, but your hand remained empty.";
 	}
 	
-	return ( "You picked up " + keyword );
-	
-	
 	Character::updateInventory( charId );
+	return ( "You picked up " + keyword );
 	//return stuff
 }
 

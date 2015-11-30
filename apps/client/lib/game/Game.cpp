@@ -75,6 +75,16 @@ void Game::logout() {
 
 
 // BLOCKING
+NetMessage Game::createCharacter( std::string charName, std::string charDesc ) {
+	std::string charData = charName + "|" + charDesc;
+	Game::transceiver->writeToServer( GameCode::CHAR_CREATE, charData );
+	
+	while ( Game::transceiver->queueEmpty() ) {}
+	return Game::transceiver->readAndPopQueue();
+}
+
+
+// BLOCKING
 NetMessage Game::selectCharacter( std::string charName ) {
 	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charName );
 	std::cout << "[Game] Tried to select a char." << std::endl;
