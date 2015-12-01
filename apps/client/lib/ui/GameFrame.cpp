@@ -115,15 +115,12 @@ void GameFrame::closeSubWindow() {
 
 std::vector<std::string> GameFrame::tokenizeResponses(std::string response) {
 	std::vector<std::string> tokens;
-	if(response.length() > 90)
-	{
+	if(response.length() > 90){
 		int i = 0;
 		std::string s;
-		for(char c:response)
-		{
+		for(char c:response){
 			s += c;
-			if(i == 90)
-			{
+			if(i == 90){
 				tokens.push_back(s);
 				s = "";
 				i = 0;
@@ -132,8 +129,7 @@ std::vector<std::string> GameFrame::tokenizeResponses(std::string response) {
 		}
 		tokens.push_back(s);				
 	}
-	else
-	{
+	else{
 		tokens.push_back(response);
 	}
 	return tokens;
@@ -144,8 +140,7 @@ void GameFrame::updateResponses() {
 	NetMessage msg = Game::getFrontResponse();
 	if ( msg.header != GameCode::NONE ) {
 		std::vector<std::string> tokens = tokenizeResponses(msg.body);
-		if(tokens.size() == 0)
-		{
+		if(tokens.size() == 0){
 			std::string response = "<span color='black'>" + msg.body + "</span>";
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 			pLabel->set_markup( response );
@@ -154,11 +149,9 @@ void GameFrame::updateResponses() {
 			this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
 			this->show_all_children();
 		}
-		else
-		{
+		else{
 			
-			for(std::string s : tokens)
-			{
+			for(std::string s : tokens){
 				std::string response = "<span color='black'>" + s + "</span>";
 				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 				pLabel->set_markup( response );
