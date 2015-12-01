@@ -247,7 +247,7 @@ class DatabaseTool{
 
 		static int getCharID(int userID);
 
-		static string getCharacterDesciption(int charID);
+		static string getCharacterDescription(int charID);
 
 		static bool isCharOnline(int charID);
 

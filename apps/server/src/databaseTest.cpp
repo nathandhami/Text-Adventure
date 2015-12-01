@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
       //npcInstanceTest();
       //DatabaseTool::setAllNotInCombat();
 
-      DatabaseTool::executeCommands();
+
       // cout << DatabaseTool::checkCommand("move") << endl;
       // cout << DatabaseTool::checkCommand("delete") << endl;
       // cout << DatabaseTool::checkCommand("@") << endl;
@@ -127,6 +127,8 @@ int main(int argc, char* argv[])
       // Spell spell = DatabaseTool::getSpell("flamestrike");
       // cout << spell.spellName << endl;
       // cout << spell.effect << endl;
+
+      cout << DatabaseTool::getCharacterDescription(1) << endl;
 
    }
    catch(runtime_error e){

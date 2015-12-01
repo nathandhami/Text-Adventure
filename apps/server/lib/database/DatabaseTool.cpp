@@ -176,7 +176,27 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 	}
 }
 
-string DatabaseTool::getCharacterDesciption(int charID) {
+string DatabaseTool::getCharacterDescription(int charID) {
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+
+		string description;
+
+		db << "select description from characters where userID=?;"
+		<<charID
+		>>description;
+
+		databaseMutex.unlock();
+		return description;
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return "";
+	}
 
 }
 
