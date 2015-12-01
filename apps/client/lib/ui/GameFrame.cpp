@@ -10,6 +10,10 @@
 #include <Locale.hpp>
 #include <ui/SubWindow.hpp>
 
+#include <string>
+#include <sstream>
+#include <vector>
+
 #define WIDTH_DEFAULT 	900
 #define HEIGHT_DEFAULT	500
 
@@ -109,17 +113,65 @@ void GameFrame::closeSubWindow() {
 	
 }
 
+std::vector<std::string> GameFrame::tokenizeResponses(std::string response) {
+	std::vector<std::string> tokens;
+	if(response.length() > 90)
+	{
+		int i = 0;
+		std::string s;
+		for(char c:response)
+		{
+			s += c;
+			if(i == 90)
+			{
+				tokens.push_back(s);
+				s = "";
+				i = 0;
+			}
+			i++;
+		}
+		tokens.push_back(s);				
+	}
+	else
+	{
+		tokens.push_back(response);
+	}
+	return tokens;
+}
+
 void GameFrame::updateResponses() {
 //	std::cout << "It's done!" << std::endl;
 	NetMessage msg = Game::getFrontResponse();
 	if ( msg.header != GameCode::NONE ) {
-		std::string response = "<span color='black'>" + msg.body + "</span>";
-		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-		pLabel->set_markup( response );
-		pLabel->set_valign( Gtk::Align::ALIGN_START );
-		pLabel->set_halign( Gtk::Align::ALIGN_START );
-		this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		this->show_all_children();
+		std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0)
+		{
+			std::string response = "<span color='black'>" + msg.body + "</span>";
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_markup( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else
+		{
+			
+			for(std::string s : tokens)
+			{
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_markup( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+			
+			
+			
+		}
+		
 	}
 	
 }
