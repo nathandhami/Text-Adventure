@@ -27,7 +27,7 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 	std::cout << "Got command." << std::endl;
 	
 	if ( commandHeader == CommandHeader::CHARACTER ) {
-		return Character::performCommand( user.getUserId(), command );
+		return Character::performCommand( user.getSelectedCharacterId(), command );
 	}
 	
 //	if ( commandHeader == CommandHeader::WORLD ) {

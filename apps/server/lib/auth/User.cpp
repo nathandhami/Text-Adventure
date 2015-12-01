@@ -12,6 +12,11 @@ int User::getUserId() const {
 }
 
 
+int User::getSelectedCharacterId() const {
+	return this->selectedCharacterId;
+}
+
+
 int getSelectedCharacterId() {
 	
 	return 0;//

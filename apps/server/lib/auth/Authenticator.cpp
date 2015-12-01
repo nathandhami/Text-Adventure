@@ -41,7 +41,7 @@ bool Authenticator::logout( User& user ) {
 
 		if ( signedOut ) {
 			std::cout << "[Auth] Logged out." << std::endl;
-			DatabaseTool::setCharOffline( user.getUserId() );
+			DatabaseTool::setCharOffline( user.getSelectedCharacterId() );
 			user.userId = NO_USER_ID;
 		} else {
 			std::cout << "[Auth] Failed to log out." << std::endl;

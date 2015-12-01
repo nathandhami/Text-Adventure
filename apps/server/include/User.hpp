@@ -12,7 +12,7 @@ public:
 	
 	bool isAuthorized() const;
 	int getUserId() const;
-	void getSelectedCharacterId() const;
+	int getSelectedCharacterId() const;
 	
 private:
 	int userId = 0;
