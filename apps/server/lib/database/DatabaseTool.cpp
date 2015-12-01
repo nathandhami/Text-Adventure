@@ -154,15 +154,15 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		database db(DB_LOCATION);
 
 		db << FOREIGN_KEY_ON;
-		db << "INSERT INTO characters (charID, name, userID, location) VALUES ( NULL, ? , ?, ?);"
+		db << "INSERT INTO characters (charID, name, userID, location, description) VALUES ( NULL, ? , ?, ?, ?);"
 		<<name
 		<<userID
-		<<INITIAL_ZONE;
+		<<INITIAL_ZONE
+		<<description;
 		int charID = db.last_insert_rowid();
 
-		db << "INSERT INTO playerAttributes VALUES (?, ?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
-		<<charID
-		<<description;
+		db << "INSERT INTO playerAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		<<charID;
 
 		databaseMutex.unlock();
 		return true;
@@ -174,6 +174,10 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		databaseMutex.unlock();
 		return false;
 	}
+}
+
+string DatabaseTool::getCharacterDesciption(int charID) {
+
 }
 
 vector<string> DatabaseTool::getCharactersNames(int userID){
@@ -1631,7 +1635,7 @@ string DatabaseTool::findPlayerDescription(int lookerID, int zoneID, string name
 		database db(DB_LOCATION);
 
 		string description;
-		db << "select description from playerAttributes A, charactersOnline O, characters C where C.name == ? and C.charID == O.charID  and A.charID = C.charID and C.location = ?;"
+		db << "select description from charactersOnline O, characters C where C.name == ? and C.charID == O.charID and C.location = ?;"
 		<<name
 		<<zoneID
 		>>description;
@@ -1710,13 +1714,12 @@ void DatabaseTool::executeCommands() {
 					db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 					<<npcInstanceID;
 
-				} //else  
-				// if(action == "object") {
-				// 	db << "insert into instanceOfItem values (NULL, ?, ?,NULL)"
-				// 	<<id
-				// 	<<room;
+				} else if(action == "object") {
+					db << "insert into instanceOfItem values (NULL, ?, ?,NULL)"
+					<<id
+					<<room;
 
-				// }
+				}
 			} catch (sqlite_exception e) {
 
 			}
