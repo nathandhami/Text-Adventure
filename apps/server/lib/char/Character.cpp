@@ -33,9 +33,9 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 }
 
 
-void Character::updateStats( int charId ) {
+std::string Character::getStats( int charId ) {
 	Attributes stats = DatabaseTool::getAttributes( charId, Target::character );
-	std::string formattedStats =
+	return
 		"Strength:" 	+ std::to_string( stats.strength ) + "\n" +
 		"Intelligence:" + std::to_string( stats.intelligence ) + "\n" +
 		"Dexterity:" 	+ std::to_string( stats.dexterity ) + "\n" +
@@ -44,21 +44,27 @@ void Character::updateStats( int charId ) {
 		"MP:"			+ std::to_string( stats.mana ) + "/" + "what" + "\n" +
 		"XP:"			+ std::to_string( stats.experience ) + "/" + "what" + "\n" +
 		"Level:"		+ std::to_string( stats.level );
-	
-	Server::sendMessageToCharacter( charId, GameCode::ATTRIBUTES, formattedStats );
+}
+
+
+void Character::updateStats( int charId ) {
+	Server::sendMessageToCharacter( charId, GameCode::ATTRIBUTES, Character::getStats( charId ) );
+}
+
+
+std::string Character::getInventory( int charId ) {
+	std::vector< Item > items = DatabaseTool::getItemsInInventory( charId );
+	std::vector< std::string > formattedItems;
+
+	for ( Item& item: items ) {
+		formattedItems.push_back( item.shortDesc + ";" + std::to_string( item.quantity ) + ";" + std::to_string( item.isEquipped ) );
+	}
+	return boost::algorithm::join( formattedItems, "\n" );
 }
 
 
 void Character::updateInventory( int charId ) {
-	std::vector< Item > items = DatabaseTool::getItemsInInventory( charId );
-	std::vector< std::string > formattedItems;
-	
-	for ( Item& item: items ) {
-		formattedItems.push_back( item.shortDesc + ";" + std::to_string( item.quantity ) + ";" + std::to_string( item.isEquipped ) );
-	}
-	std::string formattedInv = boost::algorithm::join( formattedItems, "\n" );
-	
-	Server::sendMessageToCharacter( charId, GameCode::INVENTORY, formattedInv );
+	Server::sendMessageToCharacter( charId, GameCode::INVENTORY, Character::getInventory( charId ) );
 }
 
 

@@ -13,7 +13,10 @@ class Character {
 public:
 	static std::pair< std::string, std::string > performCommand( int charId, Command command );
 	
+	static std::string getStats( int charId );
 	static void updateStats( int charId );
+	
+	static std::string getInventory( int charId );
 	static void updateInventory( int charId );
 	
 	

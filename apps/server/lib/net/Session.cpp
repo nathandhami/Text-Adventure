@@ -9,6 +9,7 @@
 #include <mod/Editor.hpp>
 #include <cmd/Commander.hpp>
 #include <char/CharacterManager.hpp>
+#include <char/Character.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -215,6 +216,8 @@ void Session::selectCharacter( const std::string& charName ) {
 	
 	if ( CharacterManager::selectCharacter( this->currentUser, charName, this->identifierString ) ) {
 		this->writeToClient( GameCode::OK, "Character " + charName + " selected." );
+		this->writeToClient( GameCode::ATTRIBUTES, Character::getStats( this->currentUser.getSelectedCharacterId() ) );
+		this->writeToClient( GameCode::INVENTORY, Character::getInventory( this->currentUser.getSelectedCharacterId() ) );
 	} else {
 		this->writeToClient( GameCode::ERROR, "Could not select " + charName + ", internal server error occurred." );
 	}
