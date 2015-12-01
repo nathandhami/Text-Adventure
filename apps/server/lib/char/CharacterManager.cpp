@@ -59,4 +59,13 @@ std::pair< std::string, std::string > CharacterManager::createCharacter( int use
 	}
 }
 
+
+std::pair< std::string, std::string > CharacterManager::deleteCharacter( int userId, std::string charName ) {
+	if ( DatabaseTool::removeCharacter( charName ) ) {
+		return std::make_pair( GameCode::OK, CharacterManager::getCharacterList( userId ) );
+	} else {
+		return std::make_pair( GameCode::ERROR, "Internal server error: unable to delete character." );
+	}
+}
+
 // ------------------- PRIVATE ------------------

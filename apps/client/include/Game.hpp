@@ -23,7 +23,9 @@ public:
 	static NetMessage login( std::string userName, std::string password );
 	static void logout();
 	static NetMessage createCharacter( std::string charName, std::string charDesc );
+	static NetMessage deleteCharacter( std::string charName );
 	static NetMessage selectCharacter( std::string charName );
+	static NetMessage deselectCurrentCharacter();
 	static void enact( std::string userInputString );
 	
 	
@@ -33,6 +35,8 @@ private:
 	
 	// Transport module
 	static std::shared_ptr< Transceiver > transceiver;
+	
+	static NetMessage getBusyResponse();
 	
 	
 	

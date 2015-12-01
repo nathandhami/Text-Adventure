@@ -209,6 +209,8 @@ class DatabaseTool{
 		static string getCharNameFromID(int charID);
 
 		static bool addCharacter(string name, int userID, string description);
+		
+		static bool removeCharacter(string name);
 
 		static int getCharID(int userID);
 

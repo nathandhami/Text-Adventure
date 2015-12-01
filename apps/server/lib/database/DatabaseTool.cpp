@@ -204,9 +204,27 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		
 		databaseMutex.unlock();
 		return true;
-	} catch ( sqlite_exception e ) {
+	} catch (sqlite_exception e) {
 		databaseMutex.unlock();
 		
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		return false;
+	}
+}
+
+bool DatabaseTool::removeCharacter(string name){
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+		
+		db	<< FOREIGN_KEY_ON;
+		db	<< "DELETE FROM characters WHERE name = ?;"
+			<< name;
+		
+		return true;
+	} catch ( sqlite_exception e ) {
 		if(verbosity > 0) {
 			std::cerr << e.what() << std::endl;
 		}

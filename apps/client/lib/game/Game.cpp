@@ -85,6 +85,13 @@ NetMessage Game::createCharacter( std::string charName, std::string charDesc ) {
 
 
 // BLOCKING
+NetMessage Game::deleteCharacter( std::string charName ) {
+	Game::transceiver->writeToServer( GameCode::CHAR_DELETE, charName );
+	return Game::getBusyResponse();
+}
+
+
+// BLOCKING
 NetMessage Game::selectCharacter( std::string charName ) {
 	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charName );
 	std::cout << "[Game] Tried to select a char." << std::endl;
@@ -103,3 +110,9 @@ void Game::enact( std::string userInputString ) {
 // ------------------- PRIVATE ------------------
 
 std::shared_ptr< Transceiver > Game::transceiver;
+
+
+NetMessage Game::getBusyResponse() {
+	while ( Game::transceiver->queueEmpty() ) {}
+	return Game::transceiver->readAndPopQueue();
+}

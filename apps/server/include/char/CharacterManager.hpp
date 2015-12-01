@@ -16,7 +16,7 @@ public:
 
 	static std::string getCharacterList( int userId );
 	static std::pair< std::string, std::string > createCharacter( int userId, std::string charName );
-	static std::string deleteCharacter( int userId, std::string charName );
+	static std::pair< std::string, std::string > deleteCharacter( int userId, std::string charName );
 	
 private:
 	CharacterManager() {}
