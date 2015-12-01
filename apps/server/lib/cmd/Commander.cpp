@@ -28,7 +28,18 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 	
 	if ( commandHeader == CommandHeader::CHARACTER ) {
 		return Character::performCommand( user.getSelectedCharacterId(), command );
+	} else if ( commandHeader == CommandHeader::MESSENGER ) {
+		int numSentTo = CarrierPigeon::deliverPackage( user.getSelectedCharacterId(), command );
+		if ( !numSentTo ) {
+			responseHeader = GameCode::STATUS;
+			responseBody = "There is nobody to send this to.";
+		} else {
+			responseHeader = GameCode::OK;
+			responseBody = "Message delivered to " + std::to_string( numSentTo ) + " players.";
+		}
 	}
+	
+	return std::make_pair( responseHeader, responseBody );
 	
 //	if ( commandHeader == CommandHeader::WORLD ) {
 //		std::string worldResponse =  World::executeCommand( user.getUserId(), command );
