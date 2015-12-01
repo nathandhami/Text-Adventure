@@ -176,10 +176,27 @@ string DatabaseTool::getPassword(int userID) {
 	}
 }*/
 
+//Starting item
+
+/*
+
+INSERT INTO `items`(`itemID`,`shortDescription`,`description`,`longDescription`,`keywords`,`isPickable`,`isEquippable`,`isStackable`,`isContainer`) VALUES (NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+UPDATE `items` SET `shortDescription`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `description`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `longDescription`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `keywords`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `isPickable`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `isEquippable`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `isStackable`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `isContainer`=? WHERE `_rowid_`='10003';
+
+*/
+
+
 bool DatabaseTool::addCharacter(string name, int userID, string description){
 	try {
 		const int STARTING_ITEM_ID = 10003;
-		const string STARTING_ITEM = "an old cotton robe";
+		const string STARTING_ITEM = "a cotton robe";
 		
 		databaseMutex.lock();
 		database db(DB_LOCATION);
@@ -192,16 +209,14 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 		
 		int charID = db.last_insert_rowid();
 		
-		db	<< "INSERT INTO playerAttributes VALUES (?, 'stuff', 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 100, 100);"
+		db	<< "INSERT INTO playerAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 			<< charID;
 		
-		db	<< "insert into player_inventory (charID, itemID, quantity, isEquipped) values ( ?, ?, 1, 0)"
+		db	<< "INSERT INTO player_inventory (charID, itemID, quantity, isEquipped) VALUES (?, ?, 1, 0)"
 			<< charID
 			<< STARTING_ITEM_ID;
 		
-//		std::cout << "[DB] did not pull out .\n";
 //		DatabaseTool::equipItem( charID, STARTING_ITEM );
-//		std::cout << "[DB] done db insertion if you know what i mean.\n";
 		
 		databaseMutex.unlock();
 		return true;
