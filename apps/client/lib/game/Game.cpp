@@ -37,20 +37,20 @@ NetMessage Game::getFrontResponse() {
 
 // BLOCKING
 NetMessage Game::registerUser( std::string userName, std::string password, std::string passwordRep ) {
-	std::vector< std::string > credentialTokens = { userName, password, passwordRep };
-	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+//	std::vector< std::string > credentialTokens = { userName, password, passwordRep };
+//	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+	std::string joinedCredentials = userName + ";" + password + ";" + passwordRep;
 	
 	Game::transceiver->writeToServer( GameCode::REGISTER, joinedCredentials );
-	
-	while ( Game::transceiver->queueEmpty() ) {}
-	return Game::transceiver->readAndPopQueue();
+	return Game::getBusyResponse();
 }
 
 
 // BLOCKING
 NetMessage Game::login( std::string userName, std::string password ) {
-	std::vector< std::string > credentialTokens = { userName, password };
-	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+//	std::vector< std::string > credentialTokens = { userName, password };
+//	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+	std::string joinedCredentials = userName + ";" + password;
 	
 	Game::transceiver->writeToServer( GameCode::LOGIN, joinedCredentials );
 	
@@ -78,9 +78,7 @@ void Game::logout() {
 NetMessage Game::createCharacter( std::string charName, std::string charDesc ) {
 	std::string charData = charName + "|" + charDesc;
 	Game::transceiver->writeToServer( GameCode::CHAR_CREATE, charData );
-	
-	while ( Game::transceiver->queueEmpty() ) {}
-	return Game::transceiver->readAndPopQueue();
+	return Game::getBusyResponse();
 }
 
 
@@ -95,9 +93,7 @@ NetMessage Game::deleteCharacter( std::string charName ) {
 NetMessage Game::selectCharacter( std::string charName ) {
 	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charName );
 	std::cout << "[Game] Tried to select a char." << std::endl;
-	
-	while ( Game::transceiver->queueEmpty() ) {}
-	return Game::transceiver->readAndPopQueue();
+	return Game::getBusyResponse();
 }
 
 

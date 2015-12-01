@@ -52,6 +52,7 @@ private:
 	void logoutButton_click();
 	void selectButton_click();
 	void addCharButton_click();
+	void deleteButton_click();
 };
 
 

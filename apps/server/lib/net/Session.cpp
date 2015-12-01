@@ -195,9 +195,17 @@ void Session::logout( const std::string& credentials ) {
 
 
 void Session::createCharacter( const std::string& charData ) {
-	LOG( "CHar-create happened." );
+	LOG( "Char-create happened." );
 	
 	std::pair< std::string, std::string > createResponse = CharacterManager::createCharacter( this->currentUser.getUserId(), charData );
+	this->writeToClient( createResponse.first, createResponse.second );
+}
+
+
+void Session::deleteCharacter( const std::string& charName ) {
+	LOG( "Char-delete happened." );
+
+	std::pair< std::string, std::string > createResponse = CharacterManager::deleteCharacter( this->currentUser.getUserId(), charName );
 	this->writeToClient( createResponse.first, createResponse.second );
 }
 

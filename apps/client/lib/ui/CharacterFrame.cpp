@@ -103,7 +103,7 @@ void CharacterFrame::setupButtons() {
 	
 	this->deleteButton.set_label( "Delete" );
 	this->deleteButton.set_size_request( BTN_WIDTH, -1 );
-	
+	this->deleteButton.signal_clicked().connect( sigc::mem_fun( *this, &CharacterFrame::deleteButton_click ) );
 	
 	this->selectButton.set_label( "Enter World" );
 	this->selectButton.set_size_request( BTN_WIDTH, -1 );
@@ -238,6 +238,7 @@ void CharacterFrame::selectButton_click() {
 	}
 }
 
+
 void CharacterFrame::addCharButton_click() {
 	MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
 	if ( p_parentWindow ) {
@@ -245,6 +246,19 @@ void CharacterFrame::addCharButton_click() {
 	}
 }
 
+
+void CharacterFrame::deleteButton_click() {
+	NetMessage deleteResponse = Game::deleteCharacter( this->selectedCharName );
+	
+	if ( deleteResponse.header == GameCode::OK ) {
+		this->updateCharacterList( deleteResponse.body );
+	} else {
+		Gtk::MessageDialog dlg( deleteResponse.body, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		dlg.set_decorated( false );
+		dlg.set_title( "Deletion Failed" );
+		dlg.run();
+	}
+}
 
 
 

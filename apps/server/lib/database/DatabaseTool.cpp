@@ -239,8 +239,10 @@ bool DatabaseTool::removeCharacter(string name){
 		db	<< "DELETE FROM characters WHERE name = ?;"
 			<< name;
 		
+		databaseMutex.unlock();
 		return true;
 	} catch ( sqlite_exception e ) {
+		databaseMutex.unlock();
 		if(verbosity > 0) {
 			std::cerr << e.what() << std::endl;
 		}
