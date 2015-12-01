@@ -16,6 +16,7 @@ const string INITIAL_ZONE = "3054";
 const string FOREIGN_KEY_ON = "PRAGMA foreign_keys = ON;";
 const int PLAYER_OFFLINE = 0;
 const int PLAYER_ONLINE = 1;
+const int INVALID_COMMAND = 4;
 
 static std::mutex databaseMutex;
 
@@ -153,15 +154,15 @@ string DatabaseTool::getPassword(int userID) {
 		database db(DB_LOCATION);
 
 		db << FOREIGN_KEY_ON;
-		db << "INSERT INTO characters (charID, name, userID, location) VALUES ( NULL, ? , ?, ?);"
+		db << "INSERT INTO characters (charID, name, userID, location, description) VALUES ( NULL, ? , ?, ?, ?);"
 		<<name
 		<<userID
-		<<INITIAL_ZONE;
+		<<INITIAL_ZONE
+		<<description;
 		int charID = db.last_insert_rowid();
 
-		db << "INSERT INTO playerAttributes VALUES (?, ?, 1, 0, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
-		<<charID
-		<<description;
+		db << "INSERT INTO playerAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		<<charID;
 
 		databaseMutex.unlock();
 		return true;
@@ -230,6 +231,30 @@ bool DatabaseTool::removeCharacter(string name){
 		}
 		return false;
 	}
+}
+
+string DatabaseTool::getCharacterDescription(int charID) {
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+
+		string description;
+
+		db << "select description from characters where userID=?;"
+		<<charID
+		>>description;
+
+		databaseMutex.unlock();
+		return description;
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		databaseMutex.unlock();
+		return "";
+	}
+
 }
 
 vector<string> DatabaseTool::getCharactersNames(int userID){
@@ -507,7 +532,7 @@ bool DatabaseTool::createNpcInstance(int npcID, int zoneID){
 
 		int npcInstanceID = db.last_insert_rowid();
 
-		db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+		db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
 		<<npcInstanceID;
 
 		databaseMutex.unlock();
@@ -1234,17 +1259,17 @@ Attributes DatabaseTool::getAttributes(int id, Target characterOrNpc){
 		database db(DB_LOCATION);
 
 		if(characterOrNpc == Target::character) {
-			db << "select charID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
+			db << "select charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
 			<< id
-			>>[&](int charID, int level, int experience, int health, int maxHealth, int mana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-				Attributes characterAttributes(charID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+			>>[&](int charID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+				Attributes characterAttributes(charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
 				attributes = characterAttributes;
 			};
 		} else if(characterOrNpc == Target::npc) {
-			db << "select npcInstanceID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
+			db << "select npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
 			<< id
-			>>[&](int npcInstanceID, int level, int experience, int health, int maxHealth, int mana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-				Attributes npcAttributes(npcInstanceID, level, experience, health, maxHealth, mana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+			>>[&](int npcInstanceID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
+				Attributes npcAttributes(npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
 				attributes = npcAttributes;
 			};
 		}
@@ -1268,12 +1293,14 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 		database db(DB_LOCATION);
 
 		if(characterOrNpc == Target::character) {
-			db << "UPDATE playerAttributes SET level = ?, experience = ?, health = ?, maxHealth = ?, mana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
+			db << "UPDATE playerAttributes SET level = ?, experience = ?, requiredExp = ?, health = ?, maxHealth = ?, mana = ?, maxMana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
 			<<attributes.level
 			<<attributes.experience
+			<<attributes.requiredExperience
 			<<attributes.health
 			<<attributes.maxHealth
 			<<attributes.mana
+			<<attributes.maxMana
 			<<attributes.strength
 			<<attributes.intelligence
 			<<attributes.dexterity
@@ -1287,12 +1314,14 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 			<<attributes.weponSlot
 			<<attributes.id;
 		} else if(characterOrNpc == Target::npc) {
-			db << "UPDATE npcAttributes SET level = ?, experience = ?, health = ?, maxHealth = ?, mana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
+			db << "UPDATE npcAttributes SET level = ?, experience = ?, requiredExp = ?, health = ?, maxHealth = ?, mana = ?, maxMana =?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
 			<<attributes.level
 			<<attributes.experience
+			<<attributes.requiredExperience
 			<<attributes.health
 			<<attributes.maxHealth
 			<<attributes.mana
+			<<attributes.maxMana
 			<<attributes.strength
 			<<attributes.intelligence
 			<<attributes.dexterity
@@ -1684,7 +1713,7 @@ string DatabaseTool::findPlayerDescription(int lookerID, int zoneID, string name
 		database db(DB_LOCATION);
 
 		string description;
-		db << "select description from playerAttributes A, charactersOnline O, characters C where C.name == ? and C.charID == O.charID  and A.charID = C.charID and C.location = ?;"
+		db << "select description from charactersOnline O, characters C where C.name == ? and C.charID == O.charID and C.location = ?;"
 		<<name
 		<<zoneID
 		>>description;
@@ -1755,16 +1784,15 @@ void DatabaseTool::executeCommands() {
 		>>[&](string action, int id, int room) {
 
 			try {
-				// if(action == "npc") {
-				// 	db << "insert into instanceOfNpc values (NULL, ?, ?, 1, 0)"
-				// 	<<id
-				// 	<<room;
-				// 	int npcInstanceID = db.last_insert_rowid();
-				// 	db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
-				// 	<<npcInstanceID;
+				if(action == "npc") {
+					db << "insert into instanceOfNpc values (NULL, ?, ?, 1, 0)"
+					<<id
+					<<room;
+					int npcInstanceID = db.last_insert_rowid();
+					db << "INSERT INTO npcAttributes VALUES (?, 1, 0, 100, 100, 100, 100, 100, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0);"
+					<<npcInstanceID;
 
-				// } else  
-				if(action == "object") {
+				} else if(action == "object") {
 					db << "insert into instanceOfItem values (NULL, ?, ?,NULL)"
 					<<id
 					<<room;
@@ -2213,6 +2241,73 @@ bool DatabaseTool::setAllNotInCombat() {
 
 }
 
+int DatabaseTool::checkCommand(string command) {
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		int header;
+		db << "select header from commands where command = ?;"
+		<<command
+		>> header;
+
+		databaseMutex.unlock();
+		return header;
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return INVALID_COMMAND;
+	}
+}
+
+bool DatabaseTool::knowsSpell(int charID, string spellName) {
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+
+		db << "select knownID from knownSpells where charID = ? and spellName = ?"
+		<< charID
+		<<spellName;
+
+		databaseMutex.unlock();
+		return true;
+
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return false;
+	}
+}
+
+Spell DatabaseTool::getSpell(string spellName) {
+	Spell spell;
+	try {
+		databaseMutex.lock();
+		database db(DB_LOCATION);
+
+		db << "select * from spells where spellName = ?"
+		<<spellName
+		>>[&](string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
+			Spell spellToGet(spellName, minLevel, cost, archetypeID, effect, hitChar, hitRoom, hitVict);
+			spell = spellToGet;
+		};
+
+		databaseMutex.unlock();
+		return spell;
+
+	} catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return spell;
+	}
+}
 
 vector< string > DatabaseTool::getAllNPCsInZone( int zoneID ) {
 	vector< string > npcs;

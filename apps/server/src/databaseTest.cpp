@@ -30,10 +30,10 @@ int main(int argc, char* argv[])
 
       // cout << DatabaseTool::getPassword(1) << endl;
       // cout << DatabaseTool::getPassword(2) << endl;
-    //   cout << DatabaseTool::getPassword(99999) << endl;
+      // cout << DatabaseTool::getPassword(99999) << endl;
 
-      // cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
-    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("testChar1", 1, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("testChar2", 2, "femal elf") << endl;
 
 
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
       
 
       //cout << DatabaseTool::getCharNameFromID(1) << endl;;
-      updateAttributesTest();
+      //updateAttributesTest();
       //npcInstanceTest();
       //inventoryTest();
 
@@ -118,6 +118,17 @@ int main(int argc, char* argv[])
       //lookTest();
       //npcInstanceTest();
       //DatabaseTool::setAllNotInCombat();
+
+
+      // cout << DatabaseTool::checkCommand("move") << endl;
+      // cout << DatabaseTool::checkCommand("delete") << endl;
+      // cout << DatabaseTool::checkCommand("@") << endl;
+
+      // Spell spell = DatabaseTool::getSpell("flamestrike");
+      // cout << spell.spellName << endl;
+      // cout << spell.effect << endl;
+
+      cout << DatabaseTool::getCharacterDescription(1) << endl;
 
    }
    catch(runtime_error e){
