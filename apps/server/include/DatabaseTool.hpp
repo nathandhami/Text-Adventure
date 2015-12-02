@@ -93,7 +93,7 @@ class Attributes {
 			this->health = 0;
 			this->maxHealth = 0;
 			this->mana = 0;
-			this-> maxMana = 0;
+			this->maxMana = 0;
 			this->strength = 0;
 			this->intelligence = 0;
 			this->dexterity = 0;

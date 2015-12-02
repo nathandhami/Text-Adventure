@@ -216,9 +216,9 @@ bool DatabaseTool::addCharacter(string name, int userID, string description){
 			<< charID
 			<< STARTING_ITEM_ID;
 		
-//		DatabaseTool::equipItem( charID, STARTING_ITEM );
-		
 		databaseMutex.unlock();
+		
+		DatabaseTool::equipItem( charID, STARTING_ITEM );
 		return true;
 	} catch (sqlite_exception e) {
 		databaseMutex.unlock();
