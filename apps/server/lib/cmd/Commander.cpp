@@ -37,6 +37,11 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 			responseHeader = GameCode::OK;
 			responseBody = "Message delivered to " + std::to_string( numSentTo ) + " players.";
 		}
+	} else if ( commandHeader == CommandHeader::COMBAT ) {
+		std::string combatMessage = Combat::executeCommand( user.getUserId(), command );
+//		
+		responseHeader = GameCode::COMBAT;
+		responseBody = combatMessage;
 	}
 	
 	return std::make_pair( responseHeader, responseBody );

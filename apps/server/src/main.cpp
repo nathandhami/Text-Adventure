@@ -2,6 +2,7 @@
 
 #include "Watcher.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 
 #define MESSAGE_WELCOME		"Text Gale Online server has started."
@@ -11,6 +12,7 @@
 int main( /*int argc, const char* argv[]*/ ) {
 	std::cout << MESSAGE_WELCOME << std::endl;
 	
+	World::startRespawnLoop();
 	Server::initialize();
 	Server::start();
 	Server::waitUntilDone();
