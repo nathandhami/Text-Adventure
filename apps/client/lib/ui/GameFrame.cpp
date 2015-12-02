@@ -61,11 +61,21 @@ void GameFrame::prepareComponents() {
 	this->chatBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
 	combatBox.set_halign( Gtk::Align::ALIGN_START );
 	combatBox.set_valign( Gtk::Align::ALIGN_START );
+		
+	this->statsBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
+	combatBox.set_halign( Gtk::Align::ALIGN_START );
+	combatBox.set_valign( Gtk::Align::ALIGN_START );
+	
+	this->inventoryBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
+	combatBox.set_halign( Gtk::Align::ALIGN_START );
+	combatBox.set_valign( Gtk::Align::ALIGN_START );
 	
 	this->scrolledWindow.override_background_color( Gdk::RGBA("white"));
 	this->worldWindow.override_background_color( Gdk::RGBA("white"));
 	this->combatWindow.override_background_color( Gdk::RGBA("white"));
 	this->chatWindow.override_background_color( Gdk::RGBA("white"));
+	this->statsWindow.override_background_color( Gdk::RGBA("white"));
+	this->inventoryWindow.override_background_color( Gdk::RGBA("white"));
 	
 	this->scrolledWindow.add( this->responseBox );
 	this->scrolledWindow.set_size_request( 680, 380 );
@@ -84,6 +94,14 @@ void GameFrame::prepareComponents() {
 	this->chatWindow.set_size_request( 680, 380 );
 	this->chatWindow.set_border_width( 5 );
 
+	this->statsWindow.add( this->statsBox );
+	this->statsWindow.set_size_request( 210, 110 );
+	this->statsWindow.set_border_width( 5 );
+
+	this->inventoryWindow.add( this->inventoryBox );
+	this->inventoryWindow.set_size_request( 210, 110 );
+	this->inventoryWindow.set_border_width( 5 );
+
 	this->commandEntry.set_size_request( 680, 40 );
 
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
@@ -99,8 +117,8 @@ void GameFrame::prepareComponents() {
 	this->sideNotebook.set_size_request( 220, 120 );
 	//this->sideNotebook.set_border_width( 5 );
 	
-	this->sideNotebook.append_page(this->statsTabLabel, "Stats");
-	this->sideNotebook.append_page(this->inventoryTabLabel, "Inventory");
+	this->sideNotebook.append_page(this->statsWindow, "Stats");
+	this->sideNotebook.append_page(this->inventoryWindow, "Inventory");
 	
 	//this->layoutGrid.add( this->subFrameNotebook );
 	//this->layoutGrid.add( this->sideNotebook );
@@ -168,10 +186,11 @@ void GameFrame::updateResponses() {
 //	std::cout << "It's done!" << std::endl;
 	NetMessage msg = Game::getFrontResponse();
 	std::string response = "<span color='black'>" + msg.body + "</span>";
-	if ( msg.header != GameCode::NONE
-	  	//&& msg.header != GameCode::INVENTORY
-		//&& msg.header != GameCode::ATTRIBUTES
-		//&& msg.header != GameCode::SPELLS 
+	if ( msg.header == GameCode::DESCRIPTION 
+	  	|| msg.header == GameCode::COMBAT
+		|| msg.header == GameCode::CHAT_ZONE
+		|| msg.header == GameCode::CHAT_PRIVATE
+		|| msg.header == GameCode::INVALID
 		) {
 
 		std::vector<std::string> tokens = tokenizeResponses(msg.body);
@@ -201,13 +220,7 @@ void GameFrame::updateResponses() {
 		
 	}
 
-	if ( msg.header != GameCode::NONE 
-		&& msg.header != GameCode::COMBAT 
-		&& msg.header != GameCode::CHAT_ZONE 
-		&& msg.header != GameCode::CHAT_PRIVATE
-		&& msg.header != GameCode::INVENTORY
-		&& msg.header != GameCode::ATTRIBUTES
-		&& msg.header != GameCode::SPELLS) {
+	if ( msg.header == GameCode::DESCRIPTION ) {
 
 		std::string response = "<span color='black'>" + msg.body + "</span>";
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
@@ -229,7 +242,7 @@ void GameFrame::updateResponses() {
 		this->show_all_children();
 	}
 
-	if ( msg.header == GameCode::CHAT_ZONE && msg.header != GameCode::CHAT_PRIVATE ) {
+	if ( msg.header == GameCode::CHAT_ZONE /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
 		std::string response = "<span color='black'>" + msg.body + "</span>";
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 		pLabel->set_markup( response );

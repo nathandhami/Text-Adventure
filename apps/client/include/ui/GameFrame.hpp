@@ -24,10 +24,14 @@ private:
 	Gtk::ScrolledWindow worldWindow;
 	Gtk::ScrolledWindow combatWindow;
 	Gtk::ScrolledWindow chatWindow;
+	Gtk::ScrolledWindow statsWindow;
+	Gtk::ScrolledWindow inventoryWindow;
 	Gtk::Box responseBox;
 	Gtk::Box worldBox;
 	Gtk::Box combatBox;
 	Gtk::Box chatBox;
+	Gtk::Box statsBox;
+	Gtk::Box inventoryBox;
 	Gtk::Entry commandEntry;
 	Gtk::Button commandEntryButton;
 	Gtk::Label outputTabLabel;
