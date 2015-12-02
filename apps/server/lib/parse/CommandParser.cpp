@@ -11,7 +11,7 @@
 #include <iostream>
 #include "CommandParser.hpp"
 #include "NetConfig.hpp"
-#include "DatabaseTools.hpp"
+#include "DatabaseTool.hpp"
 
 #define LOG( msg ) std::cout << "[Parser] " << msg << std::endl
 
@@ -34,39 +34,47 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 }
 std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) { 
 	Command parsedCommand;
-	int parsedHeader = INVALID;
+	int parsedHeader = CommandHeader::INVALID;
+	boost::trim(commandString);
 	
 	LOG( "Parsing string: '" << commandString << "'..." );
 	std::string commandPrefix = "";
-
+	int tempHeader;
 	int prefixLength;
 	//parse by character and check for valid commands
-	for ( prefixLength = commandString.begin(); prefixLength <= commandString.end(); prefixLength++ ){
+	for ( prefixLength = 0; prefixLength < commandString.size(); prefixLength++ ){
 
-		commandPrefix = commandPrefix + commandString.at( prefixLength );
+		commandPrefix = commandPrefix + commandString[ prefixLength ];
 
 		LOG( "\tPrefix: " << commandPrefix );
 
-		int prefixHeader = DatabaseTools::checkCommand( commandPrefix );
+		int prefixHeader = DatabaseTool::checkCommand( commandPrefix );
 
 		LOG( "\tHeader: " << prefixHeader );
 
-		if( prefixHeader == CommandHeader::INVALID && ( ( commandString.at( prefixLength ) == " " ) || ( prefixLength == commandString.end() ) ){
+		if( prefixHeader == CommandHeader::INVALID ){
+			if( ( isspace( commandString[ prefixLength ] ) ) || ( prefixLength == commandString.size() ) ){
 			parsedHeader = CommandHeader::INVALID;
 			break;
+			}
+
 		}
 		if( prefixHeader != CommandHeader::INVALID && prefixHeader != CommandHeader::INCOMPLETE ){
 			parsedHeader = prefixHeader;
+			prefixLength++;
+			break;
 		}
 
 	}
 
-	int commandDataTokenLength = commandString.size() - prefixLength;
+	int commandDataTokenLength = commandString.size() - prefixLength ;
+	int commandTypeTokenLength = prefixLength;
 
 	LOG( "Data size: " << commandDataTokenLength );
 
-	std::string commandType = std::string::copy(commandString, 0, prefixLength);
-	std::string commandData = std::string::copy(commandString, prefixLength, commandString.size() - prefixLength);
+	std::string commandType = commandString.substr(0,commandTypeTokenLength);
+
+	std::string commandData = commandString.substr(commandTypeTokenLength, commandDataTokenLength);
 	boost::trim(commandData);
 
 	parsedCommand.type = commandType;
@@ -74,6 +82,7 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 
 	translateSpecial( parsedHeader, parsedCommand );
 	return std::make_tuple( parsedHeader, parsedCommand );
+
 }
 
 // std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) {
