@@ -11,7 +11,8 @@ CREATE TABLE characters (
   name varchar(30) unique,
   userID integer,
   location integer,
-  FOREIGN KEY(userID) REFERENCES users(userID),
+  description text,
+  FOREIGN KEY(userID) REFERENCES users(userID) on delete cascade,
   FOREIGN KEY(location) REFERENCES zones(zoneID)
 );
 
@@ -19,7 +20,7 @@ CREATE TABLE charactersOnline (
   charID integer primary key,
   sessionID text unique,
   inCombat integer,
-  FOREIGN KEY(charID) REFERENCES characters(charID)
+  FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade
 );
 
 CREATE TABLE npcs (
@@ -36,8 +37,8 @@ CREATE TABLE instanceOfNpc (
   zoneID integer,
   isAlive integer,
   inCombat integer,
-  FOREIGN KEY(npcID) REFERENCES npcs(npcID),
-  FOREIGN KEY(zoneID) REFERENCES zones(zoneID)
+  FOREIGN KEY(npcID) REFERENCES npcs(npcID) on delete cascade,
+  FOREIGN KEY(zoneID) REFERENCES zones(zoneID) on delete cascade
 );
 
 CREATE TABLE resetCommands (
@@ -53,10 +54,13 @@ CREATE TABLE resetCommands (
 
 CREATE TABLE playerAttributes (
   charID integer primary key,
-  description text,
   level integer,
   experience integer,
+  requiredExp integer,
   health integer,
+  maxHealth integer,
+  mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -75,7 +79,11 @@ CREATE TABLE npcAttributes (
   npcInstanceID integer primary key,
   level integer,
   experience integer,
+  requiredExp integer,
   health integer,
+  maxHealth integer,
+  mana integer,
+  maxMana integer,
   strength integer, 
   intelligence integer,
   dexterity integer,
@@ -153,9 +161,72 @@ CREATE TABLE instanceOfItem (
 	itemID integer,
 	zoneID integer,
 	containerID integer,
-	FOREIGN KEY(itemID) REFERENCES items(itemID),
-	FOREIGN KEY(zoneID) REFERENCES zones(zoneID),
-  FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID)
+	FOREIGN KEY(itemID) REFERENCES items(itemID) on delete cascade,
+	FOREIGN KEY(zoneID) REFERENCES zones(zoneID) on delete cascade,
+  FOREIGN KEY(containerID) REFERENCES instanceOfItem(itemInstanceID) on delete cascade
+);
+
+CREATE TABLE spells (
+  spellName text primary key,
+  minLevel integer,
+  cost integer,
+  duration integer,
+  archetypeID integer,
+  modifiers text,
+  effect text,
+  hitChar text,
+  hitRoom text,
+  hitVict text
+);
+
+CREATE TABLE knownSpells (
+  knownID integer primary key,
+  charID integer,
+  spellName text,
+  resetTime integer,
+  FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
+  FOREIGN KEY(spellName) REFERENCES defensiveSpell(spellName) on delete cascade
+);
+
+CREATE TABLE spellTeacher (
+  teacherID integer primary key,
+  npcInstanceID integer,
+  FOREIGN kEY(npcInstanceID) REFERENCES instanceOfNpc(npcInstanceID) on delete cascade
+);
+
+CREATE TABLE teachableSpells (
+  teachableID integer primary key,
+  teacherID integer,
+  spellName text,
+  FOREIGN KEY(teacherID) REFERENCES spellTeacher(teacherID) on delete cascade,
+  FOREIGN KEY(spellName) REFERENCES spells(spellName) on delete cascade
+);
+
+CREATE TABLE commands (
+  commandID integer primary key,
+  command text,
+  header integer
+);
+
+CREATE TABLE requiredExp (
+  level integer primary key,
+  requiredExp integer
+);
+
+CREATE TABLE statModifiers (
+  modifierID integer primary key,
+  charID integer,
+  equippedItemID integer,
+  spellName text,
+  healthModifier integer,
+  manaModifier integer,
+  strengthModifer integer,
+  intelligenceModifier integer,
+  dexterityModifier integer,
+  charismaModifier integer,
+  FOREIGN kEY(charID) REFERENCES characters(charID) on delete cascade,
+  FOREIGN kEY(equippedItemID) REFERENCES player_inventory(ownershipID) on delete cascade,
+  FOREIGN KEY(spellName) REFERENCES spells(spellName) on delete cascade
 );
 
 
