@@ -21,7 +21,13 @@ private:
 	Gtk::ScrolledWindow subWindow;
 	
 	Gtk::ScrolledWindow scrolledWindow;
+	Gtk::ScrolledWindow worldWindow;
+	Gtk::ScrolledWindow combatWindow;
+	Gtk::ScrolledWindow chatWindow;
 	Gtk::Box responseBox;
+	Gtk::Box worldBox;
+	Gtk::Box combatBox;
+	Gtk::Box chatBox;
 	Gtk::Entry commandEntry;
 	Gtk::Button commandEntryButton;
 	Gtk::Label outputTabLabel;
