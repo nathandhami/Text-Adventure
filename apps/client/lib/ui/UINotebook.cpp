@@ -9,30 +9,7 @@
 #include <Locale.hpp>
 
 // ------------------- UI Frame parent class -------------------
-
-UINotebook::UINotebook() {
-	
-
-	this->prepareComponents();
-
-	this->show_all_children();
+void refreshTab(std::string Tab)
+{
+	return;
 }
-
-void UINotebook::prepareComponents() {
-
-}
-
-
-void UINotebook::startReading() {
-
-}
-
-
-void UINotebook::readResponses_thread() {
-
-		
-}
-
-void UINotebook::enterCommand_signal(){
-}
-

@@ -5,12 +5,12 @@
 #include <gtkmm.h>
 #include <thread>
 #include <ui/SubWindow.hpp>
+#include <ui/UINotebook.hpp>
 
 class GameFrame: public Gtk::Frame {
 
 public:
 	GameFrame();
-	
 	void startReading();
 	void startSubFrame(SubWindow *subWindow);
 	void closeSubWindow();
@@ -29,8 +29,8 @@ private:
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
 
-	Gtk::Notebook subFrameNotebook;
-	Gtk::Notebook sideNotebook;
+	UINotebook subFrameNotebook;
+	UINotebook sideNotebook;
 	Gtk::Label worldTabLabel, combatTabLabel, chatTabLabel;
 	Gtk::Label statsTabLabel, inventoryTabLabel;
 	

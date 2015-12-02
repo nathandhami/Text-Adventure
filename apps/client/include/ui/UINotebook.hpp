@@ -7,19 +7,10 @@
 class UINotebook: public Gtk::Notebook {
 
 public:
-	UINotebook();
+	UINotebook(){}
 	
 private:
-
-	void prepareComponents();
-	
-	void readResponses_thread();
-	
-	void updateResponses();
-	
-	void startReading();
-
-	void enterCommand_signal();
+	void refreshTab(std::string Tab);
 
 };
 

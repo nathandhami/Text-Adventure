@@ -9,6 +9,7 @@
 
 #include <Locale.hpp>
 #include <ui/SubWindow.hpp>
+#include <ui/UINotebook.hpp>
 
 #include <string>
 #include <sstream>
@@ -26,9 +27,8 @@ GameFrame::GameFrame()
 	this->prepareComponents();
 
 	this->show_all_children();
+
 }
-
-
 // ------------------- PRIVATE ------------------
 
 void GameFrame::prepareComponents() {
