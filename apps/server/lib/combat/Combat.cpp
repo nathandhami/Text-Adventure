@@ -74,7 +74,10 @@ void Combat::isolateCombatInstance(int playerID, int opponentID) {
 // Violates the idea of a function not taking many lines
 string Combat::startCombat(int playerID, string arguments) {
 	if (Combat::isInCombat(playerID)) {
-		return "Finish your current fight before starting another, you barbarian.\n";
+		return "Finish your current fight before starting another, you barbarian.";
+	}
+	if (DatabaseTool::getAttributes(playerID, Target::character).health <= 0) {
+		return "You're no Black Knight, bring your health above 0 before trying to start a fight.";
 	}
 
 	deque<std::string> parsedArgument;
@@ -100,7 +103,7 @@ string Combat::startCombat(int playerID, string arguments) {
 		}
 	}
 	if (enemyName == "") {
-		return "No need to take on the whole world, just fight one enemy at a time.\n" + HOW_TO_START_FIGHT;
+		return "No need to take on the whole world, just fight one enemy at a time." + HOW_TO_START_FIGHT;
 	}
 
 	// This is pretty ugly, but I can't think of a cleaner way to do it
@@ -117,14 +120,17 @@ string Combat::startCombat(int playerID, string arguments) {
 	}
 
 	if (enemyPlayerID > 0 && enemyNpcID > 0) {
-		return "Do you want to attack the player named " + enemyName + " or the NPC named " + enemyName + "?\nPlease clarify by using one of these commands\n    fight player <name>\n    fight npc <name>\n";
+		return "Do you want to attack the player named " + enemyName + " or the NPC named " + enemyName + "?\nPlease clarify by using one of these commands\n    fight player <name>\n    fight npc <name>";
 	}
 	else if (enemyPlayerID > 0) {
 		if (playerID == enemyPlayerID) {
-			return "You punch yourself in the face.\n";
+			return "You punch yourself in the face.";
 		}
 		if (Combat::isInCombat(enemyPlayerID, PLAYER_ONLY)) {
-			return enemyName + " is already in combat.\n";
+			return enemyName + " is already in combat.";
+		}
+		if (DatabaseTool::getAttributes(enemyPlayerID, Target::character).health <= 0) {
+			return enemyName + " is dead, leave them be.";
 		}
 		combatInstancesLock.lock();
 		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyPlayerID, PLAYER_ONLY, DatabaseTool::getCharsLocation(playerID)));
@@ -132,14 +138,17 @@ string Combat::startCombat(int playerID, string arguments) {
 	}
 	else if (enemyNpcID > 0) {
 		if (Combat::isInCombat(enemyNpcID, NPC_ONLY)) {
-			return enemyName + " is already in combat.\n";
+			return enemyName + " is already in combat.";
+		}
+		if (DatabaseTool::getAttributes(enemyNpcID, Target::npc).health <= 0) {
+			return enemyName + " is dead, leave them be.";
 		}
 		combatInstancesLock.lock();
 		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyNpcID, NPC_ONLY, DatabaseTool::getCharsLocation(playerID)));
 		combatInstancesLock.unlock();
 	}
 	else {
-		return "There is no " + enemyName + " in your zone.\n";
+		return "There is no " + enemyName + " in your zone.";
 	}
 	return "";
 }

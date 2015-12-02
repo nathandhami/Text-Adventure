@@ -124,9 +124,11 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::checkCommand("delete") << endl;
       // cout << DatabaseTool::checkCommand("@") << endl;
 
-      Spell spell = DatabaseTool::getSpell("flamestrike");
-      cout << spell.spellName << endl;
-      cout << spell.effect << endl;
+      // Spell spell = DatabaseTool::getSpell("flamestrike");
+      // cout << spell.spellName << endl;
+      // cout << spell.effect << endl;
+
+      cout << DatabaseTool::getCharacterDescription(1) << endl;
 
    }
    catch(runtime_error e){

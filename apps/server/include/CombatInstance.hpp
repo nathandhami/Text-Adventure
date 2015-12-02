@@ -9,7 +9,8 @@
 #include <unistd.h>
 #include <thread>
 
-#define RETREAT_NOTIFICATION "Your opponent ran away.\n"
+#define RETREAT_NOTIFICATION "Your opponent turns to run away!\n"
+#define LEAVE_NOTIFICATION "Your opponent got away!\n"
 #define VICTORY_NOTIFICATION "You defeated your opponent!\n"
 #define DEFEAT_NOTIFICATION "You were defeated!\n"
 
@@ -33,10 +34,7 @@ class CombatInstance {
 	int playerOneID = 0;
 	int playerTwoID = 0;
 
-	// For testing combat until we have equipment and attribute data
-	int damageDealt = 4;
-	int playerOneHealthRemaining = 60;
-	int playerTwoHealthRemaining = 55;
+	int prioritize = PLAYER_ONE;
 
 	thread combatThread;
 
@@ -59,6 +57,7 @@ class CombatInstance {
 	void executePlayerAttack(int attacker, int characterType);
 	
 	void executePlayerRetreat(int player);
+	void executePlayerLeave(int player);
 
 	void executePlayerAction(int player, int characterType);
 

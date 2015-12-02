@@ -118,28 +118,10 @@ void CombatInstance::executePlayerAttack(int attacker, int characterType) {
 	if (attacker == PLAYER_ONE) {
 		defenderTarget = getTargetFromType(enemyType);
 		defender = playerTwoID;
-		/*
-		playerTwoHealthRemaining -= damageDealt;
-		notifyAttack(player, characterType, damageDealt, playerTwoHealthRemaining);
-		if (playerTwoHealthRemaining <= 0) {
-			keepFighting = false;
-			playerWin(playerOneID);
-			playerLose(playerTwoID);
-		}
-		*/
 	}
 	else {
 		defenderTarget = getTargetFromType(PLAYER_ONLY);
 		defender = playerOneID;
-		/*
-		playerOneHealthRemaining -= damageDealt;
-		notifyAttack(player, characterType, damageDealt, playerOneHealthRemaining);
-		if (playerOneHealthRemaining <= 0) {
-			keepFighting = false;
-			playerWin(playerTwoID);
-			playerLose(playerOneID);
-		}
-		*/
 	}
 
 	Attributes defenderAttributesModifier = Attributes();
@@ -154,45 +136,40 @@ void CombatInstance::executePlayerAttack(int attacker, int characterType) {
 		playerWin(attacker);
 		playerLose(defender);
 	}
-
-	/*
-	Attributes attackerAttributes;
-	Attributes defenderAttributes;
-
-	
-	if (player == PLAYER_ONE) {
-		damageDealt = 
-		if (characterType == PLAYER_ONLY) {
-			healthRemaining = DatabaseTool::getCharHealth(playerTwoID);
-		}
-		else {
-			healthRemaining = DatabaseTool::getNpcHealth(playerTwoID);
-		}
-	}
-	else {
-		if (characterType == PLAYER_ONLY) {
-			damageDealt = // Get player damage
-		}
-		else {
-			damageDealt = // Get npc damage
-		}
-		healthRemaining = DatabaseTool::getCharHealth(playerOneID);
-	}
-	*/	
 }
 
 void CombatInstance::executePlayerRetreat(int player) {
+	if (player == PLAYER_ONE) {
+		prioritize = PLAYER_TWO;
+		if (enemyType == PLAYER_ONLY) {
+			if (DatabaseTool::getAttributes(player, getTargetFromType(PLAYER_ONLY)).health > 0) {
+				Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You turn to run away.");
+				Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+			}
+		}
+	}
+	else if (player == PLAYER_TWO) {
+		prioritize = PLAYER_ONE;
+		if (DatabaseTool::getAttributes(player, getTargetFromType(enemyType)).health > 0) {
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You turn to run away.");
+			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+		}
+	}
+	playersActionQueue.at(player).push_front(LEAVE_ACTION);
+}
+
+void CombatInstance::executePlayerLeave(int player) {
 	keepFighting = false;
 	if (player == PLAYER_ONE && enemyType == PLAYER_ONLY) {
 		if (DatabaseTool::getAttributes(player, getTargetFromType(PLAYER_ONLY)).health > 0) {
-			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You run away.");
-			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You get away!");
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, LEAVE_NOTIFICATION);
 		}
 	}
 	else if (player == PLAYER_TWO) {
 		if (DatabaseTool::getAttributes(player, getTargetFromType(enemyType)).health > 0) {
-			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You run away.");
-			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, RETREAT_NOTIFICATION);
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You get away!");
+			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, LEAVE_NOTIFICATION);
 		}
 	}
 }
@@ -201,15 +178,18 @@ void CombatInstance::executePlayerAction(int player, int characterType) {
 	if (playersActionQueue.at(player).empty()) {
 		playersActionQueue.at(player).push_back(ATTACK_ACTION);
 	}
+	int action = playersActionQueue.at(player).front();
+	playersActionQueue.at(player).pop_front();
 
-	if (playersActionQueue.at(player).front() == ATTACK_ACTION) {
+	if (action == ATTACK_ACTION) {
 		CombatInstance::executePlayerAttack(player, characterType);
 	}
-	else if (playersActionQueue.at(player).front() == RETREAT_ACTION) {
+	else if (action == RETREAT_ACTION) {
 		CombatInstance::executePlayerRetreat(player);
 	}
-
-	playersActionQueue.at(player).pop_front();
+	else if (action == LEAVE_ACTION) {
+		CombatInstance::executePlayerLeave(player);
+	}
 }
 
 void CombatInstance::runCombat() {
@@ -229,8 +209,14 @@ void CombatInstance::runCombat() {
 	playersActionQueue.push_back(deque<int> (1, ATTACK_ACTION));
 
 	while (keepFighting) {
-		CombatInstance::executePlayerAction(PLAYER_ONE, PLAYER_ONLY);
-		CombatInstance::executePlayerAction(PLAYER_TWO, enemyType);
+		if (prioritize == PLAYER_TWO) {
+			CombatInstance::executePlayerAction(PLAYER_TWO, enemyType);	
+			CombatInstance::executePlayerAction(PLAYER_ONE, PLAYER_ONLY);
+		}
+		else {
+			CombatInstance::executePlayerAction(PLAYER_ONE, PLAYER_ONLY);
+			CombatInstance::executePlayerAction(PLAYER_TWO, enemyType);	
+		}
 		sleep(HEARTBEAT_SECONDS);
 	}
 }
