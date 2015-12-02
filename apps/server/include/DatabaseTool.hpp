@@ -61,7 +61,8 @@ class Item{
 			this->shortDesc = shortDesc;
 			this->description = description;
 			this->keywords = keywords;
-			this->instanceID = 0;
+			this->quantity = 0;
+			this->isEquipped = 0;
 			this->isPickable = 0;
 			this->isEquippable = 0;
 			this->isStackable = 0;
@@ -70,11 +71,12 @@ class Item{
 		~Item(){
 		};
 		int itemID;
-		int instanceID;
 		string shortDesc;
 		string longDesc;
 		string description;
 		vector<string> keywords;
+		int quantity;
+		int isEquipped;
 		int isPickable;
 		int isEquippable;
 		int isStackable;
@@ -87,7 +89,11 @@ class Attributes {
 			this->id = 0;
 			this->level = 0;
 			this->experience = 0;
+			this->requiredExperience = 0;
 			this->health = 0;
+			this->maxHealth = 0;
+			this->mana = 0;
+			this-> maxMana = 0;
 			this->strength = 0;
 			this->intelligence = 0;
 			this->dexterity = 0;
@@ -100,11 +106,15 @@ class Attributes {
 			this->handSlot = 0;
 			this->weponSlot = 0;
 		}
-		Attributes(int id, int level, int experience, int health, int strength, int intelligence, int dexterity, int charisma, int ringslot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot){
+		Attributes(int id, int level, int experience, int requiredExperience, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringslot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot){
 			this->id = id;
 			this->level = level;
 			this->experience = experience;
+			this->requiredExperience = requiredExperience;
 			this->health = health;
+			this->maxHealth = maxHealth;
+			this->mana = mana;
+			this->maxMana = maxMana;
 			this->strength = strength;
 			this->intelligence = intelligence;
 			this->dexterity = dexterity;
@@ -117,12 +127,15 @@ class Attributes {
 			this->handSlot = handSlot;
 			this->weponSlot = weponSlot;
 		};
-		~Attributes(){
-		};
+		~Attributes(){};
 		int id;
 		int level;
 		int experience;
+		int requiredExperience;
 		int health;
+		int maxHealth;
+		int mana;
+		int maxMana;
 		int strength;
 		int intelligence;
 		int dexterity;
@@ -138,7 +151,11 @@ class Attributes {
 			cout << "id: " << this->id << endl;
 			cout << "level: " << this->level << endl;
 			cout << "experience: " << this->experience << endl;
+			cout << "RequiredExperience: " << this->experience << endl;
 			cout << "health: " << this->health << endl;
+			cout << "maxHealth: " << this ->maxHealth << endl;
+			cout << "mana: " << this->mana << endl;
+			cout << "maxMana: " << this->mana << endl;
 			cout << "strength: " << this->strength << endl;
 			cout << "intelligence: " << this->intelligence << endl;
 			cout << "dexterity: " << this->dexterity << endl;
@@ -165,8 +182,7 @@ class ResetCommand{
 			this-> state = state;
 			this->container = container;
 		}
-		~ResetCommand(){
-		};
+		~ResetCommand(){};
 		string action;
 		int id;
 		int slot;
@@ -176,10 +192,37 @@ class ResetCommand{
 		int container;
 };
 
-
+class Spell{
+	public:
+		Spell() {
+			this->spellName = "";
+			this-> archetypeID = 0;
+		};
+		Spell(string spellName, int minLevel, int cost, int archetypeID, string effect, string hitChar, string hitRoom, string hitVict) {
+			this->spellName = spellName;
+			this->minLevel = minLevel;
+			this->cost = cost;
+			this->archetypeID = archetypeID;
+			this->effect = effect;
+			this->hitChar = hitChar;
+			this->hitRoom = hitRoom;
+			this->hitVict = hitVict;
+		}
+		~Spell(){};
+		string spellName;
+		int minLevel;
+		int cost;
+		int archetypeID;
+		string effect;
+		string hitChar;
+		string hitRoom;
+		string hitVict;
+};
 
 class DatabaseTool{
 	public:
+
+		//user queries
 		static bool addUser(string userName, string password);
 
 		static int getUserID(string userName, string password);
@@ -192,6 +235,8 @@ class DatabaseTool{
 
 		static vector<string> getCharactersNames(int userID);
 
+		//character queries
+
 		static int getCharIDFromName(string name);
 
 		static int getCharIDInZoneFromName(string name, int zoneID);
@@ -199,18 +244,22 @@ class DatabaseTool{
 		static string getCharNameFromID(int charID);
 
 		static bool addCharacter(string name, int userID, string description);
+		
+		static bool removeCharacter(string name);
 
 		static int getCharID(int userID);
 
+		static string getCharacterDescription(int charID);
+
 		static bool isCharOnline(int charID);
 
-		static void setCharOnline(int charID, string sessionID);
+		static bool setCharOnline(int charID, string sessionID);
 
-		static void setCharOffline(int charID);
+		static bool setCharOffline(int charID);
 
 		static string getSessionID(int charID);
 
-		static void putCharInZone(int charID, int zoneID);
+		static bool putCharInZone(int charID, int zoneID);
 
 		static int getCharsLocation(int charID);
 
@@ -220,11 +269,11 @@ class DatabaseTool{
 
 		static vector<int> getAllAliveNpcsInZone(int zoneID);
 
-		static void deleteNpcInstance(int npcInstanceID);
+		static bool deleteNpcInstance(int npcInstanceID);
 
 		static bool isNpcAlive(int npcInstanceID);
 
-		static void respawnAll();
+		static bool respawnAll();
 
 		static bool murderNpc(int npcInstanceID);
 
@@ -266,7 +315,7 @@ class DatabaseTool{
 
 		static bool addItem(Item item);
 
-		static vector<string> getItemsInInventory(int charID);
+		static vector<Item> getItemsInInventory(int charID);
 
 		static vector<int> getInstanceIDsOfItemsInInventory(int charID);
 
@@ -292,7 +341,6 @@ class DatabaseTool{
 
 		static bool pickUp(int charID, string item);
 
-
 		static bool setCombatFlag(int id, bool inCombat, Target characterOrNpc);
 
 		static bool inCombat(int id, Target characterOrNpc);
@@ -301,13 +349,20 @@ class DatabaseTool{
 
 		static void executeCommands();
 
+		static bool unEquip(int charID, string item);
+
 		static bool dropItem(int charID, string item);
+
+		static bool setAllNotInCombat();
+
+		static int checkCommand(string command);
 	
 		// TMP NEW THINGS ----------------------------------------------
 	
 		static bool testValidity();
 	
 		static int createNewZone( string zoneName, string zoneDesc );
+
 		static int createNewZone( int zoneID, string zoneName, string zoneDesc );
 	
 		static void deleteZone( int zoneID );
@@ -315,28 +370,45 @@ class DatabaseTool{
 		static bool addExtendedDescriptionToZone( int zoneID, string desc, string keywords );
 	
 		static int addDoorToZone( int zoneID, string description, string direction, int pointer, string keywords );
+
 		static void deleteDoor( int doorID );
+
 		static string getDoorDescriptionAt( int zoneID, string direction );
+
 		static int getZoneIDBehindDoorAt( int zoneID, string direction );
 	
 		static bool moveCharacterToZone( int charID, int zoneID );
 	
 		static int createNewItem( string shrtDesc, string desc, string lngDesc, string keywords );
+
 		static void deleteObject( int objectID );
 	
 		static bool signUserIn( string userName, string password );
+
 		static bool signUserOut( int userID );
 	
 		static void clearAllSessions();
+
 		static void signOffAllUsers();
 	
+		static vector< string > getAllNPCsInZone( int zoneID );
+		static vector< string > getAllPlayersInZone( int charID, int zoneID );
+
+		static bool knowsSpell(int charID, string spellName);
+		static Spell getSpell(string spellName);
+	
+		static string findPlayerDescription(int lookerID, int zoneID, string name);
+		static string findNpcDescription(int zoneID, string word);
+		static string findItemDescription(int charID, int zoneID, string word);
+	
+		static bool userExists( string userName );
+		static vector< int > getAllUserCharIDs( int userID );
+		static string getCharDescription( int charID );
 //		static bool dropItem( int charID, string item );
 	
 	
 	private:
-		static string findPlayerDescription(int lookerID, int zoneID, string name);
-		static string findNpcDescription(int zoneID, string word);
-		static string findItemDescription(int charID, int zoneID, string word);
+		
 		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);

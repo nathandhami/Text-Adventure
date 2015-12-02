@@ -3,14 +3,16 @@
 
 
 class User {
+friend class Authenticator;
+friend class CharacterManager;
+
 public:
-	friend class Authenticator;
 	
 	User() {}
 	
 	bool isAuthorized() const;
 	int getUserId() const;
-	void getSelectedCharacterId() const;
+	int getSelectedCharacterId() const;
 	
 private:
 	int userId = 0;

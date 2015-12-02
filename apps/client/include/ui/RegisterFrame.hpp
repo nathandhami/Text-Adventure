@@ -1,25 +1,30 @@
-#ifndef LOGINFRAME_HPP
-#define LOGINFRAME_HPP
+#ifndef REGISTERFRAME_HPP
+#define REGISTERFRAME_HPP
 
 
 #include <gtkmm.h>
 
 
-class LoginFrame: public Gtk::Frame {
+class RegisterFrame: public Gtk::Frame {
 
 public:
-	LoginFrame();
+	RegisterFrame();
 	
 	
 private:
 	// Frame widgets
 	Gtk::Grid layoutGrid;
+	
 	Gtk::Label usernameLabel;
 	Gtk::Label passwordLabel;
+	Gtk::Label passwordRepLabel;
+	
 	Gtk::Entry usernameEntry;
 	Gtk::Entry passwordEntry;
-	Gtk::Button loginButton;
+	Gtk::Entry passwordRepEntry;
+	
 	Gtk::Button registerButton;
+	Gtk::Button cancelButton;
 
 	// Widgets setup
 	void setupComponents();
@@ -29,7 +34,7 @@ private:
 	void setupEntries();
 	
 	// Action listener functions
-	void loginButton_click();
+	void cancelButton_click();
 	void registerButton_click();
 	
 };

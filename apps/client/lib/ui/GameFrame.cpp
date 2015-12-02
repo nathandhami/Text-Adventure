@@ -168,7 +168,12 @@ void GameFrame::updateResponses() {
 //	std::cout << "It's done!" << std::endl;
 	NetMessage msg = Game::getFrontResponse();
 	std::string response = "<span color='black'>" + msg.body + "</span>";
-	if ( msg.header != GameCode::NONE ) {
+	if ( msg.header != GameCode::NONE
+	  	//&& msg.header != GameCode::INVENTORY
+		//&& msg.header != GameCode::ATTRIBUTES
+		//&& msg.header != GameCode::SPELLS 
+		) {
+
 		std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
@@ -199,7 +204,10 @@ void GameFrame::updateResponses() {
 	if ( msg.header != GameCode::NONE 
 		&& msg.header != GameCode::COMBAT 
 		&& msg.header != GameCode::CHAT_ZONE 
-		&& msg.header != GameCode::CHAT_PRIVATE) {
+		&& msg.header != GameCode::CHAT_PRIVATE
+		&& msg.header != GameCode::INVENTORY
+		&& msg.header != GameCode::ATTRIBUTES
+		&& msg.header != GameCode::SPELLS) {
 
 		std::string response = "<span color='black'>" + msg.body + "</span>";
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );

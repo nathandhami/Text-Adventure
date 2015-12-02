@@ -18,10 +18,11 @@
 static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 	const std::string MOVE_CARDINAL = "move";
 	const std::string MOVE_EXCEPTION = "look";
+	const std::string MOVE_EXCEPTION2 = "look at";
 	const std::string MOVE_SYNONYM = "go";
 	
 	if ( commandHeader == CommandHeader::WORLD ) {
-		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION && parsedCommand.type != MOVE_CARDINAL ) {
+		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION && parsedCommand.type != MOVE_EXCEPTION2 && parsedCommand.type != MOVE_CARDINAL ) {
 			parsedCommand.data = parsedCommand.type;
 			parsedCommand.type = MOVE_CARDINAL;
 		}

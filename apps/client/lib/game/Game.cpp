@@ -35,11 +35,22 @@ NetMessage Game::getFrontResponse() {
 	return responseMessage;
 }
 
+// BLOCKING
+NetMessage Game::registerUser( std::string userName, std::string password, std::string passwordRep ) {
+//	std::vector< std::string > credentialTokens = { userName, password, passwordRep };
+//	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+	std::string joinedCredentials = userName + ";" + password + ";" + passwordRep;
+	
+	Game::transceiver->writeToServer( GameCode::REGISTER, joinedCredentials );
+	return Game::getBusyResponse();
+}
+
 
 // BLOCKING
 NetMessage Game::login( std::string userName, std::string password ) {
-	std::vector< std::string > credentialTokens = { userName, password };
-	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+//	std::vector< std::string > credentialTokens = { userName, password };
+//	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
+	std::string joinedCredentials = userName + ";" + password;
 	
 	Game::transceiver->writeToServer( GameCode::LOGIN, joinedCredentials );
 	
@@ -64,11 +75,26 @@ void Game::logout() {
 
 
 // BLOCKING
-// TO-DO: make blocking
-/*void Game::selectCharacter( std::string charNameOrNumber ) {
-	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charNameOrNumber );
-	std::cout << "- Tried to select a char." << std::endl;
-}*/
+NetMessage Game::createCharacter( std::string charName, std::string charDesc ) {
+	std::string charData = charName + "|" + charDesc;
+	Game::transceiver->writeToServer( GameCode::CHAR_CREATE, charData );
+	return Game::getBusyResponse();
+}
+
+
+// BLOCKING
+NetMessage Game::deleteCharacter( std::string charName ) {
+	Game::transceiver->writeToServer( GameCode::CHAR_DELETE, charName );
+	return Game::getBusyResponse();
+}
+
+
+// BLOCKING
+NetMessage Game::selectCharacter( std::string charName ) {
+	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charName );
+	std::cout << "[Game] Tried to select a char." << std::endl;
+	return Game::getBusyResponse();
+}
 
 
 void Game::enact( std::string userInputString ) {
@@ -80,3 +106,9 @@ void Game::enact( std::string userInputString ) {
 // ------------------- PRIVATE ------------------
 
 std::shared_ptr< Transceiver > Game::transceiver;
+
+
+NetMessage Game::getBusyResponse() {
+	while ( Game::transceiver->queueEmpty() ) {}
+	return Game::transceiver->readAndPopQueue();
+}
