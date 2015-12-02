@@ -11,17 +11,18 @@
 #include <iostream>
 #include "CommandParser.hpp"
 #include "NetConfig.hpp"
+#include "DatabaseTools.hpp"
 
 #define LOG( msg ) std::cout << "[Parser] " << msg << std::endl
 
-// Handles cases such as one-wrod movements and more!
+// Handles cases such as one-word movements and more!
 static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 	const std::string MOVE_CARDINAL = "move";
 	const std::string MOVE_EXCEPTION = "look";
 	const std::string MOVE_SYNONYM = "go";
 	
 	if ( commandHeader == CommandHeader::WORLD ) {
-		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION && parsedCommand.type != MOVE_CARDINAL ) {
+		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION ) {
 			parsedCommand.data = parsedCommand.type;
 			parsedCommand.type = MOVE_CARDINAL;
 		}
@@ -31,66 +32,106 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 		}
 	}
 }
-
-
-std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) {
+std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) { 
 	Command parsedCommand;
 	int parsedHeader = INVALID;
 	
-	boost::trim( commandString );
-	
 	LOG( "Parsing string: '" << commandString << "'..." );
-	
-	std::vector< std::string > tokens;
-	boost::split( tokens, commandString, boost::is_any_of( " " ), boost::token_compress_on );
-	
-	LOG( "Parsing tokens..." );
-	
-	std::string commandType = "";
-	int prefixLength = 0;
-	
-	// copied values because of the to_lower
-	for ( std::string token: tokens ) {
-		boost::to_lower( token );
-		LOG( "\tToken: " << token );
-		
-		std::string commandPrefix = commandType + " " + token;
-		boost::trim( commandPrefix );
-		
+	std::string commandPrefix = "";
+
+	int prefixLength;
+	//parse by character and check for valid commands
+	for ( prefixLength = commandString.begin(); prefixLength <= commandString.end(); prefixLength++ ){
+
+		commandPrefix = commandPrefix + commandString.at( prefixLength );
+
 		LOG( "\tPrefix: " << commandPrefix );
-		
-		int prefixHeader = DictionaryCmds::getParsableFromInput( commandPrefix );
+
+		int prefixHeader = DatabaseTools::checkCommand( commandPrefix );
+
 		LOG( "\tHeader: " << prefixHeader );
-		
-		if ( prefixHeader == CommandHeader::INVALID ) {
-			if ( parsedHeader == CommandHeader::INCOMPLETE ) parsedHeader = CommandHeader::INVALID;
+
+		if( prefixHeader == CommandHeader::INVALID && ( ( commandString.at( prefixLength ) == " " ) || ( prefixLength == commandString.end() ) ){
+			parsedHeader = CommandHeader::INVALID;
 			break;
-		} else {
-			commandType = commandPrefix;
-			parsedHeader = prefixHeader;
-			prefixLength ++;
 		}
+		if( prefixHeader != CommandHeader::INVALID && prefixHeader != CommandHeader::INCOMPLETE ){
+			parsedHeader = prefixHeader;
+		}
+
 	}
-	
-	
-	
-	// Get the size of 'trailing' data
-	int commandDataTokenLength = tokens.size() - prefixLength;
+
+	int commandDataTokenLength = commandString.size() - prefixLength;
+
 	LOG( "Data size: " << commandDataTokenLength );
-	
-	// Cut off the command type from the data
-	std::rotate( tokens.begin(), tokens.end() - commandDataTokenLength, tokens.end() );
-	tokens.resize( commandDataTokenLength );
-	
-	std::string commandData = boost::algorithm::join( tokens, " " );
-	
+
+	std::string commandType = std::string::copy(commandString, 0, prefixLength);
+	std::string commandData = std::string::copy(commandString, prefixLength, commandString.size() - prefixLength);
+	boost::trim(commandData);
+
 	parsedCommand.type = commandType;
 	parsedCommand.data = commandData;
-	
+
 	translateSpecial( parsedHeader, parsedCommand );
-	
 	return std::make_tuple( parsedHeader, parsedCommand );
 }
+
+// std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) {
+// 	Command parsedCommand;
+// 	int parsedHeader = INVALID;
+	
+// 	LOG( "Parsing string: '" << commandString << "'..." );
+	
+// 	std::vector< std::string > tokens;
+// 	boost::split( tokens, commandString, boost::is_any_of( " " ), boost::token_compress_on );
+	
+// 	LOG( "Parsing tokens..." );
+	
+// 	std::string commandType = "";
+// 	int prefixLength = 0;
+	
+// 	// copied values because of the to_lower
+// 	for ( std::string token: tokens ) {
+// 		boost::to_lower( token );
+// 		LOG( "\tToken: " << token );
+		
+// 		std::string commandPrefix = commandType + " " + token;
+// 		boost::trim( commandPrefix );
+		
+// 		LOG( "\tPrefix: " << commandPrefix );
+		
+// 		int prefixHeader = DictionaryCmds::getParsableFromInput( commandPrefix );
+// 		LOG( "\tHeader: " << prefixHeader );
+		
+// 		if ( prefixHeader == CommandHeader::INVALID ) {
+// 			if ( parsedHeader == CommandHeader::INCOMPLETE ) parsedHeader = CommandHeader::INVALID;
+// 			break;
+// 		} else {
+// 			commandType = commandPrefix;
+// 			parsedHeader = prefixHeader;
+// 			prefixLength ++;
+// 		}
+// 	}
+	
+	
+	
+// 	// Get the size of 'trailing' data
+// 	int commandDataTokenLength = tokens.size() - prefixLength;
+// 	LOG( "Data size: " << commandDataTokenLength );
+	
+// 	// Cut off the command type from the data
+// 	std::rotate( tokens.begin(), tokens.end() - commandDataTokenLength, tokens.end() );
+// 	tokens.resize( commandDataTokenLength );
+	
+// 	std::string commandData = boost::algorithm::join( tokens, " " );
+	
+// 	parsedCommand.type = commandType;
+// 	parsedCommand.data = commandData;
+	
+// 	translateSpecial( parsedHeader, parsedCommand );
+	
+// 	return std::make_tuple( parsedHeader, parsedCommand );
+// }
 
 
 
