@@ -46,6 +46,8 @@ void GameFrame::prepareComponents() {
 	
 //	 Gdk::RGBA color;
 	
+	/*main notebook*/
+	
 	this->responseBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
 	responseBox.set_halign( Gtk::Align::ALIGN_START );
 	responseBox.set_valign( Gtk::Align::ALIGN_START );
@@ -222,34 +224,79 @@ void GameFrame::updateResponses() {
 
 	if ( msg.header == GameCode::DESCRIPTION ) {
 
-		std::string response = "<span color='black'>" + msg.body + "</span>";
-		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-		pLabel->set_markup( response );
-		pLabel->set_valign( Gtk::Align::ALIGN_START );
-		pLabel->set_halign( Gtk::Align::ALIGN_START );
-		this->worldBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		this->show_all_children();
+		std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0){
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_markup( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->worldBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else{
+			
+			for(std::string s : tokens){
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_markup( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				this->worldBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+				
+		}
 
 	}
 
 	if ( msg.header == GameCode::COMBAT ) {
-		std::string response = "<span color='black'>" + msg.body + "</span>";
-		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-		pLabel->set_markup( response );
-		pLabel->set_valign( Gtk::Align::ALIGN_START );
-		pLabel->set_halign( Gtk::Align::ALIGN_START );
-		this->combatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		this->show_all_children();
+		std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0){
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_markup( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->combatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else{
+			
+			for(std::string s : tokens){
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_markup( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				this->combatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+				
+		}
 	}
 
 	if ( msg.header == GameCode::CHAT_ZONE /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
-		std::string response = "<span color='black'>" + msg.body + "</span>";
-		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-		pLabel->set_markup( response );
-		pLabel->set_valign( Gtk::Align::ALIGN_START );
-		pLabel->set_halign( Gtk::Align::ALIGN_START );
-		this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		this->show_all_children();
+				std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0){
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_markup( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else{
+			
+			for(std::string s : tokens){
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_markup( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+				
+		}
 	}
 	
 }
