@@ -298,6 +298,54 @@ void GameFrame::updateResponses() {
 				
 		}
 	}
+	if ( msg.header == GameCode::INVENTORY /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
+				std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0){
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_markup( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else{
+			
+			for(std::string s : tokens){
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_markup( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+				
+		}
+	}
+	if ( msg.header == GameCode::ATTRIBUTES /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
+				std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0){
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_markup( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else{
+			
+			for(std::string s : tokens){
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_markup( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+				
+		}
+	}
 	
 }
 
