@@ -32,28 +32,28 @@ int main() {
 	cout << "Command Type = " + parsedcommand.type << endl;
 	cout << "Command Data = " + parsedcommand.data << endl;
 	
-	
-	// output = (CommandParser::getHeaderAndCommand(str));
-	// header = get<0>(output);
-	// if(header == WORLD){
-	// 	strheader = "WORLD";
-	// }else if (header == COMBAT){
-	// 	strheader = "COMBAT";
-	// }else if (header == MESSENGER){
-	// 	strheader = "MESSENGER";
-	// }else if (header == INCOMPLETE){
-	// 	strheader = "INCOMPLETE";
-	// }else if (header == INVALID){
-	// 	strheader = "INVALID";
-	// }else if (header == CHARACTER){
-	// 	strheader = "CHARACTER";
-	// }else if (header == EDITOR){
-	// 	strheader = "EDITOR";
-	// }
-	// parsedcommand = get<1>(output);
-	// cout << "Header = " + strheader << endl;
-	// cout << "Command Type = " + parsedcommand.type << endl;
-	// cout << "Command Data = " + parsedcommand.data << endl;
+	str = "Create Zone";
+	output = (CommandParser::getHeaderAndCommand(str));
+	header = get<0>(output);
+	if(header == WORLD){
+		strheader = "WORLD";
+	}else if (header == COMBAT){
+		strheader = "COMBAT";
+	}else if (header == MESSENGER){
+		strheader = "MESSENGER";
+	}else if (header == INCOMPLETE){
+		strheader = "INCOMPLETE";
+	}else if (header == INVALID){
+		strheader = "INVALID";
+	}else if (header == CHARACTER){
+		strheader = "CHARACTER";
+	}else if (header == EDITOR){
+		strheader = "EDITOR";
+	}
+	parsedcommand = get<1>(output);
+	cout << "Header = " + strheader << endl;
+	cout << "Command Type = " + parsedcommand.type << endl;
+	cout << "Command Data = " + parsedcommand.data << endl;
 	
 	
 	return 0;

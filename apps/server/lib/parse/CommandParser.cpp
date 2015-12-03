@@ -39,31 +39,46 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 	
 	LOG( "Parsing string: '" << commandString << "'..." );
 	std::string commandPrefix = "";
-	int tempHeader;
-	int prefixLength;
+	int tempHeader = CommandHeader::INVALID;
+	int prefixLength = 0;
+	int tempLength = 0;
 	//parse by character and check for valid commands
 	for ( prefixLength = 0; prefixLength < commandString.size(); prefixLength++ ){
 
 		commandPrefix = commandPrefix + commandString[ prefixLength ];
+		boost::algorithm::to_lower(commandPrefix);
 
 		LOG( "\tPrefix: " << commandPrefix );
 
 		int prefixHeader = DatabaseTool::checkCommand( commandPrefix );
 
 		LOG( "\tHeader: " << prefixHeader );
+		
+		if( prefixHeader != CommandHeader::INVALID ){//&& prefixHeader != CommandHeader::INCOMPLETE ){
+			
+			tempHeader = prefixHeader;
+			tempLength = prefixLength;
 
-		if( prefixHeader == CommandHeader::INVALID ){
-			if( ( isspace( commandString[ prefixLength ] ) ) || ( prefixLength == commandString.size() ) ){
-			parsedHeader = CommandHeader::INVALID;
+			
+		}
+		LOG( "\ttempHeader: " << tempHeader );
+		LOG( "\ttempLength: " << tempLength);
+		if( ( prefixHeader == CommandHeader::INVALID && tempHeader != CommandHeader::INVALID ) || ( prefixLength == commandString.size() -1 ) ){
+
+			if( ( ( isspace( commandString[ prefixLength ] ) ) && ( prefixLength != tempLength +1 ) ) || ( prefixLength == commandString.size() -1 ) ){
+
+			parsedHeader = tempHeader;
+			LOG( "\tfinalHeader: " << parsedHeader );
+			
+			prefixLength = tempLength +1;
+			LOG( "\tfinalLength: " << prefixLength);
+				
 			break;
+
 			}
 
 		}
-		if( prefixHeader != CommandHeader::INVALID && prefixHeader != CommandHeader::INCOMPLETE ){
-			parsedHeader = prefixHeader;
-			prefixLength++;
-			break;
-		}
+		
 
 	}
 
