@@ -18,4 +18,10 @@ echo "Installing GTK+..."
 apt-get install libgtkmm-3.0-dev
 echo "GTK+: done."
 
+# Sphinx
+echo "Installing Sphinx..."
+apt-get install python3
+apt-get install python-sphinx
+echo "Sphinx: done."
+
 # Other libs...
