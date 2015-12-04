@@ -2,7 +2,9 @@
 Project Description
 ==============
 
-You can describe or provide an introduction to your product/project here.
+Text Gale Online - Group: Faloodah
+
+A simple text player multiplayer game.
 
 Contents
 ===========

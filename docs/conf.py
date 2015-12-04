@@ -46,8 +46,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'PROJECTNAME'
-copyright = '2015, AUTHORS'
+project = 'Faloodah'
+copyright = '2015, Pavol Kozlovsky, Devon Briere, Matthew Fraser, Gener Iglesias, Brady Will, Nathan Dhami, Kenan Abdulkarim, Lim'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
