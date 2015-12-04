@@ -5,54 +5,43 @@ Building
 Dependencies
 ==============================================
 
-PROJECTNAME depends on the following Ubuntu packages:
+textadventure depends on the following libraries:
 
-* one
-* two
-* three
+* boost
+* sqlite (database)
+* gtkmm  (gui)
+* sphinx (doc)
 
-
-PROJECTNAME depends on the following external libraries:
-
-* one
-* two
-* three
-
-Example Instructions
+How to Install Dependencies
 ==============================================
 
-The following instructions assume that your current working directory starts
-out as the ``PROJECTNAME`` directory within the project.
+To install all the neccessary dependancies on your machine go to the project's root and run:
+
+sudo bash get-deps.sh
+
+This process might take a while, so grab some coffee.
+
+
+Basic Compliation Guidelines
+==============================================
+
+Make sure all the necessary dependencies are installed first.
+In project's root folder: 
 
 1. Create a new directory for building.
-  
-  .. code-block:: bash  
 
-    mkdir ../build
+    mkdir -p build
 
 2. Change into the new directory.
-  
-  .. code-block:: bash  
 
-    cd ../build
+    cd build
 
-3. Run CMake with the path to the project source.
-  
-  .. code-block:: bash  
+3. Run CMake inside build folder exactly like this:
 
-    cmake ../PROJECTNAME
+    cmake ..
 
-4. Run your desired build tool inside the build directory.
-  
-  .. code-block:: bash  
+4. Run make inside build folder
 
     make
-
-4. Use ``make install`` to install the project.
-  
-  .. code-block:: bash  
-
-    make install
-
 
 

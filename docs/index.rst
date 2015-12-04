@@ -1,6 +1,6 @@
-==============
+====================
 Project Description
-==============
+====================
 
 Text Gale Online - Group: Faloodah
 
@@ -14,6 +14,9 @@ Contents
 
    overview
    building
+   run
+   login
+   control
    configuring
    usage
 
