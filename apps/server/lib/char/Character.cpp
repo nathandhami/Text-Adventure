@@ -41,8 +41,8 @@ std::string Character::getStats( int charId ) {
 		"Dexterity:" 	+ std::to_string( stats.dexterity ) + "\n" +
 		"Charisma:" 	+ std::to_string( stats.charisma ) + "\n" +
 		"HP:"			+ std::to_string( stats.health ) + "/" + std::to_string( stats.maxHealth ) + "\n" +
-		"MP:"			+ std::to_string( stats.mana ) + "/" + "what" + "\n" +
-		"XP:"			+ std::to_string( stats.experience ) + "/" + "what" + "\n" +
+		"MP:"			+ std::to_string( stats.mana ) + "/" + std::to_string( stats.maxMana ) + "\n" +
+		"XP:"			+ std::to_string( stats.experience ) + "/" + std::to_string( stats.requiredExperience ) + "\n" +
 		"Level:"		+ std::to_string( stats.level );
 }
 

@@ -73,6 +73,7 @@ void GameFrame::prepareComponents() {
 	combatBox.set_valign( Gtk::Align::ALIGN_START );
 	
 	this->scrolledWindow.override_background_color( Gdk::RGBA("white"));
+	//this->responseBox.set_policy( Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC );
 	this->worldWindow.override_background_color( Gdk::RGBA("white"));
 	this->combatWindow.override_background_color( Gdk::RGBA("white"));
 	this->chatWindow.override_background_color( Gdk::RGBA("white"));
@@ -185,8 +186,17 @@ std::vector<std::string> GameFrame::tokenizeResponses(std::string response) {
 }
 
 void GameFrame::updateResponses() {
+
 //	std::cout << "It's done!" << std::endl;
 	NetMessage msg = Game::getFrontResponse();
+
+
+	if(msg.header != GameCode::NONE){
+		std::cout << "Inside" << std::endl;
+		Glib::RefPtr<Gtk::Adjustment> adjustment = scrolledWindow.get_vadjustment();
+		adjustment->set_value(adjustment->get_upper());
+	}
+	
 	std::string response = "<span color='black'>" + msg.body + "</span>";
 	if ( msg.header == GameCode::DESCRIPTION 
 	  	|| msg.header == GameCode::COMBAT
@@ -195,14 +205,31 @@ void GameFrame::updateResponses() {
 		|| msg.header == GameCode::INVALID
 		) {
 
-		std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_markup( response );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
+		pLabel->set_line_wrap(TRUE);
+		//pLabel->set_wrap_mode( Gtk::WrapMode::WRAP_WORD_CHAR );
+		this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		//Glib::RefPtr<Gtk::Adjustment> m_adjustment;
+		Glib::RefPtr<Gtk::Adjustment> m_adjustment = scrolledWindow.get_vadjustment();
+		m_adjustment->set_value(m_adjustment->get_upper());
+		this->show_all_children();
+
+		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 			pLabel->set_markup( response );
 			pLabel->set_valign( Gtk::Align::ALIGN_START );
 			pLabel->set_halign( Gtk::Align::ALIGN_START );
 			this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			m_adjustment = scrolledWindow.get_vadjustment();
+			printf("%d", m_adjustment->get_value());
+			m_adjustment->set_value(m_adjustment->get_value());
 			this->show_all_children();
+
 		}
 		else{
 			
@@ -213,12 +240,12 @@ void GameFrame::updateResponses() {
 				pLabel->set_valign( Gtk::Align::ALIGN_START );
 				pLabel->set_halign( Gtk::Align::ALIGN_START );
 				this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				m_adjustment = scrolledWindow.get_vadjustment();
+				printf("%d", m_adjustment->get_value());
+				m_adjustment->set_value(m_adjustment->get_value());
 				this->show_all_children();
 			}
-			
-			
-			
-		}
+		}*/
 		
 	}
 
@@ -274,7 +301,7 @@ void GameFrame::updateResponses() {
 		}
 	}
 
-	if ( msg.header == GameCode::CHAT_ZONE /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
+	if ( msg.header == GameCode::CHAT_ZONE || msg.header == GameCode::CHAT_PRIVATE ) {
 				std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
@@ -298,7 +325,7 @@ void GameFrame::updateResponses() {
 				
 		}
 	}
-	if ( msg.header == GameCode::INVENTORY /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
+	if ( msg.header == GameCode::INVENTORY) {
 				std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
@@ -322,7 +349,7 @@ void GameFrame::updateResponses() {
 				
 		}
 	}
-	if ( msg.header == GameCode::ATTRIBUTES /*|| msg.header == GameCode::CHAT_PRIVATE*/ ) {
+	if ( msg.header == GameCode::ATTRIBUTES) {
 				std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
@@ -346,7 +373,6 @@ void GameFrame::updateResponses() {
 				
 		}
 	}
-	
 }
 
 

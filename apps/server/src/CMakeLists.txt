@@ -1,5 +1,5 @@
 add_executable ( runServer main.cpp )
-target_link_libraries ( runServer Server )
+target_link_libraries ( runServer Server World )
 
 add_executable ( testk testk.cpp )
 target_link_libraries ( testk Server ${Boost_LIBRARIES} )
