@@ -49,8 +49,9 @@ void GameFrame::prepareComponents() {
 	/*main notebook*/
 	
 	this->responseBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
-	responseBox.set_halign( Gtk::Align::ALIGN_START );
-	responseBox.set_valign( Gtk::Align::ALIGN_START );
+	this->responseBox.set_halign( Gtk::Align::ALIGN_START );
+	this->responseBox.set_valign( Gtk::Align::ALIGN_START );
+	this->responseBox.signal_size_allocate().connect( sigc::mem_fun( *this, &GameFrame::updateScrollPosition ) );
 
 	this->worldBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
 	worldBox.set_halign( Gtk::Align::ALIGN_START );
@@ -139,6 +140,14 @@ void GameFrame::prepareComponents() {
 }
 
 
+void GameFrame::updateScrollPosition( Gtk::Allocation& alloc ) {
+	std::cout << "LEL" << std::endl;
+	Glib::RefPtr<Gtk::Adjustment> p_adjustment = this->scrolledWindow.get_vadjustment();
+	p_adjustment->set_value( p_adjustment->get_upper() );
+	this->show_all_children();
+}
+
+
 void GameFrame::startReading() {
 	this->readerThread = Glib::Thread::create(sigc::mem_fun(*this, &GameFrame::readResponses_thread), true);
 
@@ -191,11 +200,7 @@ void GameFrame::updateResponses() {
 	NetMessage msg = Game::getFrontResponse();
 
 
-	if(msg.header != GameCode::NONE){
-		std::cout << "Inside" << std::endl;
-		Glib::RefPtr<Gtk::Adjustment> adjustment = scrolledWindow.get_vadjustment();
-		adjustment->set_value(adjustment->get_upper());
-	}
+	
 	
 	std::string response = "<span color='black'>" + msg.body + "</span>";
 	if ( msg.header == GameCode::DESCRIPTION 
@@ -213,9 +218,6 @@ void GameFrame::updateResponses() {
 		pLabel->set_line_wrap(TRUE);
 		//pLabel->set_wrap_mode( Gtk::WrapMode::WRAP_WORD_CHAR );
 		this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		//Glib::RefPtr<Gtk::Adjustment> m_adjustment;
-		Glib::RefPtr<Gtk::Adjustment> m_adjustment = scrolledWindow.get_vadjustment();
-		m_adjustment->set_value(m_adjustment->get_upper());
 		this->show_all_children();
 
 		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
@@ -373,6 +375,15 @@ void GameFrame::updateResponses() {
 				
 		}
 	}
+	
+	/*if( msg.header != GameCode::NONE ){
+//		std::cout << "Inside" << std::endl;
+		Glib::RefPtr< Gtk::Adjustment > p_adjustment = this->scrolledWindow.get_vadjustment();
+		p_adjustment->set_value( p_adjustment->get_upper() + 500 );
+		this->scrolledWindow.set_vadjustment( p_adjustment );
+		this->show_all_children();
+		this->show();
+	}*/
 }
 
 

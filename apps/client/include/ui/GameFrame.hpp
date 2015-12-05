@@ -52,6 +52,8 @@ private:
 	void updateResponses();
 	
 	void enterCommand_signal();
+	
+	void updateScrollPosition( Gtk::Allocation& alloc );
 
 	std::vector<std::string> tokenizeResponses(std::string);
 };
