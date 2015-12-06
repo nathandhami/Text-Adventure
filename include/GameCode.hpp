@@ -7,6 +7,7 @@
 namespace GameCode {
 	// Sent by client
 	// Request headers
+	const std::string REGISTER 		= "reg";
 	const std::string LOGIN 		= "lgn";
 	const std::string LOGOUT 		= "lgo";
 	const std::string CHAR_CREATE 	= "ccr";
@@ -27,6 +28,11 @@ namespace GameCode {
 	const std::string ALERT 		= "alr";
 	const std::string COMBAT 		= "cmb";
 	
+	// Update headers
+	const std::string INVENTORY 	= "inv";
+	const std::string ATTRIBUTES 	= "atr";
+	const std::string SPELLS	 	= "spl";
+	
 	// Chat headers
 	const std::string CHAT_ZONE 	= "chz";
 	const std::string CHAT_PRIVATE 	= "chp";
@@ -35,7 +41,8 @@ namespace GameCode {
 	const std::string DISCONNECTED 	= "dsc";
 	const std::string NONE		 	= "non";
 	const std::string FAUX_HEADER	= "fhd";
-	const std::string OK			= "okk";
+	const std::string OK			= "ok_";
+	const std::string ERROR			= "err";
 
 }
 

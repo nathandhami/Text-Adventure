@@ -3,6 +3,7 @@
 
 // Server IP address and port number
 #define HOST_ADDRESS_IP4 	"127.0.0.1"
+//#define HOST_ADDRESS_IP4 	"10.0.1.19"
 #define HOST_PORT 			9999
 
 // Header types for network messaging

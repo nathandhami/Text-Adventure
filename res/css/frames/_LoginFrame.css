@@ -1,0 +1,25 @@
+#frame-login {
+	font-weight: 500;
+	border: none;
+	border-radius: 0;
+}
+
+#frame-login > GtkGrid {
+	border: 1px solid @color_main_green;
+	background: rgba( 0, 0, 0, 0.7 );
+}
+
+#label-username, #label-password {
+/*	color: @color_main_green;*/
+}
+
+#frame-login > GtkGrid > GtkEntry {
+/*	width: 100;*/
+	border: none;
+	border-bottom-width: 1px;
+	border-bottom-color: @color_main_green;
+	border-bottom-style: solid;
+	border-radius: 0;
+	background: rgba( 0, 0, 0, 0.4 );
+	color: @color_main_green;
+}

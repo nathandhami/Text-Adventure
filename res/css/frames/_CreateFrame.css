@@ -1,0 +1,33 @@
+#frame-create {
+	font-weight: 500;
+	border: none;
+	border-radius: 0;
+}
+
+#frame-create > GtkGrid {
+/*	border: 10px solid;*/
+	background: rgba( 0, 0, 0, 0.7 );
+/*	padding-left: 10px;*/
+}
+
+#frame-create > GtkGrid > GtkEntry {
+	/*	width: 100;*/
+	border: none;
+	border-bottom-width: 1px;
+	border-bottom-color: @color_main_green;
+	border-bottom-style: solid;
+	border-radius: 0;
+	background: rgba( 0, 0, 0, 0.4 );
+	color: @color_main_green;
+}
+
+#frame-create > GtkGrid > GtkScrolledWindow {
+	padding: 5px;
+	background: rgba( 0, 0, 0, 0.6 );
+	border: 1px solid white;
+}
+
+#frame-create > GtkGrid > GtkScrolledWindow > GtkTextView {
+	background: rgba( 0, 0, 0, 0.0 );
+	color: @color_main_green;
+}

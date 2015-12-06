@@ -8,6 +8,8 @@
 #include "CarrierPigeon.hpp"
 #include <mod/Editor.hpp>
 #include <cmd/Commander.hpp>
+#include <char/CharacterManager.hpp>
+#include <char/Character.hpp>
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
@@ -157,6 +159,15 @@ void Session::handleRequest( const std::string header, const std::string body ) 
 
 // ------------- De-headed functions
 
+
+void Session::registerUser( const std::string& credentials ) {
+	LOG( "Register happened" );
+	
+	std::pair< std::string, std::string > regResult = Authenticator::registerAccount( credentials );
+	this->writeToClient( regResult.first, regResult.second );
+}
+
+
 void Session::login( const std::string& credentials ) {
 	LOG( "Login happened." );
 	
@@ -167,12 +178,8 @@ void Session::login( const std::string& credentials ) {
 	}
 	
 	std::cout << "Login success." << std::endl;
-	if ( DatabaseTool::isCharOnline( this->currentUser.getUserId() ) ) {
-		this->writeToClient( GameCode::INVALID, "Already logged in." );
-		return;
-	}
-	DatabaseTool::setCharOnline( this->currentUser.getUserId(), this->identifierString );
-	this->writeToClient( GameCode::CORRECT, "a list\nof various\ncharacters" );
+	
+	this->writeToClient( GameCode::CORRECT, CharacterManager::getCharacterList( this->currentUser.getUserId() ) );
 }
 
 void Session::logout( const std::string& credentials ) {
@@ -185,6 +192,35 @@ void Session::logout( const std::string& credentials ) {
 	}
 	
 	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
+}
+
+
+void Session::createCharacter( const std::string& charData ) {
+	LOG( "Char-create happened." );
+	
+	std::pair< std::string, std::string > createResponse = CharacterManager::createCharacter( this->currentUser.getUserId(), charData );
+	this->writeToClient( createResponse.first, createResponse.second );
+}
+
+
+void Session::deleteCharacter( const std::string& charName ) {
+	LOG( "Char-delete happened." );
+
+	std::pair< std::string, std::string > createResponse = CharacterManager::deleteCharacter( this->currentUser.getUserId(), charName );
+	this->writeToClient( createResponse.first, createResponse.second );
+}
+
+
+void Session::selectCharacter( const std::string& charName ) {
+	LOG( "Char-select happened." );
+	
+	if ( CharacterManager::selectCharacter( this->currentUser, charName, this->identifierString ) ) {
+		this->writeToClient( GameCode::OK, "Character " + charName + " selected." );
+		this->writeToClient( GameCode::ATTRIBUTES, Character::getStats( this->currentUser.getSelectedCharacterId() ) );
+		this->writeToClient( GameCode::INVENTORY, Character::getInventory( this->currentUser.getSelectedCharacterId() ) );
+	} else {
+		this->writeToClient( GameCode::ERROR, "Could not select " + charName + ", internal server error occurred." );
+	}
 }
 
 
