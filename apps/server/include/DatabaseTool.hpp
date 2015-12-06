@@ -14,8 +14,9 @@
 using namespace std;
 
 enum Transfer {toCharacter, toZone, toNpc, toItem};
-enum Target {character, npc};
+enum Target {character, npc, null};
 enum Slot {ring, head, chest, greaves, feet, hands, wepon};
+enum SpellType {unknown, defensive, offensive, utility};
 
 class Door{
 	public:

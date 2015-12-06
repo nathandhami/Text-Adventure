@@ -7,36 +7,26 @@
 
 // --------Private functions--------
 
-Target getTargetFromType(int characterType) {
-	if (characterType == PLAYER_ONLY) {
-		return Target::character;
-	}
-	else if (characterType == NPC_ONLY) {
-		return Target::npc;
-	}
-	return NULL;
-}
-
-void CombatInstance::removePlayerFromCombat(int playerID, int playerType, string message = "") {
-	if (playerType == PLAYER_ONLY) {
+void CombatInstance::removePlayerFromCombat(int playerID, Target playerType, string message = "") {
+	if (playerType == Target::character) {
 		DatabaseTool::setCombatFlag(playerID, false, Target::character);
 		Server::sendMessageToCharacter(playerID, GameCode::COMBAT, message);
 	}
-	else if (playerType == NPC_ONLY) {
+	else if (playerType == Target::npc) {
 		DatabaseTool::setCombatFlag(playerID, false, Target::npc);
 	}
 }
 
 void CombatInstance::removePlayersFromCombat(string message = "") {
-	CombatInstance::removePlayerFromCombat(playerOneID, PLAYER_ONLY, message);
+	CombatInstance::removePlayerFromCombat(playerOneID, playerOneTarget, message);
 	if (playerTwoPresent) {
-		CombatInstance::removePlayerFromCombat(playerTwoID, enemyType, message);
+		CombatInstance::removePlayerFromCombat(playerTwoID, playerTwoTarget, message);
 		playerTwoPresent = false;
 	}
 }
 
 void CombatInstance::pushPlayerAction(int player, int action) {
-	if ((playersActionQueue.at(player).size() == 1) || action == RETREAT_ACTION) {
+	if (action == RETREAT_ACTION) {
 		playersActionQueue.at(player).push_front(action);
 	}
 	else {
@@ -47,9 +37,9 @@ void CombatInstance::pushPlayerAction(int player, int action) {
 void CombatInstance::waitForChallengeAccept() {
 	string challengerName = DatabaseTool::getCharNameFromID(playerOneID);
 	string challengeeName = DatabaseTool::getCharNameFromID(playerTwoID);
-	Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, challengerName + " has challenged you to a fight!\nTo respond to their challenge, use one of the following commands\n    accept challenge " + challengerName + "\n    reject challenge " + challengerName + "\n");
+	Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, challengerName + " has challenged you to a fight!\nTo respond to their challenge, use one of the following commands\n    accept challenge " + challengerName + "\n    reject challenge " + challengerName);
 	int timeoutCounter = 0;
-	string helpText = "To retract your challenge use the following command\n    retract challenge " + challengeeName + "\n";
+	string helpText = "To retract your challenge use the following command\n    retract challenge " + challengeeName;
 
 	while (!challengeAccepted && timeoutCounter < CHALLENGE_TIMEOUT && keepFighting) {
 		if ((timeoutCounter % 5) == 0) {
@@ -63,42 +53,42 @@ void CombatInstance::waitForChallengeAccept() {
 	if (challengeAccepted) {
 		DatabaseTool::setCombatFlag(playerTwoID, true, Target::character);
 		playerTwoPresent = true;
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, challengeeName + " accepted your challenge!\nYou each bow respectfully and combat begins!\n");
+		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, challengeeName + " accepted your challenge!\nYou each bow respectfully and combat begins!");
 		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You each bow respectfully and combat begins!\n");
-		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + " and " + challengeeName + " have started fighting each other!\n", vector<int>(playerOneID, playerTwoID));
+		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + " and " + challengeeName + " have started fighting each other!", vector<int>(playerOneID, playerTwoID));
 	}
 	else if (keepFighting) {
 		keepFighting = false;
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, challengeeName + " did not accept your challenge.\n");
-		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, challengerName + " has given up waiting for you to respond to their challenge.\n");
+		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, challengeeName + " did not accept your challenge.");
+		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, challengerName + " has given up waiting for you to respond to their challenge.");
 	}
 }
 
-void CombatInstance::notifyAttack(int player, int characterType, int damageDealt, int healthRemaining) {
+void CombatInstance::notifyAttack(int player, Target characterType, int damageDealt, int healthRemaining) {
 	if (player == PLAYER_ONE) {
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You deal " + std::to_string(damageDealt) + " damage.\n");
-		if (characterType == PLAYER_ONLY) {
-			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You take " + std::to_string(damageDealt) + " damage. You have " + std::to_string(healthRemaining) + "hp.\n");
+		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You deal " + std::to_string(damageDealt) + " damage.");
+		if (characterType == Target::character) {
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You take " + std::to_string(damageDealt) + " damage. You have " + std::to_string(healthRemaining) + "hp.");
 		}
 	}
 	else {
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You take " + std::to_string(damageDealt) + " damage. You have " + std::to_string(healthRemaining) + "hp.\n");
-		if (characterType == PLAYER_ONLY) {
-			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You deal " + std::to_string(damageDealt) + " damage.\n");
+		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You take " + std::to_string(damageDealt) + " damage. You have " + std::to_string(healthRemaining) + "hp.");
+		if (characterType == Target::character) {
+			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You deal " + std::to_string(damageDealt) + " damage.");
 		}
 	}
 }
 
 void CombatInstance::playerWin(int playerID) {
 	keepFighting = false;
-	if ((playerID != playerTwoID) || (enemyType != NPC_ONLY)) {
+	if ((playerID != playerTwoID) || (playerTwoTarget != Target::npc)) {
 		Server::sendMessageToCharacter(playerID, GameCode::COMBAT, VICTORY_NOTIFICATION);
 	}
 }
 
 void CombatInstance::playerLose(int playerID) {
 	keepFighting = false;
-	if ((playerID == playerTwoID) && (enemyType == NPC_ONLY)) {
+	if ((playerID == playerTwoID) && (playerTwoTarget == Target::npc)) {
 		DatabaseTool::murderNpc(playerTwoID);
 	}
 	else {
@@ -107,20 +97,19 @@ void CombatInstance::playerLose(int playerID) {
 }
 
 // Waiting on equipment
-void CombatInstance::executePlayerAttack(int attacker, int characterType) {
-	Target attackerTarget = getTargetFromType(characterType);
-	Attributes attackerAttributes = DatabaseTool::getAttributes(attacker, attackerTarget);
+void CombatInstance::executePlayerAttack(int attacker, Target characterType) {
+	Attributes attackerAttributes = DatabaseTool::getAttributes(attacker, characterType);
 	int damageDealt = -attackerAttributes.strength * 2;    // Until we have weapons and armour we'll just do this for damage
 
 	Target defenderTarget;
 	int defender = 0;
 	
 	if (attacker == PLAYER_ONE) {
-		defenderTarget = getTargetFromType(enemyType);
+		defenderTarget = playerTwoTarget;
 		defender = playerTwoID;
 	}
 	else {
-		defenderTarget = getTargetFromType(PLAYER_ONLY);
+		defenderTarget = Target::character;
 		defender = playerOneID;
 	}
 
@@ -138,11 +127,30 @@ void CombatInstance::executePlayerAttack(int attacker, int characterType) {
 	}
 }
 
+void CombatInstance::executePlayerCastSpell(int player) {
+	Attributes caster;
+	Attributes target;
+	Target targetType;
+	if (player == PLAYER_ONE) {
+		caster = DatabaseTool::getAttributes(player, playerOneTarget);
+		targetType = playerTwoTarget;
+		target = DatabaseTool::getAttributes(playerTwoID, playerTwoTarget);
+	}
+	else {
+		caster = DatabaseTool::getAttributes(player, playerTwoTarget);
+		targetType = playerTwoTarget;
+		target = DatabaseTool::getAttributes(playerOneID, playerOneTarget);
+	}
+	Spell currentSpell = DatabaseTool::getSpell(playersSpellQueue.at(player).front());
+	playersSpellQueue.at(player).pop_front();
+	Spellcasting::immediatelyCastSpell(&currentSpell, caster, target, targetType);
+}
+
 void CombatInstance::executePlayerRetreat(int player) {
 	if (player == PLAYER_ONE) {
 		prioritize = PLAYER_TWO;
-		if (enemyType == PLAYER_ONLY) {
-			if (DatabaseTool::getAttributes(player, getTargetFromType(PLAYER_ONLY)).health > 0) {
+		if (playerTwoTarget == Target::character) {
+			if (DatabaseTool::getAttributes(player, playerOneTarget).health > 0) {
 				Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You turn to run away.");
 				Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, RETREAT_NOTIFICATION);
 			}
@@ -150,7 +158,7 @@ void CombatInstance::executePlayerRetreat(int player) {
 	}
 	else if (player == PLAYER_TWO) {
 		prioritize = PLAYER_ONE;
-		if (DatabaseTool::getAttributes(player, getTargetFromType(enemyType)).health > 0) {
+		if (DatabaseTool::getAttributes(player, playerTwoTarget).health > 0) {
 			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You turn to run away.");
 			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, RETREAT_NOTIFICATION);
 		}
@@ -160,21 +168,21 @@ void CombatInstance::executePlayerRetreat(int player) {
 
 void CombatInstance::executePlayerLeave(int player) {
 	keepFighting = false;
-	if (player == PLAYER_ONE && enemyType == PLAYER_ONLY) {
-		if (DatabaseTool::getAttributes(player, getTargetFromType(PLAYER_ONLY)).health > 0) {
+	if (player == PLAYER_ONE && playerTwoTarget == Target::character) {
+		if (DatabaseTool::getAttributes(player, playerOneTarget).health > 0) {
 			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You get away!");
 			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, LEAVE_NOTIFICATION);
 		}
 	}
 	else if (player == PLAYER_TWO) {
-		if (DatabaseTool::getAttributes(player, getTargetFromType(enemyType)).health > 0) {
+		if (DatabaseTool::getAttributes(player, playerTwoTarget).health > 0) {
 			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You get away!");
 			Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, LEAVE_NOTIFICATION);
 		}
 	}
 }
 
-void CombatInstance::executePlayerAction(int player, int characterType) {
+void CombatInstance::executePlayerAction(int player, Target characterType) {
 	if (playersActionQueue.at(player).empty()) {
 		playersActionQueue.at(player).push_back(ATTACK_ACTION);
 	}
@@ -183,6 +191,9 @@ void CombatInstance::executePlayerAction(int player, int characterType) {
 
 	if (action == ATTACK_ACTION) {
 		CombatInstance::executePlayerAttack(player, characterType);
+	}
+	else if (action == CAST_SPELL_ACTION) {
+		CombatInstance::executePlayerCastSpell(player);
 	}
 	else if (action == RETREAT_ACTION) {
 		CombatInstance::executePlayerRetreat(player);
@@ -193,7 +204,7 @@ void CombatInstance::executePlayerAction(int player, int characterType) {
 }
 
 void CombatInstance::runCombat() {
-	if (enemyType == PLAYER_ONLY) {
+	if (playerTwoTarget == Target::character) {
 		CombatInstance::waitForChallengeAccept();
 	}
 	else {
@@ -202,20 +213,21 @@ void CombatInstance::runCombat() {
 		challengeAccepted = true;   // Unnecessary, but it would annoy me if we were fighting with challengeAccepted being false =P
 		string challengerName = DatabaseTool::getCharNameFromID(playerOneID);
 		string npcName = DatabaseTool::getNpcName(playerTwoID);
-		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + " has started fighting " + npcName + "!\n", vector<int>(playerOneID));
+		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + " has started fighting " + npcName + "!", vector<int>(playerOneID));
 	}
-
-	playersActionQueue.push_back(deque<int> (1, ATTACK_ACTION));
-	playersActionQueue.push_back(deque<int> (1, ATTACK_ACTION));
+	playersSpellQueue.push_back(deque<Spell> ());
+	playersSpellQueue.push_back(deque<Spell> ());
+	playersActionQueue.push_back(deque<int> ());
+	playersActionQueue.push_back(deque<int> ());
 
 	while (keepFighting) {
 		if (prioritize == PLAYER_TWO) {
-			CombatInstance::executePlayerAction(PLAYER_TWO, enemyType);	
-			CombatInstance::executePlayerAction(PLAYER_ONE, PLAYER_ONLY);
+			CombatInstance::executePlayerAction(PLAYER_TWO, playerTwoTarget);	
+			CombatInstance::executePlayerAction(PLAYER_ONE, playerOneTarget);
 		}
 		else {
-			CombatInstance::executePlayerAction(PLAYER_ONE, PLAYER_ONLY);
-			CombatInstance::executePlayerAction(PLAYER_TWO, enemyType);	
+			CombatInstance::executePlayerAction(PLAYER_ONE, playerOneTarget);
+			CombatInstance::executePlayerAction(PLAYER_TWO, playerTwoTarget);	
 		}
 		sleep(HEARTBEAT_SECONDS);
 	}
@@ -224,7 +236,7 @@ void CombatInstance::runCombat() {
 // --------Public functions--------
 
 bool CombatInstance::isCombatant(int playerID) {
-	if ((playerOneID == playerID) || ((enemyType == PLAYER_ONLY) && (playerTwoID == playerID))) {
+	if (((playerOneTarget == Target::character) && (playerOneID == playerID)) || ((playerTwoTarget == Target::character) && (playerTwoID == playerID))) {
 		return true;
 	}
 	return false;
@@ -232,6 +244,17 @@ bool CombatInstance::isCombatant(int playerID) {
 
 bool CombatInstance::isInitiator(int playerID) {
 	return (playerID == playerOneID);
+}
+
+void CombatInstance::getOpponent(int playerID, int *opponentID, Target *opponentType) {
+	if (playerID == playerOneID) {
+		*opponentID = playerTwoID;
+		*opponentType = playerTwoTarget;
+	}
+	else {
+		*opponentID = playerOneID;
+		*opponentType = playerOneTarget;
+	}
 }
 
 bool CombatInstance::inZone(int zoneID) {
@@ -249,13 +272,30 @@ bool CombatInstance::isReadyForCleanup() {
 	return readyForCleanup;
 }
 
-void CombatInstance::queuePlayerAction(int playerID, int action) {
+string CombatInstance::queuePlayerAction(int playerID, int action) {
 	if (playerID == playerOneID) {
+		if (playersActionQueue.at(PLAYER_ONE).size() >= CombatInstance::MAX_ACTIONS_QUEUE) {
+			return "You cannot queue more than " + std::to_string(CombatInstance::MAX_ACTIONS_QUEUE) + " actions at once.";
+		}
 		pushPlayerAction(PLAYER_ONE, action);
 	}
 	else if (playerID == playerTwoID) {
+		if (playersActionQueue.at(PLAYER_TWO).size() >= CombatInstance::MAX_ACTIONS_QUEUE) {
+			return "You cannot queue more than " + std::to_string(CombatInstance::MAX_ACTIONS_QUEUE) + " actions at once.";
+		}
 		pushPlayerAction(PLAYER_TWO, action);
 	}
+	return "";
+}
+
+string CombatInstance::queuePlayerAction(int playerID, int action, Spell *currentSpell) {
+	if (playerID == playerOneID) {
+		playersSpellQueue.at(PLAYER_ONE).push_back(currentSpell->spellName);
+	}
+	else if (playerID == playerTwoID) {
+		playersSpellQueue.at(PLAYER_TWO).push_back(currentSpell->spellName);
+	}
+	CombatInstance::queuePlayerAction(playerID, action);
 }
 
 void CombatInstance::acceptChallenge() {
@@ -264,16 +304,16 @@ void CombatInstance::acceptChallenge() {
 
 void CombatInstance::rejectChallenge() {
 	if (!challengeAccepted) {
-		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You calmly explain to " + DatabaseTool::getCharNameFromID(playerOneID) + " that you do not want to fight at the moment.\n");
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerTwoID) + " tells you you're not worthy to fight him.\n");
+		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You calmly explain to " + DatabaseTool::getCharNameFromID(playerOneID) + " that you do not want to fight at the moment.");
+		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerTwoID) + " tells you you're not worthy to fight them.");
 		CombatInstance::endCombat("");
 	}
 }
 
 void CombatInstance::retractChallenge() {
 	if (!challengeAccepted) {
-		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You decide you don't really want to fight " + DatabaseTool::getCharNameFromID(playerTwoID) + ", so you retract the challenge.\n");
-		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerOneID) + " retracts his challenge.\n");
+		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You decide you don't really want to fight " + DatabaseTool::getCharNameFromID(playerTwoID) + ", so you retract the challenge.");
+		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerOneID) + " retracts their challenge.");
 		CombatInstance::endCombat("");
 	}
 }
@@ -294,21 +334,21 @@ void CombatInstance::playerDisconnect(int playerID) {
 		opponentID = playerTwoID;
 	}
 	if (!challengeAccepted) {
-		Server::sendMessageToCharacter(opponentID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerID) + " disconnected, so don't worry about responding to their challenge.\n");
+		Server::sendMessageToCharacter(opponentID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerID) + " disconnected, so do not worry about responding to their challenge.");
 		CombatInstance::endCombat("");
 	}
 	else if (keepFighting) {
-		Server::sendMessageToCharacter(opponentID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerID) + " disconnected.\n");
+		Server::sendMessageToCharacter(opponentID, GameCode::COMBAT, DatabaseTool::getCharNameFromID(playerID) + " disconnected.");
 		playerWin(opponentID);
 		CombatInstance::endCombat("");	
 	}
 }
 
-CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID) {
+CombatInstance::CombatInstance(int playerID, int enemyID, Target givenEnemyType, int zoneID) {
 	DatabaseTool::setCombatFlag(playerID, true, Target::character);
 
 	combatZoneID = zoneID;
-	enemyType = givenEnemyType;
+	playerTwoTarget = givenEnemyType;
 	playerOneID = playerID;
 	playerTwoID = enemyID;
 
@@ -317,6 +357,6 @@ CombatInstance::CombatInstance(int playerID, int enemyID, int givenEnemyType, in
 
 CombatInstance::~CombatInstance() {
 	if (!readyForCleanup) {
-		endCombat("Your fight has been ended prematurely.\n");
+		endCombat("Your fight has been ended prematurely.");
 	}
 }

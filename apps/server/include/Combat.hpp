@@ -37,13 +37,15 @@ class Combat {
 
 	static string respondToChallenge(int playerID, string command, string arguments);
 
-	static bool isInCombat(int characterID, int characterType);
+	static bool isInCombat(int characterID, Target characterType);
 
 public:
 
 	static string executeCommand(int playerID, Command givenCommand);
+	static string queueSpell(int playerID, Spell *currentSpell);
 	
 	static bool isInCombat(int playerID);
+	static bool getOpponent(int playerID, int *opponentID, Target *opponentType);
 
 	static void endCombat(int playerID, string message);
 	static void endCombat(int playerID);

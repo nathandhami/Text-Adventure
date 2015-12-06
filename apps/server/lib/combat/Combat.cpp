@@ -84,7 +84,7 @@ string Combat::startCombat(int playerID, string arguments) {
 	boost::trim(arguments);
 	boost::split(parsedArgument, arguments, boost::is_any_of(" "));
 	
-	int enemyType = PLAYER_OR_NPC;
+	Target enemyType = Target::null;
 	string enemyName = "";
 	for (int parsedArgumentIndex = 0; parsedArgumentIndex < parsedArgument.size(); parsedArgumentIndex++) {
 		enemyName = parsedArgument.at(parsedArgumentIndex);
@@ -92,10 +92,10 @@ string Combat::startCombat(int playerID, string arguments) {
 			string disambiguityCheck = enemyName;
 			boost::to_lower(disambiguityCheck);
 			if (disambiguityCheck == "player") {
-				enemyType = PLAYER_ONLY;
+				enemyType = Target::character;
 			}
 			else if (disambiguityCheck == "npc") {
-				enemyType = NPC_ONLY;
+				enemyType = Target::npc;
 			}
 			else {
 				break;
@@ -108,14 +108,14 @@ string Combat::startCombat(int playerID, string arguments) {
 
 	// This is pretty ugly, but I can't think of a cleaner way to do it
 	int enemyPlayerID = 0;
-	if (enemyType == PLAYER_OR_NPC || enemyType == PLAYER_ONLY) {
+	if (enemyType == Target::null || enemyType == Target::character) {
 		enemyPlayerID = DatabaseTool::getCharIDFromName(enemyName);
 		if (!DatabaseTool::isCharOnline(enemyPlayerID) || (DatabaseTool::getCharsLocation(playerID) != DatabaseTool::getCharsLocation(enemyPlayerID))) {
 			enemyPlayerID = 0;
 		}
 	}
 	int enemyNpcID = 0;
-	if (enemyType == PLAYER_OR_NPC || enemyType == NPC_ONLY) {
+	if (enemyType == Target::null || enemyType == Target::npc) {
 		enemyNpcID = DatabaseTool::getNpcInstanceIDFromName(enemyName, DatabaseTool::getCharsLocation(playerID));
 	}
 
@@ -126,25 +126,25 @@ string Combat::startCombat(int playerID, string arguments) {
 		if (playerID == enemyPlayerID) {
 			return "You punch yourself in the face.";
 		}
-		if (Combat::isInCombat(enemyPlayerID, PLAYER_ONLY)) {
+		if (Combat::isInCombat(enemyPlayerID, Target::character)) {
 			return enemyName + " is already in combat.";
 		}
 		if (DatabaseTool::getAttributes(enemyPlayerID, Target::character).health <= 0) {
 			return enemyName + " is dead, leave them be.";
 		}
 		combatInstancesLock.lock();
-		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyPlayerID, PLAYER_ONLY, DatabaseTool::getCharsLocation(playerID)));
+		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyPlayerID, Target::character, DatabaseTool::getCharsLocation(playerID)));
 		combatInstancesLock.unlock();
 	}
 	else if (enemyNpcID > 0) {
-		if (Combat::isInCombat(enemyNpcID, NPC_ONLY)) {
+		if (Combat::isInCombat(enemyNpcID, Target::npc)) {
 			return enemyName + " is already in combat.";
 		}
 		if (DatabaseTool::getAttributes(enemyNpcID, Target::npc).health <= 0) {
 			return enemyName + " is dead, leave them be.";
 		}
 		combatInstancesLock.lock();
-		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyNpcID, NPC_ONLY, DatabaseTool::getCharsLocation(playerID)));
+		combatInstances.push_back(std::make_shared<CombatInstance>(playerID, enemyNpcID, Target::npc, DatabaseTool::getCharsLocation(playerID)));
 		combatInstancesLock.unlock();
 	}
 	else {
@@ -161,31 +161,25 @@ string Combat::queueAttack(int playerID) {
 	if (instance == NULL) {
 		cout << "PlayerID " << playerID << "'s CombatInstance does not exist even though they are in combat." << endl;
 		DatabaseTool::setCombatFlag(playerID, false, Target::character);
-		return "Unfortunately, something seems to have failed in our combat system, your fight could not be found.\nYou have been removed from combat.\n";
+		return "Unfortunately, something seems to have failed in our combat system, your fight could not be found.\nYou have been removed from combat.";
 	}
-	instance->queuePlayerAction(playerID, ATTACK_ACTION);
-	return "";
+	return instance->queuePlayerAction(playerID, ATTACK_ACTION);
 }
 
 string Combat::retreat(int playerID) {
 	if (!Combat::isInCombat(playerID)) {
-		return "Calm down, you're not even in combat.\n";
+		return "Calm down, you're not even in combat.";
 	}
 	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(playerID);
 	if (instance == NULL) {
 		cout << "PlayerID " << playerID << "'s CombatInstance does not exist even though they are in combat." << endl;
 		DatabaseTool::setCombatFlag(playerID, false, Target::character);
-		return "Strangely, something seems to have failed in our combat system, your fight could not be found.\nYou have been removed from combat.\n";
+		return "Strangely, something seems to have failed in our combat system, your fight could not be found.\nYou have been removed from combat.";
 	}
-	instance->queuePlayerAction(playerID, RETREAT_ACTION);
-	return "";
+	return instance->queuePlayerAction(playerID, RETREAT_ACTION);
 }
 
 string Combat::respondToChallenge(int playerID, string command, string arguments) {
-	/*if (Combat::isInCombat(playerID)) {
-		return "Finish your current fight before starting another, you barbarian.\n";
-	}*/
-
 	boost::trim(arguments);
 
 	deque<std::string> parsedArgument;
@@ -201,11 +195,11 @@ string Combat::respondToChallenge(int playerID, string command, string arguments
 	
 	int opponentID = DatabaseTool::getCharIDFromName(enemyName);
 	if (playerID == opponentID) {
-		return "You must specify the opponent's name, not your own.\n";
+		return "You must specify the opponent's name, not your own.";
 	}
 	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(playerID, opponentID);
 	if (instance == NULL) {
-		return "You have no active challenges with " + enemyName + ".\n";
+		return "You have no active challenges with " + enemyName + ".";
 	}
 
 	if (command == "accept challenge") {
@@ -214,7 +208,7 @@ string Combat::respondToChallenge(int playerID, string command, string arguments
 			instance->acceptChallenge();
 		}
 		else {
-			return "Patience, you have to let THEM accept YOUR challenge\n";
+			return "Patience, you have to let THEM accept YOUR challenge.";
 		}
 	}
 	else if (command == "reject challenge") {
@@ -222,7 +216,7 @@ string Combat::respondToChallenge(int playerID, string command, string arguments
 			instance->rejectChallenge();
 		}
 		else {
-			return "If you want to retract your challenge to " + enemyName + " use the following command\n    retract challenge " + enemyName + "\n";
+			return "If you want to retract your challenge to " + enemyName + " use the following command\n    retract challenge " + enemyName;
 		}
 	}
 	else if (command == "retract challenge") {
@@ -230,17 +224,17 @@ string Combat::respondToChallenge(int playerID, string command, string arguments
 			instance->retractChallenge();
 		}
 		else {
-			return "If you want to reject " + enemyName + "'s challenge use the following command\n    reject challenge " + enemyName + "\n";
+			return "If you want to reject " + enemyName + "'s challenge use the following command\n    reject challenge " + enemyName;
 		}
 	}
 	return "";
 }
 
-bool Combat::isInCombat(int characterID, int characterType) {
-	if (characterType == PLAYER_ONLY) {
+bool Combat::isInCombat(int characterID, Target characterType) {
+	if (characterType == Target::character) {
 		return DatabaseTool::inCombat(characterID, Target::character);
 	}
-	else if (characterType == NPC_ONLY) {
+	else if (characterType == Target::npc) {
 		return DatabaseTool::inCombat(characterID, Target::npc);
 	}
 	return true;
@@ -266,11 +260,33 @@ string Combat::executeCommand(int playerID, Command givenCommand) {
 	else if (command == "accept challenge" || command == "reject challenge" || command == "retract challenge") {
 		return Combat::respondToChallenge(playerID, command, arguments);
 	}
-	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
+	return "The command " + command + " was not recognized. Check help for a list of valid commands.";
+}
+
+string Combat::queueSpell(int playerID, Spell *currentSpell) {
+	if (!Combat::isInCombat(playerID)) {
+		return "For some strange reason your spell was queued as an in-combat attack, yet you are not in combat.\nWe cannot trust the source of your spell queueing, your spell has been cancelled.\nWe apologise for the inconvenience.";
+	}
+	std::shared_ptr<CombatInstance> instance = Combat::getCombatInstance(playerID);
+	if (instance == NULL) {
+		cout << "PlayerID " << playerID << "'s CombatInstance does not exist even though they are in combat." << endl;
+		DatabaseTool::setCombatFlag(playerID, false, Target::character);
+		return "Unfortunately, something seems to have failed in our combat system, your fight could not be found.\nYou have been removed from combat.";
+	}
+	return instance->queuePlayerAction(playerID, CAST_SPELL_ACTION, currentSpell);
 }
 
 bool Combat::isInCombat(int playerID) {
-	return Combat::isInCombat(playerID, PLAYER_ONLY);
+	return Combat::isInCombat(playerID, Target::character);
+}
+
+bool Combat::getOpponent(int playerID, int *opponentID, Target *opponentType) {
+	std::shared_ptr<CombatInstance> combatInstance = Combat::getCombatInstance(playerID);
+	if (combatInstance != NULL) {
+		combatInstance->getOpponent(playerID, opponentID, opponentType);
+		return true;
+	}
+	return false;
 }
 
 void Combat::endCombat(int playerID, string message) {	
@@ -285,7 +301,7 @@ void Combat::endCombat(int playerID, string message) {
 }
 
 void Combat::endCombat(int playerID) {
-	Combat::endCombat(playerID, "Your combat has been ended prematurely.\n");
+	Combat::endCombat(playerID, "Your combat has been ended prematurely.");
 }
 
 void Combat::endAllCombat(string message) {
@@ -299,7 +315,7 @@ void Combat::endAllCombat(string message) {
 }
 
 void Combat::endAllCombat() {
-	Combat::endAllCombat("Your combat has been ended prematurely.\n");
+	Combat::endAllCombat("Your combat has been ended prematurely.");
 }
 
 void Combat::endAllCombat(int zoneID, string message) {
@@ -326,7 +342,7 @@ void Combat::endAllCombat(int zoneID, string message) {
 }
 
 void Combat::endAllCombat(int zoneID) {
-	Combat::endAllCombat(zoneID, "Your combat has been ended prematurely.\n");
+	Combat::endAllCombat(zoneID, "Your combat has been ended prematurely.");
 }
 
 void Combat::playerDisconnect(int playerID) {

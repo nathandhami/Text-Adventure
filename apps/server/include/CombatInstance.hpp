@@ -5,14 +5,15 @@
 #include "DatabaseTool.hpp"
 #include "Server.hpp"
 #include "Zone.hpp"
+#include "Spellcasting.hpp"
 #include <deque>
 #include <unistd.h>
 #include <thread>
 
-#define RETREAT_NOTIFICATION "Your opponent turns to run away!\n"
-#define LEAVE_NOTIFICATION "Your opponent got away!\n"
-#define VICTORY_NOTIFICATION "You defeated your opponent!\n"
-#define DEFEAT_NOTIFICATION "You were defeated!\n"
+#define RETREAT_NOTIFICATION "Your opponent turns to run away!"
+#define LEAVE_NOTIFICATION "Your opponent got away!"
+#define VICTORY_NOTIFICATION "You defeated your opponent!"
+#define DEFEAT_NOTIFICATION "You were defeated!"
 
 
 using namespace std;
@@ -20,8 +21,11 @@ using namespace std;
 class CombatInstance {
 	static const int HEARTBEAT_SECONDS = 1;
 	static const int CHALLENGE_TIMEOUT = 30;
+	static const int MAX_ACTIONS_QUEUE = 10;
+	// --- Do not change these ---
 	static const int PLAYER_ONE = 0;
 	static const int PLAYER_TWO = 1;
+	// ---------------------------
 
 	bool challengeAccepted = false;
 	bool playerTwoPresent = false;
@@ -30,36 +34,37 @@ class CombatInstance {
 	bool readyForCleanup = false;
 
 	int combatZoneID = 0;
-	int enemyType = 0;
+	
 	int playerOneID = 0;
+	Target playerOneTarget = Target::character;
 	int playerTwoID = 0;
+	Target playerTwoTarget = Target::null;
 
 	int prioritize = PLAYER_ONE;
 
 	thread combatThread;
 
 	deque<deque<int>> playersActionQueue;
+	deque<deque<string>> playersSpellQueue;
 
-	void getTargetFromType(int characterType);
-
-	void removePlayerFromCombat(int playerID, int playerType, string message);
+	void removePlayerFromCombat(int playerID, Target playerType, string message);
 	void removePlayersFromCombat(string message);
 
 	void pushPlayerAction(int player, int action);
 
 	void waitForChallengeAccept();
 
-	void notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
+	void notifyAttack(int player, Target characterType, int damageDealt, int healthRemaining);
 	
 	void playerWin(int playerID);
 	void playerLose(int playerID);
 
-	void executePlayerAttack(int attacker, int characterType);
+	void executePlayerAttack(int attacker, Target characterType);
 	
 	void executePlayerRetreat(int player);
 	void executePlayerLeave(int player);
 
-	void executePlayerAction(int player, int characterType);
+	void executePlayerAction(int player, Target characterType);
 
 	void runCombat();
 
@@ -68,6 +73,7 @@ public:
 
 	bool isCombatant(int playerID);
 	bool isInitiator(int playerID);
+	void getOpponent(int playerID, int *opponentID, Target *opponentType);
 
 	bool inZone(int zoneID);
 
@@ -75,7 +81,8 @@ public:
 
 	bool isReadyForCleanup();
 
-	void queuePlayerAction(int playerID, int action);
+	string queuePlayerAction(int playerID, int action);
+	string queuePlayerAction(int playerID, int action, Spell *currentSpell);
 
 	void acceptChallenge();
 	void rejectChallenge();
@@ -85,7 +92,7 @@ public:
 
 	void playerDisconnect(int playerID);
 	
-	CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID);
+	CombatInstance(int playerID, int enemyID, Target givenEnemyType, int zoneID);
 
 	~CombatInstance();
 
