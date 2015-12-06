@@ -57,12 +57,12 @@ string World::playerDropItem(int playerID, string item) {
 }
 
 void World::runRespawn() {
-	int counter = 0;
+	int respawnCounter = 0;
 	while (keepRespawning) {
-		counter++;
-		if (counter >= RESPAWN_TIME_SECONDS) {
+		respawnCounter++;
+		if (respawnCounter >= RESPAWN_TIME_SECONDS) {
 			DatabaseTool::respawnAll();
-			counter = 0;
+			respawnCounter = 0;
 		}
 		sleep(1);
 	}

@@ -63,7 +63,7 @@ string Spellcasting::castUtilitySpell(Spell *currentSpell, Attributes *caster, A
 	}
 	else if (currentSpell->spellName == "switch bodies") {
 		// Body swap brings a swathe of changes to our project structure. Doable, but not safely within the time we have left.
-		return "Unfortunately this spell is still a work in progress.\nWe apologize for the inconvenience."
+		return "Unfortunately this spell is still a work in progress.\nWe apologise for the inconvenience."
 	}
 }
 
@@ -115,9 +115,15 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 	}
 	else if (enemyType == Target::character) {
 		target = DatabaseTool::getAttributes(DatabaseTool::getCharIDFromName(enemyName), Target::character);
+		if (DatabaseTool::getCharsLocation(casterID) != DatabaseTool::getCharsLocation(target->id)) {
+			return enemyName + " is not in your area.";
+		}
 	}
 	else if (enemyType == Target::npc) {
 		target = DatabaseTool::getAttributes(DatabaseTool::getNpcInstanceIDFromName(enemyName, DatabaseTool::getCharsLocation(casterID)), Target::npc);
+		if (target->id <= 0) {
+			return "There is no " + enemyName + " in the area.";
+		}
 	}
 	else {
 		int targetPlayerID = DatabaseTool::getCharIDFromName(enemyName);
@@ -128,10 +134,16 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 		if (targetPlayerID > 0) {
 			target = DatabaseTool::getAttributes(targetPlayerID, Target::character);
 			enemyType = Target::character;
+			if (DatabaseTool::getCharsLocation(casterID) != DatabaseTool::getCharsLocation(target->id)) {
+				return enemyName + " is not in your area.";
+			}
 		}
 		else if (targetNPCID > 0) {
 			target = DatabaseTool::getAttributes(targetNPCID, Target::npc);
 			enemyType = Target::npc;
+			if (target->id <= 0) {
+				return "There is no " + enemyName + " in the area.";
+			}
 		}
 	}
 	if (currentSpell.archetypeID == SpellType::offensive) {
@@ -256,6 +268,18 @@ int Spellcasting::parseSpellEffectStringToNumber(string spellEffect, Attributes 
 	return boost::lexical_cast<int>(spellEffect);
 }
 
+string Spellcasting::insertNamesIntoHitMsg(string hitMsg, string name) {
+	deque<std::string> parsedArgument;
+	// Handle brackets
+	boost::split(parsedArgument, spellEffect, boost::is_any_of("$N"));
+	string newHitMsg = "";
+	newHitMsg += parsedArgument.at(0);
+	for (int index = 1; index < parsedArgument.size(); index++) {
+		newHitMsg += name + parsedArgument.at(index);
+	}
+	return newHitMsg;
+}
+
 // --------Public functions--------
 
 string Spellcasting::executeCommand(int playerID, Command givenCommand) {
@@ -310,6 +334,8 @@ string Spellcasting::immediatelyCastSpell(Spell *currentSpell, Attributes *caste
 	DatabaseTool::updateAttributes(targetModifier, targetType);
 	
 	// Immediately send messages to caster and target based on fields in currentSpell
+	Server::sendMessageToCharacter(caster->id, GameCode::COMBAT, insertNamesIntoHitMsg(currentSpell->hitChar, DatabaseTool::getCharNameFromID(target->id)));
+	Server::sendMessageToCharacter(target->id, GameCode::COMBAT, currentSpell->hitVict);
 
 	return "";
 }
