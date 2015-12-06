@@ -12,6 +12,7 @@ CREATE TABLE characters (
   userID integer,
   location integer,
   description text,
+  isStupified integer,
   FOREIGN KEY(userID) REFERENCES users(userID) on delete cascade,
   FOREIGN KEY(location) REFERENCES zones(zoneID)
 );
@@ -185,7 +186,7 @@ CREATE TABLE knownSpells (
   spellName text,
   resetTime integer,
   FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
-  FOREIGN KEY(spellName) REFERENCES defensiveSpell(spellName) on delete cascade
+  FOREIGN KEY(spellName) REFERENCES spell(spellName) on delete cascade
 );
 
 CREATE TABLE spellTeacher (

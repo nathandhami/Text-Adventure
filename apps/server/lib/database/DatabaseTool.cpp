@@ -1234,49 +1234,176 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 		databaseMutex.lock();
 		database db(DB_LOCATION);
 
+		string targetTable = "";
+		string idColName = "";
+
 		if(characterOrNpc == Target::character) {
-			db << "UPDATE playerAttributes SET level = ?, experience = ?, requiredExp = ?, health = ?, maxHealth = ?, mana = ?, maxMana = ?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where charID = ?;"
-			<<attributes.level
-			<<attributes.experience
-			<<attributes.requiredExperience
-			<<attributes.health
-			<<attributes.maxHealth
-			<<attributes.mana
-			<<attributes.maxMana
-			<<attributes.strength
-			<<attributes.intelligence
-			<<attributes.dexterity
-			<<attributes.charisma
-			<<attributes.ringSlot
-			<<attributes.headSlot
-			<<attributes.chestSlot
-			<<attributes.greavesSlot
-			<<attributes.feetSlot
-			<<attributes.handSlot
-			<<attributes.weponSlot
-			<<attributes.id;
+			targetTable = "playerAttributes";
+			idColName = "charID";
 		} else if(characterOrNpc == Target::npc) {
-			db << "UPDATE npcAttributes SET level = ?, experience = ?, requiredExp = ?, health = ?, maxHealth = ?, mana = ?, maxMana =?, strength = ?, intelligence = ?, dexterity = ?, charisma = ?, ringSlot = ? , headSlot = ?, chestSlot = ?, greavesSlot = ?, feetSlot = ?, handSlot = ?, weponSlot = ? where npcInstanceID = ?;"
-			<<attributes.level
-			<<attributes.experience
-			<<attributes.requiredExperience
-			<<attributes.health
-			<<attributes.maxHealth
-			<<attributes.mana
-			<<attributes.maxMana
-			<<attributes.strength
-			<<attributes.intelligence
-			<<attributes.dexterity
-			<<attributes.charisma
-			<<attributes.ringSlot
-			<<attributes.headSlot
-			<<attributes.chestSlot
-			<<attributes.greavesSlot
-			<<attributes.feetSlot
-			<<attributes.handSlot
-			<<attributes.weponSlot
+			targetTable = "npcAttributes";
+			idColName = "npcInstanceID";
+		}
+		db << "begin;";
+		
+		if(attributes.level != 0) {
+			int level = 0;
+			string selectStatment = "select level from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>level;
+
+			level = level + attributes.level;
+
+			string updateStatement = "update " + targetTable + " set level = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<level
+			<<attributes.id;
+
+		}
+		if(attributes.experience != 0) {
+			int experience = 0;
+			string selectStatment = "select experience from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>experience;
+
+			experience = experience + attributes.experience;
+
+			string updateStatement = "update " + targetTable + " set experience = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<experience
+			<<attributes.id;
+
+		}
+		if(attributes.requiredExperience != 0) {
+			int requiredExperience = 0;
+			string selectStatment = "select requiredExp from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>requiredExperience;
+
+			requiredExperience = requiredExperience + attributes.requiredExperience;
+
+			string updateStatement = "update " + targetTable + " set requiredExp = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<requiredExperience
 			<<attributes.id;
 		}
+		if(attributes.health != 0) {
+			int health = 0;
+			string selectStatment = "select health from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>health;
+
+			health = health + attributes.health;
+
+			string updateStatement = "update " + targetTable + " set health = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<health
+			<<attributes.id;
+		}
+		if(attributes.maxHealth != 0) {
+			int maxHealth = 0;
+			string selectStatment = "select maxHealth from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>maxHealth;
+
+			maxHealth = maxHealth + attributes.maxHealth;
+
+			string updateStatement = "update " + targetTable + " set maxHealth = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<maxHealth
+			<<attributes.id;
+		}
+		if(attributes.mana != 0) {
+			int mana = 0;
+			string selectStatment = "select mana from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>mana;
+
+			mana = mana + attributes.mana;
+
+			string updateStatement = "update " + targetTable + " set mana = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<mana
+			<<attributes.id;
+		}
+		if(attributes.maxMana != 0) {
+			int maxMana = 0;
+			string selectStatment = "select maxMana from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>maxMana;
+
+			maxMana = maxMana + attributes.maxMana;
+
+			string updateStatement = "update " + targetTable + " set maxMana = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<maxMana
+			<<attributes.id;
+		}
+		if(attributes.strength != 0) {
+			int strength = 0;
+			string selectStatment = "select strength from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>strength;
+
+			strength = strength + attributes.strength;
+
+			string updateStatement = "update " + targetTable + " set strength = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<strength
+			<<attributes.id;
+		}
+		if(attributes.intelligence != 0) {
+			int intelligence = 0;
+			string selectStatment = "select intelligence from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>intelligence;
+
+			intelligence = intelligence + attributes.intelligence;
+
+			string updateStatement = "update " + targetTable + " set intelligence = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<intelligence
+			<<attributes.id;
+		}
+		if(attributes.dexterity != 0) {
+			int dexterity = 0;
+			string selectStatment = "select dexterity from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>dexterity;
+
+			dexterity = dexterity + attributes.dexterity;
+
+			string updateStatement = "update " + targetTable + " set dexterity = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<dexterity
+			<<attributes.id;
+		}
+		if(attributes.charisma != 0) {
+			int charisma = 0;
+			string selectStatment = "select charisma from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectStatment
+			<<attributes.id
+			>>charisma;
+
+			charisma = charisma + attributes.charisma;
+
+			string updateStatement = "update " + targetTable + " set charisma = ? where " + idColName + " = ?;";
+			db << updateStatement
+			<<charisma
+			<<attributes.id;
+		}
+
+		db << "commit;";
 
 		databaseMutex.unlock();
 	} catch (sqlite_exception e) {
