@@ -55,7 +55,7 @@ int CastSpell::parseSpellEffectStringToNumber(string spellEffect, Attributes *ca
 			deque<std::string> parsedOnBracket;
 			boost::split(parsedOnBracket, parsedArgument.at(argumentIndex), boost::is_any_of(")"));
 			if (parsedOnBracket.size() > 1) {
-				numericEquationString += CastSpell::parseSpellEffectStringToNumber(parsedOnBracket.at(0), caster, target).str();
+				numericEquationString += std::to_string(CastSpell::parseSpellEffectStringToNumber(parsedOnBracket.at(0), caster, target));
 				for (int bracketIndex = 1; bracketIndex < parsedOnBracket.size(); bracketIndex++) {
 					numericEquationString += parsedOnBracket.at(bracketIndex);
 				}

@@ -63,7 +63,7 @@ string Spellcasting::castUtilitySpell(Spell *currentSpell, Attributes *caster, A
 	}
 	else if (currentSpell->spellName == "switch bodies") {
 		// Body swap brings a swathe of changes to our project structure. Doable, but not safely within the time we have left.
-		return "Unfortunately this spell is still a work in progress.\nWe apologise for the inconvenience."
+		return "Unfortunately this spell is still a work in progress.\nWe apologise for the inconvenience.";
 	}
 }
 
@@ -107,7 +107,7 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 	Spell currentSpell = DatabaseTool::getSpell(spellName);
 	Attributes caster = DatabaseTool::getAttributes(casterID, Target::character);
 	if (caster.level < currentSpell.minLevel) {
-		return "Your level is too low to cast that spell (" + currentSpell.spellName + " requires level " + currentSpell.minLevel + " to cast).";
+		return "Your level is too low to cast that spell (" + currentSpell.spellName + " requires level " + std::to_string(currentSpell.minLevel) + " to cast).";
 	}
 	Attributes target;
 	if (enemyName == "") {
@@ -115,13 +115,13 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 	}
 	else if (enemyType == Target::character) {
 		target = DatabaseTool::getAttributes(DatabaseTool::getCharIDFromName(enemyName), Target::character);
-		if (DatabaseTool::getCharsLocation(casterID) != DatabaseTool::getCharsLocation(target->id)) {
+		if (DatabaseTool::getCharsLocation(casterID) != DatabaseTool::getCharsLocation(target.id)) {
 			return enemyName + " is not in your area.";
 		}
 	}
 	else if (enemyType == Target::npc) {
 		target = DatabaseTool::getAttributes(DatabaseTool::getNpcInstanceIDFromName(enemyName, DatabaseTool::getCharsLocation(casterID)), Target::npc);
-		if (target->id <= 0) {
+		if (target.id <= 0) {
 			return "There is no " + enemyName + " in the area.";
 		}
 	}
@@ -134,14 +134,14 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 		if (targetPlayerID > 0) {
 			target = DatabaseTool::getAttributes(targetPlayerID, Target::character);
 			enemyType = Target::character;
-			if (DatabaseTool::getCharsLocation(casterID) != DatabaseTool::getCharsLocation(target->id)) {
+			if (DatabaseTool::getCharsLocation(casterID) != DatabaseTool::getCharsLocation(target.id)) {
 				return enemyName + " is not in your area.";
 			}
 		}
 		else if (targetNPCID > 0) {
 			target = DatabaseTool::getAttributes(targetNPCID, Target::npc);
 			enemyType = Target::npc;
-			if (target->id <= 0) {
+			if (target.id <= 0) {
 				return "There is no " + enemyName + " in the area.";
 			}
 		}
