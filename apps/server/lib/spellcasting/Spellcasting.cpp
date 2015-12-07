@@ -107,6 +107,7 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 	Spell currentSpell = DatabaseTool::getSpell(spellName);
 	Attributes caster = DatabaseTool::getAttributes(casterID, Target::character);
 	if (caster.level < currentSpell.minLevel) {
+		//cout << "Level too low (" << currentSpell.minLevel << ")\n";
 		return "Your level is too low to cast that spell (" + currentSpell.spellName + " requires level " + std::to_string(currentSpell.minLevel) + " to cast).";
 	}
 	Attributes target;

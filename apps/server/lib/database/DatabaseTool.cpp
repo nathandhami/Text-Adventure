@@ -2442,6 +2442,7 @@ Spell DatabaseTool::getSpell(string spellName) {
 		};
 
 		databaseMutex.unlock();
+		std::cout << " MIN LEVEL FOR SPELL : " << spell.minLevel << std::endl;
 		return spell;
 
 	} catch (sqlite_exception e) {
