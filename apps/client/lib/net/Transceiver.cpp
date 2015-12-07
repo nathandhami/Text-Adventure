@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <chrono>
 #include <iomanip>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 
 #include "Transceiver.hpp"
@@ -22,7 +24,12 @@ using boost::asio::ip::tcp;
 
 Transceiver::Transceiver() {
 	tcp::resolver resolver( ioService );
-	tcp::resolver::query query( HOST_ADDRESS_IP4, std::to_string( HOST_PORT ) );
+	
+	// Modified code from http://stackoverflow.com/questions/6175502/how-to-parse-ini-file-with-boost by Timo
+	boost::property_tree::ptree pt;
+	boost::property_tree::ini_parser::read_ini( "game.ini", pt );
+	
+	tcp::resolver::query query( pt.get<std::string>( "server.address" ), pt.get<std::string>( "server.port" ) );
 	endpointIterator = resolver.resolve( query );
 	
 	this->connection = std::make_shared< ServerConnection >( ioService, endpointIterator );
