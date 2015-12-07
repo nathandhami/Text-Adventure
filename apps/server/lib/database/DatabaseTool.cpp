@@ -1452,7 +1452,7 @@ bool DatabaseTool::pickUp(int charID, string item) {
 
 
 bool DatabaseTool::dropItem(int charID, string item) {
-	int foundItemID;
+	int foundItemID = 0;
 	int foundInvID;
 	int zoneID;
 	try{
@@ -1472,10 +1472,12 @@ bool DatabaseTool::dropItem(int charID, string item) {
 			<< foundItemID
 			<< zoneID;
 		
+		
+		
 		db 	<< "DELETE FROM player_inventory WHERE ownershipID = ?"
 			<< foundInvID;
 		
-		return true;
+		return foundItemID;
 	} catch(sqlite_exception e) {
 		cout << e.what() << endl;
 		return false;

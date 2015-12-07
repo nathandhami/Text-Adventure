@@ -159,7 +159,7 @@ std::string Character::pickUpItem( int charId, std::string keyword ) {
 std::string Character::dropItem( int charId, std::string keyword ) {
 	int currentZoneID = DatabaseTool::getCharsLocation( charId );
 	if ( !DatabaseTool::dropItem( charId, keyword ) ) {
-		return ( "You look through your bag, but you can't find any " + keyword + "." );
+		return ( "You look through your bag, but you can't find " + keyword + "." );
 	}
 	Character::updateInventory( charId );
 	return ( "You dropped " + keyword + "." );
