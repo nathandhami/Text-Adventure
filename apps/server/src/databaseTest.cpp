@@ -129,20 +129,8 @@ int main(int argc, char* argv[])
       // cout << spell.effect << endl;
 
       //cout << DatabaseTool::getCharacterDescription(1) << endl;
-      Attributes attributes;
-      attributes.level = 1;
-      attributes.experience = 99;
-      attributes.requiredExperience = 999;
-      attributes.id = 1;
-      attributes.health = 15;
-      attributes.maxHealth = 15;
-      attributes.mana = 15;
-      attributes.maxMana = 15;
-      attributes.strength = 1;
-      attributes.intelligence = 1;
-      attributes.dexterity = 1;
-      attributes.charisma =1;
-      DatabaseTool::updateAttributes(attributes, Target::character);
+      cout << DatabaseTool::getNpcLocation(1) << endl;
+
 
    }
    catch(runtime_error e){
@@ -170,10 +158,24 @@ void inventoryTest() {
 }
 
 void updateAttributesTest() {
-   Attributes attributes = DatabaseTool::getAttributes(1, Target::character);
-   attributes.print();
+   // Attributes attributes = DatabaseTool::getAttributes(1, Target::character);
+   // attributes.print();
+   // attributes.level = 1;
+   // attributes.experience = 99;
+   // DatabaseTool::updateAttributes(attributes, Target::character);
+   Attributes attributes;
    attributes.level = 1;
    attributes.experience = 99;
+   attributes.requiredExperience = 999;
+   attributes.id = 1;
+   attributes.health = 15;
+   attributes.maxHealth = 15;
+   attributes.mana = 15;
+   attributes.maxMana = 15;
+   attributes.strength = 1;
+   attributes.intelligence = 1;
+   attributes.dexterity = 1;
+   attributes.charisma =1;
    DatabaseTool::updateAttributes(attributes, Target::character);
 
 }

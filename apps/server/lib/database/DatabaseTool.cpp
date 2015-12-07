@@ -2562,6 +2562,29 @@ string DatabaseTool::getCharDescription( int charID ) {
 	}
 }
 
+int DatabaseTool::getNpcLocation(int npcInstanceID) {
+	try {
+		int zoneID = 0;
+
+		databaseMutex.lock();
+		database db( DB_LOCATION);
+
+		db << "SELECT zoneID from instanceOfNpc where npcInstanceID = ?"
+		<< npcInstanceID
+		>> zoneID;
+
+		return zoneID;
+		databaseMutex.unlock();
+
+	}catch (sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return 0;
+	}
+}
+
 
 
 

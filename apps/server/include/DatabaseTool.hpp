@@ -287,6 +287,8 @@ class DatabaseTool{
 
 		static string getNpcName(int npcInstanceID);
 
+		static int getNpcLocation(int npcInstanceID);
+
 		static bool addNpc(
 		 	int npcID, 
 		 	string description, 
