@@ -52,7 +52,7 @@ std::string ObjectEditor::deleteObject( std::string objectData ) {
 	
 	std::string responseMessage = MSG_INVALID_CMD;
 	try {
-		int objectId = boost::lexical_cast<int>( objectData );
+		int objectId = boost::lexical_cast< int >( objectData );
 		if ( objectId ) {
 			DatabaseTool::deleteObject( objectId );
 			responseMessage = "Deleted object " + std::to_string( objectId );
@@ -62,4 +62,22 @@ std::string ObjectEditor::deleteObject( std::string objectData ) {
 	}
 	
 	return responseMessage;
+}
+
+
+std::string ObjectEditor::placeObject( int creatorId, std::string objectData ) {
+	const std::string MSG_INVALID_CMD = "This is not a valid ID.";
+	
+	try {
+		int objectId = boost::lexical_cast< int >( objectData );
+		int zoneId = DatabaseTool::getCharsLocation( creatorId );
+		
+		if ( DatabaseTool::spawnItemInZone( objectId, zoneId ) ) {
+			return ( "Spawned item [" + objectData + "] at your position." );
+		} else {
+			return MSG_INVALID_CMD;
+		}
+	} catch( boost::bad_lexical_cast const& ) {
+		return MSG_INVALID_CMD;
+	}
 }

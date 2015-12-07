@@ -41,6 +41,7 @@ private:
 	static std::shared_ptr< Transceiver > transceiver;
 	
 	static NetMessage getBusyResponse();
+	static void readUntilHitAndFlush( std::string header );
 	
 	
 	

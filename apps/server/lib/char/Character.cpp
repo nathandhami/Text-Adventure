@@ -148,20 +148,17 @@ std::string Character::pickUpItem( int charId, std::string keyword ) {
 	//TO-DO: add item to inventory
 	int currentZoneID = DatabaseTool::getCharsLocation( charId );
 	if ( !DatabaseTool::pickUp( charId, keyword ) ) {
-//		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item);
 		return "You grabbed the air as if something was in it, but your hand remained empty.";
 	}
 	
 	Character::updateInventory( charId );
 	return ( "You picked up " + keyword );
-	//return stuff
 }
 
 
 std::string Character::dropItem( int charId, std::string keyword ) {
 	int currentZoneID = DatabaseTool::getCharsLocation( charId );
 	if ( !DatabaseTool::dropItem( charId, keyword ) ) {
-//		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item);
 		return ( "You look through your bag, but you can't find any " + keyword + "." );
 	}
 	return ( "You dropped " + keyword + "." );
@@ -172,7 +169,7 @@ std::string Character::equipItem( int charId, std::string keyword ) {
 	if ( DatabaseTool::equipItem( charId, keyword ) ) {
 		return ( "You equipped " + keyword + "." );
 	} else {
-		return ( "You do not have " + keyword + "." );
+		return ( "You do not have or can't equip " + keyword + "." );
 	}
 }
 
