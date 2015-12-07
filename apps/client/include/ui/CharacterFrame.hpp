@@ -44,7 +44,7 @@ private:
 	void setupButtons();
 	void setupLabels();
 	
-	void addCharacter( std::string data );
+	std::string addCharacter( std::string data );
 	void addCharacterButton( std::string charName, std::string charLevel );
 	void addAddCharButton();
 	void selectCharacter( std::string name );

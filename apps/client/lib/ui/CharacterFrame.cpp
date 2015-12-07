@@ -36,10 +36,20 @@ void CharacterFrame::updateCharacterList( std::string list ) {
 	boost::split( listTokens, list, boost::is_any_of( "~" ) );
 	//TO-DO: replace with regex match for multi-char delimeter
 	if ( !listTokens.empty() && !listTokens[ 0 ].empty() ) {
-		for ( std::string& character: listTokens ) {
-			this->addCharacter( character );
+		std::string firstSelectedName = "";
+		
+		for ( std::string& characterData: listTokens ) {
+			if ( firstSelectedName.empty() ) {
+				firstSelectedName = this->addCharacter( characterData );
+			} else {
+				this->addCharacter( characterData );
+			}
 		}
-		this->selectCharacter( this->charInfList.begin()->first );
+		
+		
+		
+		
+		this->selectCharacter( firstSelectedName );
 		this->infoBox.set_opacity( 1 );
 		this->deleteButton.set_sensitive( true );
 		this->selectButton.set_sensitive( true );
@@ -143,14 +153,14 @@ void CharacterFrame::setupLabels() {
 }
 
 
-void CharacterFrame::addCharacter( std::string data ) {
+std::string CharacterFrame::addCharacter( std::string data ) {
 	const int NUM_ARGS_EXP = 4;
 	
-	if ( data.empty() ) return;
+	if ( data.empty() ) return "";
 	
 	std::vector< std::string > dataTokens;
 	boost::split( dataTokens, data, boost::is_any_of( "|" ) );
-	if ( dataTokens.size() != NUM_ARGS_EXP ) return;
+	if ( dataTokens.size() != NUM_ARGS_EXP ) return "";
 	
 	std::string name = dataTokens[ 0 ];
 	std::string level = dataTokens[ 1 ];
@@ -159,6 +169,8 @@ void CharacterFrame::addCharacter( std::string data ) {
 	
 	this->charInfList.insert( std::pair< std::string, CharacterInfo >( name, CharacterInfo( location, description ) ) );
 	this->addCharacterButton( name, level );
+	
+	return name;
 }
 
 
@@ -204,6 +216,12 @@ void CharacterFrame::selectCharacter( std::string name ) {
 	this->locationLabel.set_text( "Location: " + this->charInfList.find( name )->second.location );
 	this->descriptionLabel.set_text( this->charInfList.find( name )->second.description );
 	this->selectedCharName = name;
+	
+	/*std::vector< Gtk::Widget* > widgets = this->charContainer.get_children();
+	for (  Gtk::Widget* widget: widgets ) {
+		this->charContainer.remove( *widget );
+	}
+	( ( Gtk::RadioButton* )widgets[ 0 ] )->set_active();*/
 }
 
 
