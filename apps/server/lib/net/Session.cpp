@@ -243,6 +243,8 @@ void Session::selectCharacter( const std::string& charName ) {
 		this->writeToClient( GameCode::OK, "Character " + charName + " selected." );
 		this->writeToClient( GameCode::ATTRIBUTES, Character::getStats( this->currentUser.getSelectedCharacterId() ) );
 		this->writeToClient( GameCode::INVENTORY, Character::getInventory( this->currentUser.getSelectedCharacterId() ) );
+		int currentZoneId = DatabaseTool::getCharsLocation( this->currentUser.getSelectedCharacterId() );
+		this->writeToClient( GameCode::DESCRIPTION, DatabaseTool::getZoneDesc( currentZoneId ) );
 	} else {
 		this->writeToClient( GameCode::ERROR, "Could not select " + charName + ", internal server error occurred." );
 	}
