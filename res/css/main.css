@@ -32,7 +32,10 @@ GtkWindow {
 }
 
 #notebookColor {
-	background: rgba( 0, 0, 0, 0.6 );
+	background: rgba( 0, 0, 0, 0.8 );
+	border-radius: 0;
+	border: none;
+	border-top: 1px solid @color_main_green;
 }
 
 GtkFrame {
@@ -46,3 +49,4 @@ GtkFrame {
 @import url( "components/_Button.css" );
 @import url( "components/_Label.css" );
 @import url( "components/_Dialog.css" );
+@import url( "components/_Entry.css" );

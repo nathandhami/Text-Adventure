@@ -122,6 +122,7 @@ void GameFrame::prepareComponents() {
 	this->spellsWindow.set_border_width( 5 );
 
 	this->commandEntry.set_size_request( 680, 40 );
+	this->commandEntry.set_name( "entry-command" );
 
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
 	this->commandEntryButton.signal_clicked().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
