@@ -40,6 +40,12 @@ bool CharacterManager::selectCharacter( User& user, std::string name, std::strin
 }
 
 
+void CharacterManager::deselectCurrentCharacter( User& user ) {
+	DatabaseTool::setCharOffline( user.getSelectedCharacterId() );
+	user.selectedCharacterId = 0;
+}
+
+
 std::pair< std::string, std::string > CharacterManager::createCharacter( int userId, std::string charData ) {
 	const int STARTING_ZONE_ID = 3054;
 	const int STARTING_ITEM_ID = 10003;

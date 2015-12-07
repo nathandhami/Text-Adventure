@@ -216,7 +216,7 @@ void Session::logout( const std::string& credentials ) {
 		return;
 	}
 	
-	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
+	this->writeToClient( GameCode::LOGOUT, MESSAGE_OK_LOGGED_OUT );
 }
 
 
@@ -246,6 +246,14 @@ void Session::selectCharacter( const std::string& charName ) {
 	} else {
 		this->writeToClient( GameCode::ERROR, "Could not select " + charName + ", internal server error occurred." );
 	}
+}
+
+
+void Session::deselectCurrentCharacter( const std::string& placeholder ) {
+	LOG( "Char-deselect happened." );
+	
+	CharacterManager::deselectCurrentCharacter( this->currentUser );
+	this->writeToClient( GameCode::CHAR_DELECT, CharacterManager::getCharacterList( this->currentUser.getUserId() ) );
 }
 
 

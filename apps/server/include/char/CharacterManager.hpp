@@ -12,7 +12,7 @@ class CharacterManager {
 
 public:	
 	static bool selectCharacter( User& user, std::string name, std::string sessionIdString );
-	static bool deselectCurrentCharacter( User& user );
+	static void deselectCurrentCharacter( User& user );
 
 	static std::string getCharacterList( int userId );
 	static std::pair< std::string, std::string > createCharacter( int userId, std::string charName );

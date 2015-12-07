@@ -59,14 +59,18 @@ NetMessage Game::login( std::string userName, std::string password ) {
 }
 
 
-// TO-DO: wait for logout or DC response, implement queue flushing, reset reading and writing
 void Game::logout() {
 	Game::transceiver->writeToServer( GameCode::LOGOUT, "arbitrary string" );
 	std::cout << "[Game] Tried to log out." << std::endl;
 	
-	NetMessage nmIter;
-	while ( Game::getFrontResponse().header != GameCode::OK ) {
+	/*while ( Game::getFrontResponse().header != GameCode::OK ) {
 //		std::cout << "[Game] Draining for log out" << std::endl;
+	}
+	*/
+	
+	while ( true ) {
+		NetMessage nmIter = Game::getFrontResponse();
+		if ( nmIter.header == GameCode::LOGOUT ) break;
 	}
 	
 	Game::transceiver->flushQueue();
@@ -94,6 +98,19 @@ NetMessage Game::selectCharacter( std::string charName ) {
 	Game::transceiver->writeToServer( GameCode::CHAR_SELECT, charName );
 	std::cout << "[Game] Tried to select a char." << std::endl;
 	return Game::getBusyResponse();
+}
+
+
+NetMessage Game::deselectCurrentCharacter() {
+	Game::transceiver->writeToServer( GameCode::CHAR_DELECT, "_" );
+	std::cout << "[Game] Tried to delect a char." << std::endl;
+	NetMessage nmIter;
+	while ( true ) {
+		nmIter = Game::getFrontResponse();
+		if ( nmIter.header == GameCode::CHAR_DELECT ) break;
+	}
+
+	Game::transceiver->flushQueue();
 }
 
 

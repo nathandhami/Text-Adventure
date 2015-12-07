@@ -10,13 +10,14 @@
 // ------------------- PUBLIC -------------------
 
 std::pair< std::string, std::string > Character::performCommand( int charId, Command command ) {
-	const std::string NOT_ALLOWED = "You cannot do that!";
+	const std::string NOT_ALLOWED = "You need to train more.";
 	const std::string CMD_LOOK		= "look";
 	const std::string CMD_LOOK_AT	= "look at";
 	const std::string CMD_MOVE		= "move";
 	const std::string CMD_PICK_UP	= "pick up";
 	const std::string CMD_DROP		= "drop";
 	const std::string CMD_EQUIP		= "equip";
+	const std::string CMD_UNEQUIP	= "unequip";
 	
 	if ( command.type == CMD_LOOK ) {
 		return std::make_pair( GameCode::DESCRIPTION, Character::look( charId, command.data ) );
@@ -30,8 +31,10 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 		return std::make_pair( GameCode::STATUS, Character::dropItem( charId, command.data ) );
 	} else if ( command.type == CMD_EQUIP ) {
 		return std::make_pair( GameCode::STATUS, Character::equipItem( charId, command.data ) );
+	} else if ( command.type == CMD_UNEQUIP ) {
+		return std::make_pair( GameCode::STATUS, Character::unequipItem( charId, command.data ) );
 	} else {
-		return std::make_pair( GameCode::ERROR, "You need to train more." );
+		return std::make_pair( GameCode::ERROR, NOT_ALLOWED );
 	}
 }
 
@@ -74,8 +77,6 @@ void Character::updateInventory( int charId ) {
 // ------------------- PRIVATE ------------------
 
 std::string Character::look( int charId, std::string direction ) {
-	Character::updateStats( charId );
-	
 	int currentZoneId = DatabaseTool::getCharsLocation( charId );
 	std::string description = "";
 	
@@ -171,12 +172,18 @@ std::string Character::equipItem( int charId, std::string keyword ) {
 	if ( DatabaseTool::equipItem( charId, keyword ) ) {
 		return ( "You equipped " + keyword + "." );
 	} else {
-		return ( "You do not carry any " + keyword + "." );
+		return ( "You do not have " + keyword + "." );
 	}
 }
 
 
-
+std::string Character::unequipItem( int charId, std::string keyword ) {
+	if ( DatabaseTool::unEquip( charId, keyword ) ) {
+		return ( "You unequipped " + keyword + "." );
+	} else {
+		return ( "You are not wearing " + keyword + "." );
+	}
+}
 
 
 
