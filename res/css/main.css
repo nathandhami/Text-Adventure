@@ -20,7 +20,7 @@ GtkWindow {
 }
 
 #combatColor {
-	color: @color_main_red;
+	color: @color_main_yellow;
 }
 
 #zoneChatColor {
@@ -28,7 +28,7 @@ GtkWindow {
 }
 
 #privateChatColor {
-	color: @color_main_black;
+	color: @color_main_purple;
 }
 
 #notebookColor {

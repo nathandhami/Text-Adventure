@@ -15,6 +15,8 @@
 #include <sstream>
 #include <vector>
 
+#include <boost/algorithm/string.hpp> 
+
 #define WIDTH_DEFAULT 	900
 #define HEIGHT_DEFAULT	500
 
@@ -29,6 +31,7 @@ GameFrame::GameFrame()
 	this->show_all_children();
 
 }
+
 // ------------------- PRIVATE ------------------
 
 void GameFrame::prepareComponents() {
@@ -75,14 +78,19 @@ void GameFrame::prepareComponents() {
 	this->inventoryBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
 	inventoryBox.set_halign( Gtk::Align::ALIGN_START );
 	inventoryBox.set_valign( Gtk::Align::ALIGN_START );
+
+	this->spellsBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
+	spellsBox.set_halign( Gtk::Align::ALIGN_START );
+	spellsBox.set_valign( Gtk::Align::ALIGN_START );
 	
-	this->scrolledWindow.override_background_color( Gdk::RGBA("white"));
+	//this->scrolledWindow.override_background_color( Gdk::RGBA("white"));
 	//this->responseBox.set_policy( Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC );
-	this->worldWindow.override_background_color( Gdk::RGBA("white"));
-	this->combatWindow.override_background_color( Gdk::RGBA("white"));
-	this->chatWindow.override_background_color( Gdk::RGBA("white"));
-	this->statsWindow.override_background_color( Gdk::RGBA("white"));
-	this->inventoryWindow.override_background_color( Gdk::RGBA("white"));
+	//this->worldWindow.override_background_color( Gdk::RGBA("white"));
+	//this->combatWindow.override_background_color( Gdk::RGBA("white"));
+	//this->chatWindow.override_background_color( Gdk::RGBA("white"));
+	//this->statsWindow.override_background_color( Gdk::RGBA("white"));
+	//this->inventoryWindow.override_background_color( Gdk::RGBA("white"));
+	//this->spellsWindow.override_background_color( Gdk::RGBA("white"));
 	
 	this->scrolledWindow.add( this->responseBox );
 	this->scrolledWindow.set_size_request( 680, 380 );
@@ -109,6 +117,10 @@ void GameFrame::prepareComponents() {
 	this->inventoryWindow.set_size_request( 210, 110 );
 	this->inventoryWindow.set_border_width( 5 );
 
+	this->spellsWindow.add( this->spellsBox );
+	this->spellsWindow.set_size_request( 210, 110 );
+	this->spellsWindow.set_border_width( 5 );
+
 	this->commandEntry.set_size_request( 680, 40 );
 
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
@@ -126,6 +138,7 @@ void GameFrame::prepareComponents() {
 	
 	this->sideNotebook.append_page(this->statsWindow, "Stats");
 	this->sideNotebook.append_page(this->inventoryWindow, "Inventory");
+	this->sideNotebook.append_page(this->spellsWindow, "Spells");
 	
 	//this->layoutGrid.add( this->subFrameNotebook );
 	//this->layoutGrid.add( this->sideNotebook );
@@ -139,12 +152,15 @@ void GameFrame::prepareComponents() {
 
 	this->add( layoutGrid );
 
+	this->statsLabel.set_valign( Gtk::Align::ALIGN_START );
+	this->statsLabel.set_halign( Gtk::Align::ALIGN_START );
+	this->statsBox.pack_start( statsLabel, Gtk::PACK_EXPAND_PADDING );
+
 //	this->show_all_children();
 }
 
-
 void GameFrame::updateScrollPosition( Gtk::Allocation& alloc ) {
-	std::cout << "LEL" << std::endl;
+	//std::cout << "LEL" << std::endl;
 	Glib::RefPtr<Gtk::Adjustment> p_adjustment = this->scrolledWindow.get_vadjustment();
 	p_adjustment->set_value( p_adjustment->get_upper() );
 	this->show_all_children();
@@ -205,7 +221,7 @@ void GameFrame::updateResponses() {
 	std::string response = "<span color='black'>" + msg.body + "</span>";
 	//std::string combatResponse = "<span color='red'>" + msg.body + "</span>";
 	
-	if ( msg.header != GameCode::NONE ) {
+	if ( msg.header != GameCode::NONE && msg.header != GameCode::INVENTORY && msg.header != GameCode::ATTRIBUTES ) {
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 
 		if( msg.header == GameCode::DESCRIPTION
@@ -285,14 +301,16 @@ void GameFrame::updateResponses() {
 		this->show_all_children();
 
 	}
-	if ( msg.header == GameCode::INVENTORY) {
+	if ( msg.header == GameCode::INVENTORY ) {
 
+		if(  msg.header != GameCode::INVALID ) { }
+		
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_text( msg.body );
-			pLabel->set_valign( Gtk::Align::ALIGN_START );
-			pLabel->set_halign( Gtk::Align::ALIGN_START );
-			this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-			this->show_all_children();	
+		pLabel->set_text( msg.body );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		this->show_all_children();
 
 		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
@@ -318,11 +336,64 @@ void GameFrame::updateResponses() {
 		}*/
 	}
 	if ( msg.header == GameCode::ATTRIBUTES) {
+		//std::cout << msg.body << std::endl;
+		std::vector< std::string > listTokens;
+		boost::split( listTokens, msg.body, boost::is_any_of( ":\n" ) );
+
+		this->strStats = listTokens[1];
+		this->intStats = listTokens[3];
+		this->dexStats = listTokens[5];
+		this->charisStats = listTokens[7];
+		this->hpStats = listTokens[9];
+		this->mpStats = listTokens[11];
+		this->xpStats = listTokens[13];
+		this->levelStats = listTokens[15];
+
+		this->statsLabel.set_text( "Level: " + this->levelStats +
+						"\nHP: " + this->hpStats + 
+						"\nMP: " + this->mpStats +
+						"\nXP: " + this->xpStats +
+						"\nStrength: " + this->strStats +
+						"\nIntellegence: " + this->intStats +
+						"\nDexterity: " + this->dexStats +
+						"\nCharisma: " + this->charisStats);
+
+		/*Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_text( "Level" + levelStats );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );*/
+		
+		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		if(tokens.size() == 0){
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_text( response );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			//this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
+		else{
+			
+			for(std::string s : tokens){
+				std::string response = "<span color='black'>" + s + "</span>";
+				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+				pLabel->set_text( response );
+				pLabel->set_valign( Gtk::Align::ALIGN_START );
+				pLabel->set_halign( Gtk::Align::ALIGN_START );
+				//this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				this->show_all_children();
+			}
+				
+		}*/
+	}
+
+	else if ( msg.header == GameCode::SPELLS) {
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 		pLabel->set_text( msg.body );
 		pLabel->set_valign( Gtk::Align::ALIGN_START );
 		pLabel->set_halign( Gtk::Align::ALIGN_START );
-		this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		this->spellsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
 		
 		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
