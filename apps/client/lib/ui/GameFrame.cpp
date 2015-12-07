@@ -124,7 +124,7 @@ void GameFrame::prepareComponents() {
 	this->spellsWindow.set_size_request( 210, 110 );
 	this->spellsWindow.set_border_width( 5 );
 
-	this->commandEntry.set_size_request( 680, 40 );
+	this->commandEntry.set_size_request( 670, 40 );
 
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
 	this->commandEntryButton.signal_clicked().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
@@ -172,6 +172,26 @@ void GameFrame::prepareComponents() {
 	this->inventoryLabel.set_valign( Gtk::Align::ALIGN_START );
 	this->inventoryLabel.set_halign( Gtk::Align::ALIGN_START );
 	this->inventoryBox.pack_start( inventoryLabel, Gtk::PACK_EXPAND_PADDING );
+
+	this->subFrameNotebook.set_margin_left(5);
+	this->subFrameNotebook.set_margin_top(5);
+	this->subFrameNotebook.set_margin_right(5);
+	//this->subFrameNotebook.set_margin_bottom(5);
+
+	this->sideNotebook.set_margin_top(5);
+	this->sideNotebook.set_margin_right(5);
+	this->sideNotebook.set_margin_bottom(5);
+	
+	//this->commandEntryButton.set_margin_left(5);
+	this->commandEntryButton.set_margin_right(5);
+	this->commandEntryButton.set_margin_bottom(5);
+
+	this->logoutButton.set_margin_bottom(5);
+
+	this->commandEntry.set_margin_left(5);
+	this->commandEntry.set_margin_right(5);
+	this->commandEntry.set_margin_bottom(5);
+
 
 //	this->show_all_children();
 }
