@@ -9,7 +9,7 @@ int CastSpell::rollDice(int number, int sides) {
 	int value = 0;
 	srand (time(NULL));
 	for (int diceRoll = 0; diceRoll < number; diceRoll++) {
-		value += rand() % sides + 1
+		value += rand() % sides + 1;
 	}
 	return value;
 }
@@ -29,7 +29,7 @@ bool CastSpell::calculateVariable(string possibleVariable, int *value, Attribute
 		if (parsedDiceRoll.size() > 1) {
 			// Extract values from possible variables before rolling
 			int valueOne = 0;
-			if (!CastSpell::calculateVariable(parsedDiceRoll.at(0), &valueOne), caster, target) {
+			if (!CastSpell::calculateVariable(parsedDiceRoll.at(0), &valueOne, caster, target) {
 				valueOne = boost::lexical_cast<int>(parsedDiceRoll.at(0));
 			}
 			int valueTwo = 0;
@@ -115,7 +115,7 @@ int CastSpell::parseSpellEffectStringToNumber(string spellEffect, Attributes *ca
 string CastSpell::insertNamesIntoHitMsg(string hitMsg, string name) {
 	deque<std::string> parsedArgument;
 	// Handle brackets
-	boost::split(parsedArgument, spellEffect, boost::is_any_of("$N"));
+	boost::split(parsedArgument, hitMsg, boost::is_any_of("$N"));
 	string newHitMsg = "";
 	newHitMsg += parsedArgument.at(0);
 	for (int index = 1; index < parsedArgument.size(); index++) {
@@ -141,7 +141,7 @@ string CastSpell::immediatelyCastSpell(Spell *currentSpell, Attributes *caster, 
 	casterModifier.id = caster->id;
 	casterModifier.mana = -currentSpell->cost;
 	if (!CastSpell::hasSufficientMana(caster, currentSpell)) {
-		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You are unable to cast " + currentSpell->spellName + " (it costs " + std::to_string(currentSpell->cost) + " mana).");
+		Server::sendMessageToCharacter(caster->id, GameCode::COMBAT, "You are unable to cast " + currentSpell->spellName + " (it costs " + std::to_string(currentSpell->cost) + " mana).");
 		return "";
 	}
 	DatabaseTool::updateAttributes(casterModifier, Target::character);
