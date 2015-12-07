@@ -1,6 +1,7 @@
 #ifndef CAST_SPELL_HPP
 #define CAST_SPELL_HPP
 
+#include "Server.hpp"
 #include "DatabaseTool.hpp"
 #include "char/Character.hpp"
 #include <boost/algorithm/string.hpp>

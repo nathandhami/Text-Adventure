@@ -141,7 +141,7 @@ string CastSpell::immediatelyCastSpell(Spell *currentSpell, Attributes *caster, 
 	casterModifier.id = caster->id;
 	casterModifier.mana = -currentSpell->cost;
 	if (!CastSpell::hasSufficientMana(caster, currentSpell)) {
-		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You are unable to cast " + currentSpell->spellName + " (it costs " + currentSpell->cost + " mana).");
+		Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You are unable to cast " + currentSpell->spellName + " (it costs " + std::to_string(currentSpell->cost) + " mana).");
 		return "";
 	}
 	DatabaseTool::updateAttributes(casterModifier, Target::character);
