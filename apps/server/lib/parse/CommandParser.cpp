@@ -51,11 +51,11 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 		commandPrefix = commandPrefix + commandString[ prefixLength ];
 		boost::algorithm::to_lower(commandPrefix);
 
-		LOG( "\tPrefix: " << commandPrefix );
+//		LOG( "\tPrefix: " << commandPrefix );
 
 		int prefixHeader = DatabaseTool::checkCommand( commandPrefix );
 
-		LOG( "\tHeader: " << prefixHeader );
+//		LOG( "\tHeader: " << prefixHeader );
 		
 		if( prefixHeader != CommandHeader::INVALID ){//&& prefixHeader != CommandHeader::INCOMPLETE ){
 			
@@ -64,8 +64,8 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 
 			
 		}
-		LOG( "\ttempHeader: " << tempHeader );
-		LOG( "\ttempLength: " << tempLength);
+//		LOG( "\ttempHeader: " << tempHeader );
+//		LOG( "\ttempLength: " << tempLength);
 		if( ( prefixHeader == CommandHeader::INVALID && tempHeader != CommandHeader::INVALID ) || ( prefixLength == commandString.size() -1 ) ){
 
 			if( ( ( isspace( commandString[ prefixLength ] ) ) && ( prefixLength != tempLength +1 ) ) || ( prefixLength == commandString.size() -1 ) ){

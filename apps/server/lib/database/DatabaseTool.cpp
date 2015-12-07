@@ -20,7 +20,7 @@ const int INVALID_COMMAND = 4;
 
 static std::mutex databaseMutex;
 
-const int verbosity = 1;
+const int verbosity = 0;
 
 using namespace std;
 using namespace sqlite;
@@ -2341,7 +2341,9 @@ vector< string > DatabaseTool::getAllNPCsInZone( int zoneID ) {
 		
 		return npcs;
 	} catch( sqlite_exception e ) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
 		return npcs;
 	}
 }
