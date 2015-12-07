@@ -5,7 +5,7 @@
 #include "DatabaseTool.hpp"
 #include "Server.hpp"
 #include "Zone.hpp"
-#include "Character.hpp"
+#include "char/Character.hpp"
 #include "Spellcasting.hpp"
 #include <deque>
 #include <unistd.h>

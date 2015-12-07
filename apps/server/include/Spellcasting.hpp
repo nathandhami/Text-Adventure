@@ -4,7 +4,7 @@
 #include "DatabaseTool.hpp"
 #include "Command.hpp"
 #include "Combat.hpp"
-#include "Character.hpp"
+#include "char/Character.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <stdlib.h>
