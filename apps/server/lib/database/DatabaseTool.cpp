@@ -2591,7 +2591,7 @@ bool DatabaseTool::aquireSpell(int charID, string spellName) {
 		database db( DB_LOCATION );
 		db << FOREIGN_KEY_ON;
 
-		db << "INSERT INTO knownSpells(charID, spellName, resetTime) VALUES (?, ?, 0);"
+		db << "INSERT INTO knownSpells (charID, spellName, resetTime) VALUES (?, ?, 0);"
 		<<charID
 		<<spellName;
 

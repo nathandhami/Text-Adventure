@@ -26,17 +26,17 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 	} else if ( command.type == CMD_LOOK_AT ) {
 		return std::make_pair( GameCode::DESCRIPTION, Character::lookAt( charId, command.data ) );
 	} else if ( command.type == CMD_MOVE ) {
-		return std::make_pair( GameCode::STATUS, Character::move( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::move( charId, command.data ) );
 	} else if ( command.type == CMD_PICK_UP ) {
-		return std::make_pair( GameCode::STATUS, Character::pickUpItem( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::pickUpItem( charId, command.data ) );
 	} else if ( command.type == CMD_DROP ) {
-		return std::make_pair( GameCode::STATUS, Character::dropItem( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::dropItem( charId, command.data ) );
 	} else if ( command.type == CMD_EQUIP ) {
-		return std::make_pair( GameCode::STATUS, Character::equipItem( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::equipItem( charId, command.data ) );
 	} else if ( command.type == CMD_UNEQUIP ) {
-		return std::make_pair( GameCode::STATUS, Character::unequipItem( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::unequipItem( charId, command.data ) );
 	} else if ( command.type == CMD_BUY_SPELL) {
-		return std::make_pair( GameCode::STATUS, Character::buySpell( charId, command.data ) );
+		return std::make_pair( GameCode::DESCRIPTION, Character::buySpell( charId, command.data ) );
 	}
 	 else {
 		return std::make_pair( GameCode::ERROR, NOT_ALLOWED );

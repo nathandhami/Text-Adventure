@@ -186,7 +186,7 @@ CREATE TABLE knownSpells (
   spellName text not null,
   resetTime integer,
   FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
-  FOREIGN KEY(spellName) REFERENCES spell(spellName) on delete cascade,
+  FOREIGN KEY(spellName) REFERENCES spells(spellName) on delete cascade,
   UNIQUE(charID, spellName)
 );
 
