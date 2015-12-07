@@ -19,6 +19,22 @@ GtkWindow {
 /*	background-image: url( "../img/bg_anim_char.gif" );*/
 }
 
+#combatColor {
+	color: @color_main_yellow;
+}
+
+#zoneChatColor {
+	color: @color_main_blue;
+}
+
+#privateChatColor {
+	color: @color_main_purple;
+}
+
+#notebookColor {
+	background: rgba( 0, 0, 0, 0.6 );
+}
+
 GtkFrame {
 	border: 1px solid @color_main_green;
 	border-top: none;

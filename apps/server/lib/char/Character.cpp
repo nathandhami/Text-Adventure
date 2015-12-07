@@ -126,7 +126,7 @@ std::string Character::lookAt( int charId, std::string keyword ) {
 		if ( !objects.empty() ) kwDescriptions.push_back( objects );
 		
 		if( kwDescriptions.empty() ) return ( "You don't see any " + keyword + "." );
-		return ( "You see " + boost::algorithm::join( kwDescriptions, ", " ) + "." );
+		return ( boost::algorithm::join( kwDescriptions, ", " ) );
 	}
 }
 
@@ -161,12 +161,14 @@ std::string Character::dropItem( int charId, std::string keyword ) {
 	if ( !DatabaseTool::dropItem( charId, keyword ) ) {
 		return ( "You look through your bag, but you can't find any " + keyword + "." );
 	}
+	Character::updateInventory( charId );
 	return ( "You dropped " + keyword + "." );
 }
 
 
 std::string Character::equipItem( int charId, std::string keyword ) {
 	if ( DatabaseTool::equipItem( charId, keyword ) ) {
+		Character::updateInventory( charId );
 		return ( "You equipped " + keyword + "." );
 	} else {
 		return ( "You do not have or can't equip " + keyword + "." );
@@ -176,6 +178,7 @@ std::string Character::equipItem( int charId, std::string keyword ) {
 
 std::string Character::unequipItem( int charId, std::string keyword ) {
 	if ( DatabaseTool::unEquip( charId, keyword ) ) {
+		Character::updateInventory( charId );
 		return ( "You unequipped " + keyword + "." );
 	} else {
 		return ( "You are not wearing " + keyword + "." );

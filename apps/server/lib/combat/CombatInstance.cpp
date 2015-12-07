@@ -67,13 +67,13 @@ void CombatInstance::waitForChallengeAccept() {
 void CombatInstance::notifyAttack(int player, Target characterType, int damageDealt, int healthRemaining) {
 	if (player == PLAYER_ONE) {
 		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You deal " + std::to_string(damageDealt) + " damage.");
-		if (characterType == Target::character) {
+		if (playerTwoTarget == Target::character) {
 			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You take " + std::to_string(damageDealt) + " damage. You have " + std::to_string(healthRemaining) + "hp.");
 		}
 	}
 	else {
 		Server::sendMessageToCharacter(playerOneID, GameCode::COMBAT, "You take " + std::to_string(damageDealt) + " damage. You have " + std::to_string(healthRemaining) + "hp.");
-		if (characterType == Target::character) {
+		if (playerTwoTarget == Target::character) {
 			Server::sendMessageToCharacter(playerTwoID, GameCode::COMBAT, "You deal " + std::to_string(damageDealt) + " damage.");
 		}
 	}
@@ -89,7 +89,7 @@ void CombatInstance::playerWin(int playerID) {
 void CombatInstance::playerLose(int playerID) {
 	keepFighting = false;
 	if ((playerID == playerTwoID) && (playerTwoTarget == Target::npc)) {
-		DatabaseTool::murderNpc(playerTwoID);
+		DatabaseTool::murderNpc(playerID);
 	}
 	else {
 		Server::sendMessageToCharacter(playerID, GameCode::COMBAT, DEFEAT_NOTIFICATION);
@@ -99,33 +99,35 @@ void CombatInstance::playerLose(int playerID) {
 
 // Waiting on equipment
 void CombatInstance::executePlayerAttack(int attacker, Target characterType) {
-	Attributes attackerAttributes = DatabaseTool::getAttributes(attacker, characterType);
-	int damageDealt = attackerAttributes.strength * 2;    // Until we have weapons and armour we'll just do this for damage
+	Attributes attackerAttributes;
 
 	Target defenderTarget;
-	int defender = 0;
+	int defenderID = 0;
 	
 	if (attacker == PLAYER_ONE) {
+		attackerAttributes = DatabaseTool::getAttributes(playerOneID, characterType);
 		defenderTarget = playerTwoTarget;
-		defender = playerTwoID;
+		defenderID = playerTwoID;
 	}
 	else {
+		attackerAttributes = DatabaseTool::getAttributes(playerTwoID, characterType);
 		defenderTarget = Target::character;
-		defender = playerOneID;
+		defenderID = playerOneID;
 	}
+	int damageDealt = attackerAttributes.strength * 2;    // Until we have weapons and armour we'll just do this for damage
 
-	Attributes defenderAttributesModifier = Attributes();
-	defenderAttributesModifier.id = defender;
+	Attributes defenderAttributesModifier;
+	defenderAttributesModifier.id = defenderID;
 	defenderAttributesModifier.health = -damageDealt;  
 	DatabaseTool::updateAttributes(defenderAttributesModifier, defenderTarget);
-	Character::updateStats(defender);
+	Character::updateStats(defenderID);
 
-	int healthRemaining = DatabaseTool::getAttributes(defender, defenderTarget).health;
+	int healthRemaining = DatabaseTool::getAttributes(defenderID, defenderTarget).health;
 	notifyAttack(attacker, characterType, damageDealt, healthRemaining);
 
 	if (healthRemaining <= 0) {
-		playerWin(attacker);
-		playerLose(defender);
+		playerWin(attackerAttributes.id);
+		playerLose(defenderID);
 	}
 }
 

@@ -20,7 +20,7 @@ const int INVALID_COMMAND = 4;
 
 static std::mutex databaseMutex;
 
-const int verbosity = 1;
+const int verbosity = 0;
 
 using namespace std;
 using namespace sqlite;
@@ -1381,7 +1381,7 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 			<<attributes.id
 			>>maxHealth;
 
-			if (health > maxHealth) {
+			if ((attributes.health >= maxHealth) || (health >= maxHealth)) {
 				health = maxHealth;
 			}
 
@@ -1421,7 +1421,7 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 			<<attributes.id
 			>>maxMana;
 
-			if (mana > maxMana) {
+			if ((attributes.mana >= maxMana) || (mana >= maxMana)) {
 				mana = maxMana;
 			}
 
@@ -2492,7 +2492,9 @@ vector< string > DatabaseTool::getAllNPCsInZone( int zoneID ) {
 		
 		return npcs;
 	} catch( sqlite_exception e ) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
 		return npcs;
 	}
 }

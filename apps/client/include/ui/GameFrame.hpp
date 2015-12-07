@@ -26,15 +26,19 @@ private:
 	Gtk::ScrolledWindow chatWindow;
 	Gtk::ScrolledWindow statsWindow;
 	Gtk::ScrolledWindow inventoryWindow;
+	Gtk::ScrolledWindow spellsWindow;
 	Gtk::Box responseBox;
 	Gtk::Box worldBox;
 	Gtk::Box combatBox;
 	Gtk::Box chatBox;
 	Gtk::Box statsBox;
 	Gtk::Box inventoryBox;
+	Gtk::Box spellsBox;
 	Gtk::Entry commandEntry;
 	Gtk::Button commandEntryButton;
 	Gtk::Label outputTabLabel;
+	Gtk::Label statsLabel;
+	Gtk::Label inventoryLabel;
 	
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
@@ -44,6 +48,18 @@ private:
 	Gtk::Label worldTabLabel, combatTabLabel, chatTabLabel;
 	Gtk::Label statsTabLabel, inventoryTabLabel;
 	
+	std::string strStats;
+	std::string intStats;
+	std::string dexStats;
+	std::string charisStats;
+	std::string hpStats;
+	std::string mpStats;
+	std::string xpStats;
+	std::string levelStats;
+
+	std::string item;
+	std::string itemQuantity;
+	std::string equipStatus;
 
 	void prepareComponents();
 	

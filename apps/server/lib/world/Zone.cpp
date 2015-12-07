@@ -46,6 +46,9 @@ void Zone::respawnPlayer(int playerID) {
 	Attributes fullHealAttributes;
 	fullHealAttributes.id = playerID;
 	fullHealAttributes.health = std::numeric_limits<int>::max();
-	DatabaseTool::putCharInZone(playerID, 3054);
+	fullHealAttributes.mana = std::numeric_limits<int>::max();
+	DatabaseTool::putCharInZone(playerID, Zone::RESPAWN_ZONE_ID);
 	DatabaseTool::updateAttributes(fullHealAttributes, Target::character);
+	Character::updateStats(playerID);
+	Server::sendMessageToCharacter(playerID, GameCode::STATUS, "You respawn " + DatabaseTool::getZoneName(Zone::RESPAWN_ZONE_ID) + ".");
 }

@@ -121,7 +121,8 @@ string CastSpell::insertNamesIntoHitMsg(string hitMsg, string name) {
 	newHitMsg += parsedArgument.at(0);
 	cout << "UPDATED HITMSG : " << newHitMsg << endl;
 	for (int index = 1; index < parsedArgument.size(); index++) {
-		if (parsedArgument.at(index).find_first_not_of(' ') != std::string::npos) {
+		//if (parsedArgument.at(index).find_first_not_of(' ') != std::string::npos) {
+		if (index == parsedArgument.size() - 1) {
 			newHitMsg += name + parsedArgument.at(index);
 		}
 	}

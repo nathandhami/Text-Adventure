@@ -35,7 +35,7 @@ string Spellcasting::castCombatSpell(Spell *currentSpell, Attributes *caster, At
 }
 
 string Spellcasting::castOffensiveSpell(Spell *currentSpell, Attributes *caster, Attributes *target, Target targetType) {
-	if (target->id == 0) {
+	if (target->id <= 0) {
 		int targetID = 0;
 		Target targetTarget = Target::null;
 		if (!Combat::getOpponent(caster->id, &targetID, &targetTarget)) {
@@ -48,7 +48,7 @@ string Spellcasting::castOffensiveSpell(Spell *currentSpell, Attributes *caster,
 }
 
 string Spellcasting::castDefensiveSpell(Spell *currentSpell, Attributes *caster, Attributes *target, Target targetType) {
-	if (target->id == 0) {
+	if (target->id <= 0) {
 		target = caster;
 	}
 	return Spellcasting::castCombatSpell(currentSpell, caster, target, targetType);
@@ -56,7 +56,7 @@ string Spellcasting::castDefensiveSpell(Spell *currentSpell, Attributes *caster,
 
 string Spellcasting::castUtilitySpell(Spell *currentSpell, Attributes *caster, Attributes *target, Target targetType) {
 	if (currentSpell->spellName == "stupify") {
-		if (target->id == 0) {
+		if (target->id <= 0) {
 			return "You must specify the target you want to stupify using the following:\n    cast stupify <target name>";
 		}
 
@@ -155,6 +155,9 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 			if (target.id <= 0) {
 				return "There is no " + enemyName + " in the area.";
 			}
+		}
+		else {
+			return "There is no " + enemyName + " in the area.";
 		}
 	}
 	if (currentSpell.archetypeID == SpellType::offensive) {

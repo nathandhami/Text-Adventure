@@ -22,7 +22,7 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 	const std::string MOVE_EXCEPTION2 = "look at";
 	const std::string MOVE_SYNONYM = "go";
 	
-	if ( commandHeader == CommandHeader::WORLD ) {
+	if ( commandHeader == CommandHeader::CHARACTER ) {
 		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION && parsedCommand.type != MOVE_EXCEPTION2 && parsedCommand.type != MOVE_CARDINAL ) {
 			parsedCommand.data = parsedCommand.type;
 			parsedCommand.type = MOVE_CARDINAL;
@@ -33,6 +33,8 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 		}
 	}
 }
+
+
 std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) { 
 	Command parsedCommand;
 	int parsedHeader = CommandHeader::INVALID;
@@ -49,11 +51,11 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 		commandPrefix = commandPrefix + commandString[ prefixLength ];
 		boost::algorithm::to_lower(commandPrefix);
 
-		LOG( "\tPrefix: " << commandPrefix );
+//		LOG( "\tPrefix: " << commandPrefix );
 
 		int prefixHeader = DatabaseTool::checkCommand( commandPrefix );
 
-		LOG( "\tHeader: " << prefixHeader );
+//		LOG( "\tHeader: " << prefixHeader );
 		
 		if( prefixHeader != CommandHeader::INVALID ){//&& prefixHeader != CommandHeader::INCOMPLETE ){
 			
@@ -62,8 +64,8 @@ std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string comma
 
 			
 		}
-		LOG( "\ttempHeader: " << tempHeader );
-		LOG( "\ttempLength: " << tempLength);
+//		LOG( "\ttempHeader: " << tempHeader );
+//		LOG( "\ttempLength: " << tempLength);
 		if( ( prefixHeader == CommandHeader::INVALID && tempHeader != CommandHeader::INVALID ) || ( prefixLength == commandString.size() -1 ) ){
 
 			if( ( ( isspace( commandString[ prefixLength ] ) ) && ( prefixLength != tempLength +1 ) ) || ( prefixLength == commandString.size() -1 ) ){

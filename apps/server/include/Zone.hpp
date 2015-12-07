@@ -3,12 +3,14 @@
 
 #include "WorldConstants.hpp"
 #include "DatabaseTool.hpp"
+#include "char/Character.hpp"
 #include "Server.hpp"
 #include <vector>
 
 using namespace std;
 
 class Zone {
+	static const int RESPAWN_ZONE_ID = 3054;
 
 	static vector<int> getPlayerIDs(int);
 	static vector<int> getNpcIDs(int);
