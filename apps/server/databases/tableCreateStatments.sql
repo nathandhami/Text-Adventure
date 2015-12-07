@@ -230,3 +230,14 @@ CREATE TABLE statModifiers (
 	FOREIGN kEY(equippedItemID) REFERENCES player_inventory(ownershipID) on delete cascade,
 	FOREIGN KEY(spellName) REFERENCES spells(spellName) on delete cascade
 );
+
+CREATE TABLE spellEffects (
+	effectID integer primary key,
+	casterID integer,
+	targetID integer,
+	spellName text,
+	expireTime integer,
+	FOREIGN KEY(casterID) REFERENCES characters(charID),
+	FOREIGN KEY(targetID) REFERENCES characters(charID) on delete cascade,
+	FOREIGN KEY(spellName) REFERENCES spells(spellName) on delete cascade
+);
