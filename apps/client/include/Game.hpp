@@ -28,7 +28,7 @@ public:
 	static NetMessage deleteCharacter( std::string charName );
 	
 	static NetMessage selectCharacter( std::string charName );
-	static NetMessage deselectCurrentCharacter();
+	static void deselectCurrentCharacter();
 	
 	static void enact( std::string userInputString );
 	

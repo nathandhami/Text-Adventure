@@ -101,7 +101,7 @@ NetMessage Game::selectCharacter( std::string charName ) {
 }
 
 
-NetMessage Game::deselectCurrentCharacter() {
+void Game::deselectCurrentCharacter() {
 	Game::transceiver->writeToServer( GameCode::CHAR_DELECT, "_" );
 	std::cout << "[Game] Tried to delect a char." << std::endl;
 	NetMessage nmIter;
