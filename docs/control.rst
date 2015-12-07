@@ -26,14 +26,45 @@ Creator Commands
 Combat Commands
 ==============================================
 
+1. fight 
+
+2. attack
+
+3. retreat
+
+4. accept challenge 
+
 
 
 Basic Commands
 ==============================================
 
-1. Move : 
+1. zone chat: 
 
-2. Look : 
+* # "enter message here"
+
+2. private message:
+
+* @ 
+
+3. equip
+
+4. drop 
+
+5. pick up 
+
+
+
+Movement Commands
+==============================================
+
+1. move
+
+2. go 
+
+3. look 
+
+4. look at
 
 
 

@@ -16,6 +16,7 @@ Contents
    building
    run
    login
+   character
    control
    configuring
    usage
