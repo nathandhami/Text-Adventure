@@ -4,6 +4,7 @@
 #include "CarrierPigeon.hpp"
 #include <mod/Editor.hpp>
 #include "Combat.hpp"
+#include "Spellcasting.hpp"
 #include <char/Character.hpp>
 
 
@@ -47,6 +48,11 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 		
 		responseHeader = GameCode::STATUS;
 		responseBody = worthyMessage;
+	} else if ( commandHeader == CommandHeader::CASTING ) {
+		std::string castingMessage = Spellcasting::executeCommand( user.getUserId(), command );
+
+		responseHeader = GameCode::COMBAT;
+		responseBody = castingMessage;
 	}
 	
 	return std::make_pair( responseHeader, responseBody );

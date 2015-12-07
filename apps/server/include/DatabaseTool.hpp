@@ -14,8 +14,9 @@
 using namespace std;
 
 enum Transfer {toCharacter, toZone, toNpc, toItem};
-enum Target {character, npc};
+enum Target {character, npc, null};
 enum Slot {ring, head, chest, greaves, feet, hands, wepon};
+enum SpellType {unknown, defensive, offensive, utility};
 
 class Door{
 	public:
@@ -263,6 +264,8 @@ class DatabaseTool{
 
 		static int getCharsLocation(int charID);
 
+		static vector<int> getAllOnlineChars();
+
 		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
 		static bool createNpcInstance(int npcID, int zoneID);
@@ -286,6 +289,8 @@ class DatabaseTool{
 		static string getNpcDesc(int npcInstanceID);
 
 		static string getNpcName(int npcInstanceID);
+
+		static int getNpcLocation(int npcInstanceID);
 
 		static bool addNpc(
 		 	int npcID, 

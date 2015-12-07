@@ -13,19 +13,16 @@ string World::movePlayer(int playerID, string destination) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	int destinationZoneID = Zone::getNeighbourZone(currentZoneID, destination);
 	if ( destinationZoneID == 0 ) {
-		return "Unable to move " + destination + "\n";
-	}
-	if (!Zone::roomForMorePlayers(destinationZoneID)) {
-		return "Unable to move " + destination + ", it is full.\n";
+		return "Unable to move " + destination;
 	}
 
 	Combat::endCombat(playerID, "");
 
 	std::cout << "Player " << playerID << " is moving from zone " << currentZoneID << " to zone " << destinationZoneID << std::endl;
-	Zone::broadcastMessage(destinationZoneID, DatabaseTool::getCharNameFromID(playerID) + " entered the zone.\n");
+	Zone::broadcastMessage(destinationZoneID, DatabaseTool::getCharNameFromID(playerID) + " entered the zone.");
 
 	DatabaseTool::putCharInZone(playerID, destinationZoneID);
-	Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " left the zone.\n");
+	Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " left the zone.");
 	return playerLook(playerID, "");
 }
 
@@ -43,29 +40,47 @@ string World::playerPickupItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
 	if (DatabaseTool::pickUp(playerID, item)) {
-		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item);
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item, vector<int>(playerID));
 		return "You pick up " + item;
 	}
-	return "The " + item + " is not in the room or cannot be picked up.\n";
+	return "The " + item + " is not in the room or cannot be picked up.";
 }
 
 string World::playerDropItem(int playerID, string item) {
 	int currentZoneID = DatabaseTool::getCharsLocation(playerID);
 	boost::trim(item);
 	if (DatabaseTool::dropItem(playerID, item)) {
-		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item);
+		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item, vector<int>(playerID));
 		return "You dropped " + item;
 	}
 	return "You do not have " + item + " in your inventory.";
 }
 
+void World::regenHealthAndMana() {
+	Attributes attributeRegenAmount;
+	attributeRegenAmount.health = HEALTH_REGEN_AMOUNT;
+	attributeRegenAmount.mana = MANA_REGEN_AMOUNT;
+	vector<int> onlineChars = DatabaseTool::getAllOnlineChars();
+	for (int index = 0; index < onlineChars.size(); index++) {
+		attributeRegenAmount.id = onlineChars.at(index);
+		DatabaseTool::updateAttributes(attributeRegenAmount, Target::character);
+		Character::updateStats(attributeRegenAmount.id);
+	}
+}
+
 void World::runRespawn() {
-	int counter = 0;
+	int respawnCounter = 0;
+	int regenCounter = 0;
 	while (keepRespawning) {
-		counter++;
-		if (counter >= RESPAWN_TIME_SECONDS) {
+		respawnCounter++;
+		regenCounter++;
+		if (respawnCounter >= RESPAWN_TIME_SECONDS) {
 			DatabaseTool::respawnAll();
-			counter = 0;
+			respawnCounter = 0;
+		}
+		if (regenCounter >= REGEN_TIME_SECONDS) {
+			World::regenHealthAndMana();
+			regenCounter = 0;
 		}
 		sleep(1);
 	}
@@ -78,7 +93,7 @@ string World::executeCommand(int playerID, Command givenCommand) {
 	string arguments = givenCommand.data;
 	cout << command << " " << playerID << " " << arguments << endl;
 	if (Combat::isInCombat(playerID)) {
-		return "You cannot " + command + " while in combat.\n";
+		return "You cannot " + command + " while in combat.";
 	}
 	if (command == "move") {
 		return movePlayer(playerID, arguments);
@@ -95,7 +110,7 @@ string World::executeCommand(int playerID, Command givenCommand) {
 	else if (command == "drop") {
 		return playerDropItem(playerID, arguments);
 	}
-	return "The command " + command + " was not recognized. Check help for a list of valid commands.\n";
+	return "The command " + command + " was not recognized. Check help for a list of valid commands.";
 }
 
 bool World::isRespawnLoopRunning() {

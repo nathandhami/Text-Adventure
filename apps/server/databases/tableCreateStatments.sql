@@ -7,13 +7,14 @@ CREATE TABLE users (
 );
 
 CREATE TABLE characters (
-	charID integer primary key,
-	name varchar(30) unique,
-	userID integer,
-	location integer,
-	description text,
-	FOREIGN KEY(userID) REFERENCES users(userID) on delete cascade,
-	FOREIGN KEY(location) REFERENCES zones(zoneID)
+  charID integer primary key,
+  name varchar(30) unique,
+  userID integer,
+  location integer,
+  description text,
+  isStupified integer,
+  FOREIGN KEY(userID) REFERENCES users(userID) on delete cascade,
+  FOREIGN KEY(location) REFERENCES zones(zoneID)
 );
 
 CREATE TABLE charactersOnline (
@@ -180,12 +181,12 @@ CREATE TABLE spells (
 );
 
 CREATE TABLE knownSpells (
-	knownID integer primary key,
-	charID integer,
-	spellName text,
-	resetTime integer,
-	FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
-	FOREIGN KEY(spellName) REFERENCES spells(spellName) on delete cascade
+  knownID integer primary key,
+  charID integer,
+  spellName text,
+  resetTime integer,
+  FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
+  FOREIGN KEY(spellName) REFERENCES spell(spellName) on delete cascade
 );
 
 CREATE TABLE spellTeacher (
