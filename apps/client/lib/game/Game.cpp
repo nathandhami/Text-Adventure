@@ -37,8 +37,6 @@ NetMessage Game::getFrontResponse() {
 
 // BLOCKING
 NetMessage Game::registerUser( std::string userName, std::string password, std::string passwordRep ) {
-//	std::vector< std::string > credentialTokens = { userName, password, passwordRep };
-//	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
 	std::string joinedCredentials = userName + ";" + password + ";" + passwordRep;
 	
 	Game::transceiver->writeToServer( GameCode::REGISTER, joinedCredentials );
@@ -48,8 +46,6 @@ NetMessage Game::registerUser( std::string userName, std::string password, std::
 
 // BLOCKING
 NetMessage Game::login( std::string userName, std::string password ) {
-//	std::vector< std::string > credentialTokens = { userName, password };
-//	std::string joinedCredentials = boost::algorithm::join( credentialTokens, ";" );
 	std::string joinedCredentials = userName + ";" + password;
 	
 	Game::transceiver->writeToServer( GameCode::LOGIN, joinedCredentials );
@@ -59,17 +55,13 @@ NetMessage Game::login( std::string userName, std::string password ) {
 }
 
 
-// TO-DO: wait for logout or DC response, implement queue flushing, reset reading and writing
 void Game::logout() {
-	Game::transceiver->writeToServer( GameCode::LOGOUT, "arbitrary string" );
+	Game::transceiver->writeToServer( GameCode::LOGOUT, "_" );
+	
 	std::cout << "[Game] Tried to log out." << std::endl;
 	
-	NetMessage nmIter;
-	while ( Game::getFrontResponse().header != GameCode::OK ) {
-//		std::cout << "[Game] Draining for log out" << std::endl;
-	}
-	
-	Game::transceiver->flushQueue();
+	Game::readUntilHitAndFlush( GameCode::LOGOUT );
+
 	std::cout << "[Game] Logged out successfully." << std::endl;
 }
 
@@ -97,6 +89,14 @@ NetMessage Game::selectCharacter( std::string charName ) {
 }
 
 
+void Game::deselectCurrentCharacter() {
+	Game::transceiver->writeToServer( GameCode::CHAR_DELECT, "_" );
+	std::cout << "[Game] Tried to delect a char." << std::endl;
+	
+	Game::readUntilHitAndFlush( GameCode::CHAR_DELECT );
+}
+
+
 void Game::enact( std::string userInputString ) {
 	Game::transceiver->writeToServer( GameCode::COMMAND, userInputString );
 	std::cout << "- Tried to command." << std::endl;
@@ -111,4 +111,14 @@ std::shared_ptr< Transceiver > Game::transceiver;
 NetMessage Game::getBusyResponse() {
 	while ( Game::transceiver->queueEmpty() ) {}
 	return Game::transceiver->readAndPopQueue();
+}
+
+
+void Game::readUntilHitAndFlush( std::string header ) {
+	while ( true ) {
+		NetMessage nmIter = Game::getFrontResponse();
+		if ( nmIter.header == header ) break;
+	}
+
+	Game::transceiver->flushQueue();
 }

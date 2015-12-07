@@ -16,11 +16,12 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include "CommandParser.hpp"
 //#include "CommandParser.hpp"
 
 //enum CommandHeader {WORLD, COMBAT, MESSENGER, INCOMPLETE, INVALID, CHARACTER, EDITOR};
 
-namespace CommandHeader {
+//namespace CommandHeader {
 	static const int WORLD = 0;
 	static const int COMBAT = 1;
 	static const int MESSENGER = 2;
@@ -28,9 +29,9 @@ namespace CommandHeader {
 	static const int INVALID = 4;
 	static const int CHARACTER = 5;
 	static const int EDITOR = 6;
-}
+//}
 
-using namespace CommandHeader;
+//using namespace CommandHeader;
 
 class DictionaryCmds {
     

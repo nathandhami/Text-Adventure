@@ -20,7 +20,7 @@ namespace GameCode {
 	// Confirmation headers
 	const std::string CORRECT 		= "cor";
 	const std::string WRONG 		= "wrg";
-	const std::string INVALID 		= "inv";
+	const std::string INVALID 		= "ivd";
 	
 	// Dynamics headers
 	const std::string DESCRIPTION 	= "des";
@@ -29,7 +29,7 @@ namespace GameCode {
 	const std::string COMBAT 		= "cmb";
 	
 	// Update headers
-	const std::string INVENTORY 	= "inv";
+	const std::string INVENTORY 	= "ivt";
 	const std::string ATTRIBUTES 	= "atr";
 	const std::string SPELLS	 	= "spl";
 	

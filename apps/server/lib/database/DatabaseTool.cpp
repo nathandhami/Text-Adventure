@@ -20,7 +20,7 @@ const int INVALID_COMMAND = 4;
 
 static std::mutex databaseMutex;
 
-const int verbosity = 1;
+const int verbosity = 0;
 
 using namespace std;
 using namespace sqlite;
@@ -181,21 +181,21 @@ string DatabaseTool::getPassword(int userID) {
 /*
 
 INSERT INTO `items`(`itemID`,`shortDescription`,`description`,`longDescription`,`keywords`,`isPickable`,`isEquippable`,`isStackable`,`isContainer`) VALUES (NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-UPDATE `items` SET `shortDescription`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `description`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `longDescription`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `keywords`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `isPickable`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `isEquippable`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `isStackable`=? WHERE `_rowid_`='10003';
-UPDATE `items` SET `isContainer`=? WHERE `_rowid_`='10003';
+UPDATE `items` SET `shortDescription`='a cotton robe' WHERE `_rowid_`='10007';
+UPDATE `items` SET `description`='You see an old cotton robe' WHERE `_rowid_`='10007';
+UPDATE `items` SET `longDescription`='The old cotton robe looks like it belonged to somebody' WHERE `_rowid_`='10007';
+UPDATE `items` SET `keywords`='cotton robe priest' WHERE `_rowid_`='10007';
+UPDATE `items` SET `isPickable`=1 WHERE `_rowid_`='10007';
+UPDATE `items` SET `isEquippable`=1 WHERE `_rowid_`='10007';
+UPDATE `items` SET `isStackable`=0 WHERE `_rowid_`='10007';
+UPDATE `items` SET `isContainer`=0 WHERE `_rowid_`='10007';
 
 */
 
 
 bool DatabaseTool::addCharacter(string name, int userID, string description){
 	try {
-		const int STARTING_ITEM_ID = 10003;
+		const int STARTING_ITEM_ID = 10007;
 		const string STARTING_ITEM = "a cotton robe";
 		
 		databaseMutex.lock();
@@ -2110,7 +2110,7 @@ int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, s
 		database db(DB_LOCATION);
 		db << FOREIGN_KEY_ON;
 
-		db 	<< "INSERT INTO items (shortDescription,description,longDescription,keywords,isPickable,isEquippable,isStackable,isContainer) VALUES (?,?,?,?,1,1,0,0);"
+		db 	<< "INSERT INTO items (shortDescription,description,longDescription,keywords,isPickable,isEquippable,isStackable,isContainer) VALUES (?,?,?,?,1,0,0,0);"
 			<< shrtDesc
 			<< desc
 			<< lngDesc
@@ -2341,7 +2341,9 @@ vector< string > DatabaseTool::getAllNPCsInZone( int zoneID ) {
 		
 		return npcs;
 	} catch( sqlite_exception e ) {
-		std::cerr << e.what() << std::endl;
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
 		return npcs;
 	}
 }

@@ -10,12 +10,14 @@
 // ------------------- PUBLIC -------------------
 
 std::pair< std::string, std::string > Character::performCommand( int charId, Command command ) {
-	const std::string NOT_ALLOWED = "You cannot do that!";
+	const std::string NOT_ALLOWED = "You need to train more.";
 	const std::string CMD_LOOK		= "look";
 	const std::string CMD_LOOK_AT	= "look at";
 	const std::string CMD_MOVE		= "move";
 	const std::string CMD_PICK_UP	= "pick up";
 	const std::string CMD_DROP		= "drop";
+	const std::string CMD_EQUIP		= "equip";
+	const std::string CMD_UNEQUIP	= "unequip";
 	
 	if ( command.type == CMD_LOOK ) {
 		return std::make_pair( GameCode::DESCRIPTION, Character::look( charId, command.data ) );
@@ -27,9 +29,13 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 		return std::make_pair( GameCode::STATUS, Character::pickUpItem( charId, command.data ) );
 	} else if ( command.type == CMD_DROP ) {
 		return std::make_pair( GameCode::STATUS, Character::dropItem( charId, command.data ) );
+	} else if ( command.type == CMD_EQUIP ) {
+		return std::make_pair( GameCode::STATUS, Character::equipItem( charId, command.data ) );
+	} else if ( command.type == CMD_UNEQUIP ) {
+		return std::make_pair( GameCode::STATUS, Character::unequipItem( charId, command.data ) );
+	} else {
+		return std::make_pair( GameCode::ERROR, NOT_ALLOWED );
 	}
-	
-	//TO-DO: add an 'else' for invalid action
 }
 
 
@@ -71,8 +77,6 @@ void Character::updateInventory( int charId ) {
 // ------------------- PRIVATE ------------------
 
 std::string Character::look( int charId, std::string direction ) {
-	Character::updateStats( charId );
-	
 	int currentZoneId = DatabaseTool::getCharsLocation( charId );
 	std::string description = "";
 	
@@ -122,7 +126,7 @@ std::string Character::lookAt( int charId, std::string keyword ) {
 		if ( !objects.empty() ) kwDescriptions.push_back( objects );
 		
 		if( kwDescriptions.empty() ) return ( "You don't see any " + keyword + "." );
-		return ( "You see " + boost::algorithm::join( kwDescriptions, ", " ) + "." );
+		return ( boost::algorithm::join( kwDescriptions, ", " ) );
 	}
 }
 
@@ -144,30 +148,42 @@ std::string Character::pickUpItem( int charId, std::string keyword ) {
 	//TO-DO: add item to inventory
 	int currentZoneID = DatabaseTool::getCharsLocation( charId );
 	if ( !DatabaseTool::pickUp( charId, keyword ) ) {
-//		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " picked up " + item);
 		return "You grabbed the air as if something was in it, but your hand remained empty.";
 	}
 	
 	Character::updateInventory( charId );
 	return ( "You picked up " + keyword );
-	//return stuff
 }
 
 
 std::string Character::dropItem( int charId, std::string keyword ) {
 	int currentZoneID = DatabaseTool::getCharsLocation( charId );
 	if ( !DatabaseTool::dropItem( charId, keyword ) ) {
-//		Zone::broadcastMessage(currentZoneID, DatabaseTool::getCharNameFromID(playerID) + " dropped " + item);
 		return ( "You look through your bag, but you can't find any " + keyword + "." );
 	}
+	Character::updateInventory( charId );
 	return ( "You dropped " + keyword + "." );
 }
 
 
+std::string Character::equipItem( int charId, std::string keyword ) {
+	if ( DatabaseTool::equipItem( charId, keyword ) ) {
+		Character::updateInventory( charId );
+		return ( "You equipped " + keyword + "." );
+	} else {
+		return ( "You do not have or can't equip " + keyword + "." );
+	}
+}
 
 
-
-
+std::string Character::unequipItem( int charId, std::string keyword ) {
+	if ( DatabaseTool::unEquip( charId, keyword ) ) {
+		Character::updateInventory( charId );
+		return ( "You unequipped " + keyword + "." );
+	} else {
+		return ( "You are not wearing " + keyword + "." );
+	}
+}
 
 
 

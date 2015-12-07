@@ -86,6 +86,7 @@ private:
 		{ GameCode::CHAR_CREATE	, &Session::createCharacter },
 		{ GameCode::CHAR_DELETE	, &Session::deleteCharacter },
 		{ GameCode::CHAR_SELECT	, &Session::selectCharacter },
+		{ GameCode::CHAR_DELECT	, &Session::deselectCurrentCharacter },
 		{ GameCode::COMMAND		, &Session::doGameCommand }
 	};
 	

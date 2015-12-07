@@ -13,6 +13,7 @@
 
 #include <future>
 #include <boost/asio/socket_base.hpp>
+#include <chrono>
 
 // Error read/write string codes
 #define CODE_ERROR_READ		"rerr"
@@ -87,9 +88,22 @@ std::string Session::getIP( IPType type ) {
 void Session::asyncReadUserRequest() {
 	this->readerThread = std::thread(
 		[ this ]() {
+			using namespace std::chrono;
+			
+			const int REQUEST_THRESHOLD = 10;
+			const int RELOAD_TIME_MS = 1000;
+			const int READER_SLEEP_TIME_MS = 10;
+			
+			int requestCounter = 0;
+			int nextReloadTime_ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() ).count() + RELOAD_TIME_MS;
 			this->reading = true;
+			
 			while ( this->reading ) {
 				// while user connected
+				int currentTime_ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() ).count();
+				LOG( "CTime: " << currentTime_ms );
+				LOG( "Next reload time: " << nextReloadTime_ms );
+					
 				// get header
 				std::string header = this->read( NetMessage::MaxLength::HEADER );
 				if ( header == CODE_ERROR_READ ) {
@@ -110,9 +124,20 @@ void Session::asyncReadUserRequest() {
 					break;
 				}
 				
-				LOG( "Received request." );
 				
-				this->handleRequest( header, body );
+				if ( nextReloadTime_ms <= currentTime_ms ) {
+					requestCounter = 0;
+					nextReloadTime_ms = currentTime_ms + RELOAD_TIME_MS;
+				}
+				
+				if ( requestCounter >= REQUEST_THRESHOLD ) {
+					this->writeToClient( GameCode::ERROR, "Server error: too many requests!" );
+				} else {
+					LOG( "Received request." );
+					this->handleRequest( header, body );
+					requestCounter++;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds( READER_SLEEP_TIME_MS ));
 			}
 			LOG( "Stopped reading." );
 			this->terminating = true;
@@ -191,7 +216,7 @@ void Session::logout( const std::string& credentials ) {
 		return;
 	}
 	
-	this->writeToClient( GameCode::OK, MESSAGE_OK_LOGGED_OUT );
+	this->writeToClient( GameCode::LOGOUT, MESSAGE_OK_LOGGED_OUT );
 }
 
 
@@ -218,9 +243,19 @@ void Session::selectCharacter( const std::string& charName ) {
 		this->writeToClient( GameCode::OK, "Character " + charName + " selected." );
 		this->writeToClient( GameCode::ATTRIBUTES, Character::getStats( this->currentUser.getSelectedCharacterId() ) );
 		this->writeToClient( GameCode::INVENTORY, Character::getInventory( this->currentUser.getSelectedCharacterId() ) );
+		int currentZoneId = DatabaseTool::getCharsLocation( this->currentUser.getSelectedCharacterId() );
+		this->writeToClient( GameCode::DESCRIPTION, DatabaseTool::getZoneDesc( currentZoneId ) );
 	} else {
 		this->writeToClient( GameCode::ERROR, "Could not select " + charName + ", internal server error occurred." );
 	}
+}
+
+
+void Session::deselectCurrentCharacter( const std::string& placeholder ) {
+	LOG( "Char-deselect happened." );
+	
+	CharacterManager::deselectCurrentCharacter( this->currentUser );
+	this->writeToClient( GameCode::CHAR_DELECT, CharacterManager::getCharacterList( this->currentUser.getUserId() ) );
 }
 
 
