@@ -22,7 +22,7 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 	const std::string MOVE_EXCEPTION2 = "look at";
 	const std::string MOVE_SYNONYM = "go";
 	
-	if ( commandHeader == CommandHeader::WORLD ) {
+	if ( commandHeader == CommandHeader::CHARACTER ) {
 		if ( parsedCommand.data == "" && parsedCommand.type != MOVE_EXCEPTION && parsedCommand.type != MOVE_EXCEPTION2 && parsedCommand.type != MOVE_CARDINAL ) {
 			parsedCommand.data = parsedCommand.type;
 			parsedCommand.type = MOVE_CARDINAL;
@@ -33,6 +33,8 @@ static void translateSpecial( int& commandHeader, Command& parsedCommand ) {
 		}
 	}
 }
+
+
 std::tuple< int, Command > CommandParser::getHeaderAndCommand( std::string commandString ) { 
 	Command parsedCommand;
 	int parsedHeader = CommandHeader::INVALID;
