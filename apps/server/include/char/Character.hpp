@@ -30,6 +30,7 @@ private:
 	
 	static std::string pickUpItem( int charId, std::string keyword );
 	static std::string dropItem( int charId, std::string keyword );
+	static std::string equipItem( int charId, std::string keyword );
 };
 
 
