@@ -1,4 +1,5 @@
 #include <ui/MainWindow.hpp>
+#include <ui/SubWindow.hpp>
 #include <Locale.hpp>
 #include "Game.hpp"
 
@@ -101,6 +102,10 @@ void MainWindow::setupComponents() {
 	
 }
 
+void MainWindow::closeSubWindow() {
+	
+}
+
 
 void MainWindow::switchToGameFrame() {
 	/*Gtk::MessageDialog dlg( "Invalid username or password.", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
@@ -108,10 +113,17 @@ void MainWindow::switchToGameFrame() {
 
 	dlg.run();*/
 //	(Gtk::Widget)(this->loginFrame).destroy();
-	this->remove();
+	/*this->remove();
+	
+	subWindow = 0;
+	subWindow = new SubWindow;
+	subWindow->signal_hide().connect(sigc::mem_fun(*this, &MainWindow::closeSubWindow));
+	//subWindow->show();
+
 	this->add( gameFrame );
 	this->gameFrame.startReading();
+	this->gameFrame.startSubFrame(subWindow);
 	
-	this->show_all_children();
+	this->show_all_children();*/
 	
 }

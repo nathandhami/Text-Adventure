@@ -8,14 +8,16 @@
 #include <ui/CharacterFrame.hpp>
 #include <ui/CreateFrame.hpp>
 #include <ui/GameFrame.hpp>
+//#include <ui/SubWindow.hpp>
 
-//#include <ui/GameWindow.hpp>
+//#include <ui/GameWindow.hpp>SubWindow* subWindow;
 
 
 class MainWindow: public Gtk::Window {
 
 public:	
 	MainWindow();
+	//SubWindow* subWindow;
 
 	void openLoginFrame();
 	void openRegisterFrame();
@@ -35,6 +37,7 @@ private:
 	void setupComponents();
 	
 	void switchToGameFrame();
+	void closeSubWindow();
 	
 };
 

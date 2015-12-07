@@ -1,0 +1,40 @@
+#include <ui/SubWindow.hpp>
+#include <Locale.hpp>
+
+
+#define WIDTH_DEFAULT 	300
+#define HEIGHT_DEFAULT	300
+
+#define BORDER_WIDTH_DEFAULT 1
+
+
+// ------------------- PUBLIC -------------------
+
+SubWindow::SubWindow() {
+	this->set_title( GameLocale::SUBWINDOWTITLE );
+
+	this->set_position( Gtk::WIN_POS_CENTER );
+	this->set_default_size( WIDTH_DEFAULT, HEIGHT_DEFAULT );
+	this->set_size_request( WIDTH_DEFAULT, HEIGHT_DEFAULT );
+	this->set_resizable( false );
+
+	this->set_name( "sub-window" );
+	
+//	this->set_border_width( BORDER_WIDTH_DEFAULT );
+
+	this->prepareComponents();
+
+//	this->show_all_children();
+}
+
+
+// ------------------- PRIVATE ------------------
+
+void SubWindow::prepareComponents() {
+	
+	
+	this->add( this->subFrame );
+	this->subFrame.show();
+	
+}
+
