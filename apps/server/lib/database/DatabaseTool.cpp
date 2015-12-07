@@ -1276,17 +1276,17 @@ Attributes DatabaseTool::getAttributes(int id, Target characterOrNpc){
 		database db(DB_LOCATION);
 
 		if(characterOrNpc == Target::character) {
-			db << "select charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from playerAttributes where charID = ?;"
+			db << "select charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weaponSlot from playerAttributes where charID = ?;"
 			<< id
-			>>[&](int charID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-				Attributes characterAttributes(charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+			>>[&](int charID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weaponSlot) {
+				Attributes characterAttributes(charID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weaponSlot);
 				attributes = characterAttributes;
 			};
 		} else if(characterOrNpc == Target::npc) {
-			db << "select npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weponSlot from npcAttributes where npcInstanceID = ?;"
+			db << "select npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot, chestSlot, greavesSlot, feetSlot, handSlot, weaponSlot from npcAttributes where npcInstanceID = ?;"
 			<< id
-			>>[&](int npcInstanceID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weponSlot) {
-				Attributes npcAttributes(npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weponSlot);
+			>>[&](int npcInstanceID, int level, int experience, int requiredExp, int health, int maxHealth, int mana, int maxMana, int strength, int intelligence, int dexterity, int charisma, int ringSlot, int headSlot, int chestSlot, int greavesSlot, int feetSlot, int handSlot, int weaponSlot) {
+				Attributes npcAttributes(npcInstanceID, level, experience, requiredExp, health, maxHealth, mana, maxMana, strength, intelligence, dexterity, charisma, ringSlot, headSlot,  chestSlot, greavesSlot, feetSlot, handSlot, weaponSlot);
 				attributes = npcAttributes;
 			};
 		}
@@ -1625,7 +1625,7 @@ string DatabaseTool::getSlot(int equiableTo) {
 		case 6:
 			return "handSlot";
 		case 7:
-			return "weponSlot";
+			return "weaponSlot";
 		default:
 			return "";
 	}
