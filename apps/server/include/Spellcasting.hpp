@@ -25,7 +25,7 @@ class Spellcasting {
 
 	static bool calculateVariable(string possibleVariable, int *value, Attributes *caster, Attributes *target);
 	static int parseSpellEffectStringToNumber(string spellEffect, Attributes *caster, Attributes *target);
-	static string insertNamesIntoHitMsg(string hitMsg, string name)
+	static string insertNamesIntoHitMsg(string hitMsg, string name);
 
 public:
 

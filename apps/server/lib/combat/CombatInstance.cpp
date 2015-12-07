@@ -117,6 +117,7 @@ void CombatInstance::executePlayerAttack(int attacker, Target characterType) {
 	defenderAttributesModifier.id = defender;
 	defenderAttributesModifier.health = damageDealt;  
 	DatabaseTool::updateAttributes(defenderAttributesModifier, defenderTarget);
+	Character::updateStats(defender);
 
 	int healthRemaining = DatabaseTool::getAttributes(defender, defenderTarget).health;
 	notifyAttack(attacker, characterType, damageDealt, healthRemaining);
@@ -143,7 +144,7 @@ void CombatInstance::executePlayerCastSpell(int player) {
 	}
 	Spell currentSpell = DatabaseTool::getSpell(playersSpellQueue.at(player).front());
 	playersSpellQueue.at(player).pop_front();
-	Spellcasting::immediatelyCastSpell(&currentSpell, caster, target, targetType);
+	Spellcasting::immediatelyCastSpell(&currentSpell, &caster, &target, targetType);
 }
 
 void CombatInstance::executePlayerRetreat(int player) {
@@ -215,8 +216,8 @@ void CombatInstance::runCombat() {
 		string npcName = DatabaseTool::getNpcName(playerTwoID);
 		Zone::broadcastMessage(DatabaseTool::getCharsLocation(playerOneID), challengerName + " has started fighting " + npcName + "!", vector<int>(playerOneID));
 	}
-	playersSpellQueue.push_back(deque<Spell> ());
-	playersSpellQueue.push_back(deque<Spell> ());
+	playersSpellQueue.push_back(deque<string> ());
+	playersSpellQueue.push_back(deque<string> ());
 	playersActionQueue.push_back(deque<int> ());
 	playersActionQueue.push_back(deque<int> ());
 

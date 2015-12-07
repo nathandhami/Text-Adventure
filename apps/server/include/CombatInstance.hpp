@@ -5,6 +5,7 @@
 #include "DatabaseTool.hpp"
 #include "Server.hpp"
 #include "Zone.hpp"
+#include "Character.hpp"
 #include "Spellcasting.hpp"
 #include <deque>
 #include <unistd.h>
@@ -60,6 +61,7 @@ class CombatInstance {
 	void playerLose(int playerID);
 
 	void executePlayerAttack(int attacker, Target characterType);
+	void executePlayerCastSpell(int player);
 	
 	void executePlayerRetreat(int player);
 	void executePlayerLeave(int player);

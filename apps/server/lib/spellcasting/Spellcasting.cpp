@@ -313,6 +313,7 @@ string Spellcasting::immediatelyCastSpell(Spell *currentSpell, Attributes *caste
 		return "";
 	}
 	DatabaseTool::updateAttributes(casterModifier, Target::character);
+	Character::updateStats(caster->id);
 
 	string effect = "";
 	int healthChangeSign = 1;
@@ -332,6 +333,7 @@ string Spellcasting::immediatelyCastSpell(Spell *currentSpell, Attributes *caste
 	}
 	targetModifier.health = Spellcasting::calculateSpellEffectNumber(currentSpell->effect, caster, target) * healthChangeSign;
 	DatabaseTool::updateAttributes(targetModifier, targetType);
+	Character::updateStats(target->id);
 	
 	// Immediately send messages to caster and target based on fields in currentSpell
 	Server::sendMessageToCharacter(caster->id, GameCode::COMBAT, insertNamesIntoHitMsg(currentSpell->hitChar, DatabaseTool::getCharNameFromID(target->id)));
