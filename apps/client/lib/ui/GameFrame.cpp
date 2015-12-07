@@ -138,7 +138,7 @@ void GameFrame::prepareComponents() {
 	
 	this->sideNotebook.append_page(this->statsWindow, "Stats");
 	this->sideNotebook.append_page(this->inventoryWindow, "Inventory");
-	this->sideNotebook.append_page(this->spellsWindow, "Spells");
+	//this->sideNotebook.append_page(this->spellsWindow, "Spells");
 	
 	//this->layoutGrid.add( this->subFrameNotebook );
 	//this->layoutGrid.add( this->sideNotebook );
@@ -155,6 +155,10 @@ void GameFrame::prepareComponents() {
 	this->statsLabel.set_valign( Gtk::Align::ALIGN_START );
 	this->statsLabel.set_halign( Gtk::Align::ALIGN_START );
 	this->statsBox.pack_start( statsLabel, Gtk::PACK_EXPAND_PADDING );
+
+	this->inventoryLabel.set_valign( Gtk::Align::ALIGN_START );
+	this->inventoryLabel.set_halign( Gtk::Align::ALIGN_START );
+	this->inventoryBox.pack_start( inventoryLabel, Gtk::PACK_EXPAND_PADDING );
 
 //	this->show_all_children();
 }
@@ -303,16 +307,25 @@ void GameFrame::updateResponses() {
 	}
 	if ( msg.header == GameCode::INVENTORY ) {
 		std::vector< std::string > listTokens;
-		boost::split( listTokens, msg.body, boost::is_any_of( ";" ) );
+		boost::split( listTokens, msg.body, boost::is_any_of( ";\n" ) );
+		
+		inventoryLabel.set_text(msg.body);
+	
+		/*this->item = listTokens[1];
+		this->intStats = listTokens[3];
+		this->dexStats = listTokens[5];
+		this->charisStats = listTokens[7];
+		this->hpStats = listTokens[9];
+		this->mpStats = listTokens[11];
+		this->xpStats = listTokens[13];
+		this->levelStats = listTokens[15];*/
 
-		//std::cout << listTokens[0] + listTokens[1] + listTokens[2] << std::endl;	
-
-		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		/*Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 		pLabel->set_text( msg.body );
 		pLabel->set_valign( Gtk::Align::ALIGN_START );
 		pLabel->set_halign( Gtk::Align::ALIGN_START );
 		this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		this->show_all_children();
+		this->show_all_children();*/
 
 		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){

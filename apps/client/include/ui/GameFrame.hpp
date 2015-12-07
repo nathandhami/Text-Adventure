@@ -38,6 +38,7 @@ private:
 	Gtk::Button commandEntryButton;
 	Gtk::Label outputTabLabel;
 	Gtk::Label statsLabel;
+	Gtk::Label inventoryLabel;
 	
 	Glib::Thread* readerThread;
 	Glib::Dispatcher updateDispatcher;
@@ -55,6 +56,10 @@ private:
 	std::string mpStats;
 	std::string xpStats;
 	std::string levelStats;
+
+	std::string item;
+	std::string itemQuantity;
+	std::string equipStatus;
 
 	void prepareComponents();
 	
