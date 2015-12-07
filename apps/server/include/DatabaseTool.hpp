@@ -217,6 +217,16 @@ class Spell{
 		string hitChar;
 		string hitRoom;
 		string hitVict;
+		void print() {
+			cout << "spell name: " << spellName << endl;
+			cout << "min level: " << minLevel << endl;
+			cout << "cost : " << cost << endl;
+			cout <<"archetypeID: " << archetypeID << endl;
+			cout << "effect: " << effect << endl;
+			cout << "hitChar: " << hitChar << endl;
+			cout << "hitRoom: " << hitRoom << endl;
+			cout << "hitVict: " << hitVict << endl;
+		}
 };
 
 class DatabaseTool{

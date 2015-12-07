@@ -124,12 +124,24 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::checkCommand("delete") << endl;
       // cout << DatabaseTool::checkCommand("@") << endl;
 
-      // Spell spell = DatabaseTool::getSpell("flamestrike");
-      // cout << spell.spellName << endl;
-      // cout << spell.effect << endl;
+      Spell spell = DatabaseTool::getSpell("flamestrike");
+      spell.print();
+      cout << endl;
+      Spell spell2 = DatabaseTool::getSpell("heal");
+      spell2.print();
+      cout << endl;
+      Spell spell3 = DatabaseTool::getSpell("cause critical");
+      spell3.print();
+      cout << endl;
+      Spell spell4 = DatabaseTool::getSpell("cure serious");
+      spell4.print();
+      cout << endl;
+      Spell spell5 = DatabaseTool::getSpell("lightning breath");
+      spell5.print();
+      cout << endl;
 
       //cout << DatabaseTool::getCharacterDescription(1) << endl;
-      cout << DatabaseTool::getNpcLocation(1) << endl;
+      //cout << DatabaseTool::getNpcLocation(1) << endl;
 
 
    }
