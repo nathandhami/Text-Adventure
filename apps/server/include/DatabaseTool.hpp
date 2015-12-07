@@ -94,7 +94,7 @@ class Attributes {
 			this->health = 0;
 			this->maxHealth = 0;
 			this->mana = 0;
-			this-> maxMana = 0;
+			this->maxMana = 0;
 			this->strength = 0;
 			this->intelligence = 0;
 			this->dexterity = 0;
@@ -245,6 +245,8 @@ class DatabaseTool{
 		static string getCharNameFromID(int charID);
 
 		static bool addCharacter(string name, int userID, string description);
+		
+		static bool removeCharacter(string name);
 
 		static int getCharID(int userID);
 
@@ -389,16 +391,25 @@ class DatabaseTool{
 		static void clearAllSessions();
 
 		static void signOffAllUsers();
+	
+		static vector< string > getAllNPCsInZone( int zoneID );
+		static vector< string > getAllPlayersInZone( int charID, int zoneID );
 
 		static bool knowsSpell(int charID, string spellName);
-
 		static Spell getSpell(string spellName);
 	
-	
-	private:
 		static string findPlayerDescription(int lookerID, int zoneID, string name);
 		static string findNpcDescription(int zoneID, string word);
 		static string findItemDescription(int charID, int zoneID, string word);
+	
+		static bool userExists( string userName );
+		static vector< int > getAllUserCharIDs( int userID );
+		static string getCharDescription( int charID );
+//		static bool dropItem( int charID, string item );
+	
+	
+	private:
+		
 		static string getSlot(int equiableTo);
 		static string quotesql( const string& s );
 		static bool executeSQLInsert(string statment);

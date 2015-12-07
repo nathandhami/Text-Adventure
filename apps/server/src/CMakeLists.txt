@@ -1,5 +1,5 @@
 add_executable ( runServer main.cpp )
-target_link_libraries ( runServer Server )
+target_link_libraries ( runServer Server World )
 
 add_executable ( testk testk.cpp )
 target_link_libraries ( testk Server ${Boost_LIBRARIES} )
@@ -7,9 +7,8 @@ target_link_libraries ( testk Server ${Boost_LIBRARIES} )
 
 
 
-
 add_executable ( dbtest databaseTest.cpp )
-#add_executable ( testStuff testStuff.cpp )
+add_executable ( parsetest testStuff.cpp )
 
 target_link_libraries (dbtest DatabaseTool)
 
@@ -19,4 +18,4 @@ target_link_libraries (yamltest DatabaseTool ${Boost_LIBRARIES} ${CMAKE_SOURCE_D
 
 
 target_link_libraries ( dbtest DatabaseTool )
-#target_link_libraries ( testStuff CommandParser DatabaseTool World )
+target_link_libraries ( parsetest CommandParser DatabaseTool World )

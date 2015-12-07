@@ -54,9 +54,9 @@ To start the server, run: `./server-start.sh`
 To start the game, run: `./play.sh`
 
 ### Two accounts available to login to:
-Username: `userTest1`, password: `test1`
+Username: `testUser1`, password: `test1`
 
-Username: `userTest2`, password: `test2`
+Username: `testUser2`, password: `test2`
 
 
 ## Creator commands
@@ -76,6 +76,5 @@ delete door [doorID]
 ```
 #### Create and delete items
 ```
-"a standard issue dagger ~: You see a standard issue dagger here~; You see a dagger of great craftsmanship. Imprinted on the side is: 'Merc Industries'~; dagger, merc"
 create item [item name] seen as [what you see] upclose [the long description] recognized as [keywords]
 ```
