@@ -17,15 +17,19 @@ public:
 	static void initialize();
 	static void start();
 	static void stop();
+	
 	static NetMessage getFrontResponse();
 	
 	static NetMessage registerUser( std::string userName, std::string password, std::string passwordRep );
 	static NetMessage login( std::string userName, std::string password );
 	static void logout();
+	
 	static NetMessage createCharacter( std::string charName, std::string charDesc );
 	static NetMessage deleteCharacter( std::string charName );
+	
 	static NetMessage selectCharacter( std::string charName );
-	static NetMessage deselectCurrentCharacter();
+	static void deselectCurrentCharacter();
+	
 	static void enact( std::string userInputString );
 	
 	

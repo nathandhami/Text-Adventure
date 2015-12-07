@@ -39,9 +39,14 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 		}
 	} else if ( commandHeader == CommandHeader::COMBAT ) {
 		std::string combatMessage = Combat::executeCommand( user.getUserId(), command );
-//		
+		
 		responseHeader = GameCode::COMBAT;
 		responseBody = combatMessage;
+	} else if ( commandHeader == CommandHeader::EDITOR ) {
+		std::string worthyMessage = Editor::judgeAndPerform( user.getUserId(), user.getUserId(), command );
+		
+		responseHeader = GameCode::STATUS;
+		responseBody = worthyMessage;
 	}
 	
 	return std::make_pair( responseHeader, responseBody );
