@@ -363,14 +363,13 @@ void GameFrame::updateResponses() {
 			if(listTokens[i] == "0") {
 				equippedVector.push_back("Not Equipped");
 			} else {
-				equippedVector.push_back("Equipped");
+				equippedVector.push_back(">Equipped");
 			}
 			
 		}
 	
 		for(int i = 0; i < itemsVector.size(); i++) {
-			inventoryVector.push_back(quantityVector[i] + "x " +
-							itemsVector[i] + "\n" + 
+			inventoryVector.push_back(itemsVector[i] + "(" + quantityVector[i]  + ")" + "\n" + 
 							equippedVector[i] + "\n\n");
 
 			inventory += inventoryVector[i];
