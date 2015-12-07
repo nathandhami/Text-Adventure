@@ -56,13 +56,31 @@ string World::playerDropItem(int playerID, string item) {
 	return "You do not have " + item + " in your inventory.";
 }
 
+void World::regenHealthAndMana() {
+	Attributes attributeRegenAmount;
+	attributeRegenAmount.health = HEALTH_REGEN_AMOUNT;
+	attributeRegenAmount.mana = MANA_REGEN_AMOUNT;
+	vector<int> onlineChars = DatabaseTool::getAllOnlineChars();
+	for (int index = 0; index < onlineChars.size(); index++) {
+		attributeRegenAmount.id = onlineChars.at(index);
+		DatabaseTool::updateAttributes(attributeRegenAmount, Target::character);
+		Character::updateStats(attributeRegenAmount.id);
+	}
+}
+
 void World::runRespawn() {
 	int respawnCounter = 0;
+	int regenCounter = 0;
 	while (keepRespawning) {
 		respawnCounter++;
+		regenCounter++;
 		if (respawnCounter >= RESPAWN_TIME_SECONDS) {
 			DatabaseTool::respawnAll();
 			respawnCounter = 0;
+		}
+		if (regenCounter >= REGEN_TIME_SECONDS) {
+			World::regenHealthAndMana();
+			regenCounter = 0;
 		}
 		sleep(1);
 	}

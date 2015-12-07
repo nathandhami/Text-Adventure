@@ -82,6 +82,11 @@ void CombatInstance::notifyAttack(int player, Target characterType, int damageDe
 void CombatInstance::playerWin(int playerID) {
 	keepFighting = false;
 	if ((playerID != playerTwoID) || (playerTwoTarget != Target::npc)) {
+		Attributes winGainAttributes;
+		winGainAttributes.id = playerID;
+		winGainAttributes.experience = 5;
+		DatabaseTool::updateAttributes(winGainAttributes, Target::character);
+		Character::updateStats(playerID);
 		Server::sendMessageToCharacter(playerID, GameCode::COMBAT, VICTORY_NOTIFICATION);
 	}
 }

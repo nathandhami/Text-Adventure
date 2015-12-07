@@ -522,6 +522,20 @@ int DatabaseTool::getCharsLocation(int charID){
 	}
 }
 
+vector<int> DatabaseTool::getAllOnlineChars(){
+	databaseMutex.lock();
+	vector<int> chars;
+	database db( DB_LOCATION );
+
+	db << "select charID from charactersOnline;"
+	>>[&](int charID) {
+		chars.push_back(charID);
+	};
+
+	databaseMutex.unlock();
+	return chars;
+}
+
 vector<int> DatabaseTool::getAllOnlineCharsInZone(int zoneID){
 	databaseMutex.lock();
 	vector<int> charsInZone;

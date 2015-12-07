@@ -56,6 +56,7 @@ string Spellcasting::castDefensiveSpell(Spell *currentSpell, Attributes *caster,
 
 string Spellcasting::castUtilitySpell(Spell *currentSpell, Attributes *caster, Attributes *target, Target targetType) {
 	if (currentSpell->spellName == "stupify") {
+		return "Unfortunately this spell is still a work in progress.\nWe apologise for the inconvenience.";
 		if (target->id <= 0) {
 			return "You must specify the target you want to stupify using the following:\n    cast stupify <target name>";
 		}

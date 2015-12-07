@@ -264,6 +264,8 @@ class DatabaseTool{
 
 		static int getCharsLocation(int charID);
 
+		static vector<int> getAllOnlineChars();
+
 		static vector<int> getAllOnlineCharsInZone(int zoneID);
 
 		static bool createNpcInstance(int npcID, int zoneID);

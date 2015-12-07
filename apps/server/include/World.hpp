@@ -4,6 +4,7 @@
 #include "WorldConstants.hpp"
 #include "DatabaseTool.hpp"
 #include "Command.hpp"
+#include "char/Character.hpp"
 #include "Zone.hpp"
 #include "Combat.hpp"
 #include <boost/algorithm/string.hpp>
@@ -12,7 +13,10 @@
 using namespace std;
 
 class World {
-	static const int RESPAWN_TIME_SECONDS = 1800;
+	static const int RESPAWN_TIME_SECONDS = 900;
+	static const int REGEN_TIME_SECONDS = 10;
+	static const int HEALTH_REGEN_AMOUNT = 1;
+	static const int MANA_REGEN_AMOUNT = 2;
 	
 	static bool keepRespawning;
 
@@ -27,6 +31,7 @@ class World {
 	static string playerPickupItem(int playerID, string item);
 	static string playerDropItem(int playerID, string item);
 
+	static void regenHealthAndMana();
 	static void runRespawn();
 
 public:
