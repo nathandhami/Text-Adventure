@@ -21,6 +21,9 @@ public:
 
 	static void broadcastMessage(int zoneID, string message, vector<int> exceptPlayers);
 	static void broadcastMessage(int zoneID, string message);
+
+	// Technically belongs in World or its own class, but when in World causes circular dependency
+	static void respawnPlayer(int playerID);
 };
 
 #endif

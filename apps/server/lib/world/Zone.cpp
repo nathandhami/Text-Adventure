@@ -41,3 +41,11 @@ void Zone::broadcastMessage(int zoneID, string message, vector<int> exceptPlayer
 void Zone::broadcastMessage(int zoneID, string message) {
 	Zone::broadcastMessage(zoneID, message, vector<int>());
 }
+
+void Zone::respawnPlayer(int playerID) {
+	Attributes fullHealAttributes;
+	fullHealAttributes.id = playerID;
+	fullHealAttributes.health = std::numeric_limits<int>::max();
+	DatabaseTool::putCharInZone(playerID, 3054);
+	DatabaseTool::updateAttributes(fullHealAttributes, Target::character);
+}

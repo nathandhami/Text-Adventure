@@ -93,13 +93,14 @@ void CombatInstance::playerLose(int playerID) {
 	}
 	else {
 		Server::sendMessageToCharacter(playerID, GameCode::COMBAT, DEFEAT_NOTIFICATION);
+		Zone::respawnPlayer(playerID);
 	}
 }
 
 // Waiting on equipment
 void CombatInstance::executePlayerAttack(int attacker, Target characterType) {
 	Attributes attackerAttributes = DatabaseTool::getAttributes(attacker, characterType);
-	int damageDealt = -attackerAttributes.strength * 2;    // Until we have weapons and armour we'll just do this for damage
+	int damageDealt = attackerAttributes.strength * 2;    // Until we have weapons and armour we'll just do this for damage
 
 	Target defenderTarget;
 	int defender = 0;
@@ -115,7 +116,7 @@ void CombatInstance::executePlayerAttack(int attacker, Target characterType) {
 
 	Attributes defenderAttributesModifier = Attributes();
 	defenderAttributesModifier.id = defender;
-	defenderAttributesModifier.health = damageDealt;  
+	defenderAttributesModifier.health = -damageDealt;  
 	DatabaseTool::updateAttributes(defenderAttributesModifier, defenderTarget);
 	Character::updateStats(defender);
 

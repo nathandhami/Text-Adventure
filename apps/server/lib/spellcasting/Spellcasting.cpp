@@ -79,7 +79,7 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 	for (int parsedArgumentIndex = 0; parsedArgumentIndex < parsedArgument.size(); parsedArgumentIndex++) {
 		if (spellName == "") {
 			spellName = parsedArgument.at(parsedArgumentIndex);
-			if (enemyName.find_first_not_of(' ') == std::string::npos) {
+			if (enemyName.find_first_not_of(' ') != std::string::npos) {
 				spellName = "";
 			}
 		}
@@ -94,17 +94,27 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 				else if (disambiguityCheck == "npc") {
 					enemyType = Target::npc;
 				}
+				else if (parsedArgumentIndex < parsedArgument.size() - 1) {     // Hacky, if a spellname has player or npc as a second word problems happen
+					spellName += " " + disambiguityCheck;
+					cout << spellName << endl;
+				}
 				else {
 					break;
 				}
 			}
 		}
 	}
+	boost::to_lower(spellName);
 
-	if (!DatabaseTool::knowsSpell(casterID, spellName)) {
-		return "You do not know the spell " + spellName + ".";
+	cout << "CASTER " << casterID << " IS TRYING TO CAST " << spellName << endl;
+	if (!DatabaseTool::knowsSpell(casterID, spellName)) {    // Not working?
+		return "You do not know the spell " + spellName + ".\nYou may have forgotten to specify a target, try\n    cast <spell name> <target name>";
 	}
 	Spell currentSpell = DatabaseTool::getSpell(spellName);
+	cout << "SPELL NAME : " << currentSpell.spellName << endl;
+	if (currentSpell.spellName == "") {
+		return "The spell " + spellName + " has not been invented yet.\nYou may have forgotten to specify a target, try\n    cast <spell name> <target name>";
+	}
 	Attributes caster = DatabaseTool::getAttributes(casterID, Target::character);
 	if (caster.level < currentSpell.minLevel) {
 		//cout << "Level too low (" << currentSpell.minLevel << ")\n";
@@ -166,7 +176,6 @@ string Spellcasting::castSpell(int casterID, string arguments) {
 string Spellcasting::executeCommand(int playerID, Command givenCommand) {
 	string command = givenCommand.type;
 	string arguments = givenCommand.data;
-	cout << command << " " << playerID << " " << arguments << endl;
 
 	if (command == "cast") {
 		return Spellcasting::castSpell(playerID, arguments);

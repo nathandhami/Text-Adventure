@@ -113,13 +113,17 @@ int CastSpell::parseSpellEffectStringToNumber(string spellEffect, Attributes *ca
 }
 
 string CastSpell::insertNamesIntoHitMsg(string hitMsg, string name) {
+	cout << "INITIAL HITMSG : " << hitMsg << endl;
 	deque<std::string> parsedArgument;
 	// Handle brackets
 	boost::split(parsedArgument, hitMsg, boost::is_any_of("$N"));
 	string newHitMsg = "";
 	newHitMsg += parsedArgument.at(0);
+	cout << "UPDATED HITMSG : " << newHitMsg << endl;
 	for (int index = 1; index < parsedArgument.size(); index++) {
-		newHitMsg += name + parsedArgument.at(index);
+		if (parsedArgument.at(index).find_first_not_of(' ') != std::string::npos) {
+			newHitMsg += name + parsedArgument.at(index);
+		}
 	}
 	return newHitMsg;
 }
@@ -165,16 +169,35 @@ string CastSpell::immediatelyCastSpell(Spell *currentSpell, Attributes *caster, 
 	}
 	targetModifier.health = CastSpell::calculateSpellEffectNumber(currentSpell->effect, caster, target) * healthChangeSign;
 	DatabaseTool::updateAttributes(targetModifier, targetType);
-	Character::updateStats(target->id);
+	
 	
 	// Immediately send messages to caster and target based on fields in currentSpell
-	Server::sendMessageToCharacter(caster->id, GameCode::COMBAT, CastSpell::insertNamesIntoHitMsg(currentSpell->hitChar, DatabaseTool::getCharNameFromID(target->id)));
+	string targetName = "";
+	if (targetType == Target::character) {
+		Character::updateStats(target->id);
+		targetName = DatabaseTool::getCharNameFromID(target->id);
+	}
+	else if (targetType == Target::npc) {
+		targetName = DatabaseTool::getNpcName(target->id);
+	}
+	Server::sendMessageToCharacter(caster->id, GameCode::COMBAT, CastSpell::insertNamesIntoHitMsg(currentSpell->hitChar, targetName));
 	Server::sendMessageToCharacter(target->id, GameCode::COMBAT, currentSpell->hitVict);
+
+	if (DatabaseTool::getAttributes(target->id, targetType).health <= 0) {
+		if (targetType == Target::character) {
+			Server::sendMessageToCharacter(caster->id, GameCode::COMBAT, "You killed " + targetName + "!");
+			Server::sendMessageToCharacter(target->id, GameCode::COMBAT, DatabaseTool::getCharNameFromID(caster->id) + " killed you!");
+			Zone::respawnPlayer(target->id);
+		}
+		else if (targetType == Target::npc) {
+			DatabaseTool::murderNpc(target->id);
+		}
+	}
 
 	return "";
 }
 
 int CastSpell::calculateSpellEffectNumber(string spellEffect, Attributes *caster, Attributes *target) {
 	boost::trim(spellEffect);
-	CastSpell::parseSpellEffectStringToNumber(spellEffect, caster, target);
+	return CastSpell::parseSpellEffectStringToNumber(spellEffect, caster, target);
 }

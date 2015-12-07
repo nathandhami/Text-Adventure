@@ -1374,6 +1374,17 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 
 			health = health + attributes.health;
 
+			// Cap health at max health
+			int maxHealth = 0;
+			string selectMaxStatment = "select maxHealth from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectMaxStatment
+			<<attributes.id
+			>>maxHealth;
+
+			if (health > maxHealth) {
+				health = maxHealth;
+			}
+
 			string updateStatement = "update " + targetTable + " set health = ? where " + idColName + " = ?;";
 			db << updateStatement
 			<<health
@@ -1401,6 +1412,18 @@ bool DatabaseTool::updateAttributes(Attributes attributes, Target characterOrNpc
 			>>mana;
 
 			mana = mana + attributes.mana;
+
+			// Cap mana at max mana
+
+			int maxMana = 0;
+			string selectMaxStatment = "select maxMana from " + targetTable + " where " + idColName + " = ?;"; 
+			db << selectMaxStatment
+			<<attributes.id
+			>>maxMana;
+
+			if (mana > maxMana) {
+				mana = maxMana;
+			}
 
 			string updateStatement = "update " + targetTable + " set mana = ? where " + idColName + " = ?;";
 			db << updateStatement

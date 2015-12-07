@@ -10,6 +10,7 @@
 #include <deque>
 #include <unistd.h>
 #include <thread>
+#include <limits>
 
 #define RETREAT_NOTIFICATION "Your opponent turns to run away!"
 #define LEAVE_NOTIFICATION "Your opponent got away!"
