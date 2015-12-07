@@ -3,6 +3,8 @@
 #include "Server.hpp"
 
 #include <boost/thread.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 #include <future>
 
 
@@ -12,10 +14,13 @@ using boost::asio::ip::tcp;
 // ------------------- PUBLIC -------------------
 
 Watcher::Watcher() {
+	boost::property_tree::ptree configurationTree;
+	boost::property_tree::ini_parser::read_ini( "server.ini", configurationTree );
+	
 	this->connectionAcceptor =
 		std::make_shared< tcp::acceptor >( 
 			this->ioService, 
-			tcp::endpoint( tcp::v4(), HOST_PORT ) 
+		tcp::endpoint( tcp::v4(), configurationTree.get< int >( "net.port" ) ) 
 		);
 	
 	this->startAccept();

@@ -25,11 +25,10 @@ using boost::asio::ip::tcp;
 Transceiver::Transceiver() {
 	tcp::resolver resolver( ioService );
 	
-	// Modified code from http://stackoverflow.com/questions/6175502/how-to-parse-ini-file-with-boost by Timo
-	boost::property_tree::ptree pt;
-	boost::property_tree::ini_parser::read_ini( "game.ini", pt );
+	boost::property_tree::ptree configurationTree;
+	boost::property_tree::ini_parser::read_ini( "game.ini", configurationTree );
 	
-	tcp::resolver::query query( pt.get<std::string>( "server.address" ), pt.get<std::string>( "server.port" ) );
+	tcp::resolver::query query( configurationTree.get< std::string >( "server.address" ), configurationTree.get< std::string >( "server.port" ) );
 	endpointIterator = resolver.resolve( query );
 	
 	this->connection = std::make_shared< ServerConnection >( ioService, endpointIterator );
