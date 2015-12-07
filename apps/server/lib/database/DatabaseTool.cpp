@@ -2237,7 +2237,7 @@ int DatabaseTool::createNewItem( string shrtDesc, string desc, string lngDesc, s
 		database db(DB_LOCATION);
 		db << FOREIGN_KEY_ON;
 
-		db 	<< "INSERT INTO items (shortDescription,description,longDescription,keywords,isPickable,isEquippable,isStackable,isContainer) VALUES (?,?,?,?,1,1,0,0);"
+		db 	<< "INSERT INTO items (shortDescription,description,longDescription,keywords,isPickable,isEquippable,isStackable,isContainer) VALUES (?,?,?,?,1,0,0,0);"
 			<< shrtDesc
 			<< desc
 			<< lngDesc

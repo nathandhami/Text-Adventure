@@ -62,6 +62,8 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "reject challenge", COMBAT },
 	{ "retract challenge", COMBAT },
 
+	{ "cast"			, CASTING },
+
 	{ "pick"			, INCOMPLETE },
 	{ "accept"			, INCOMPLETE },
 	{ "reject"			, INCOMPLETE },
