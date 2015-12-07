@@ -65,16 +65,16 @@ void GameFrame::prepareComponents() {
 	combatBox.set_valign( Gtk::Align::ALIGN_START );
 	
 	this->chatBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
-	combatBox.set_halign( Gtk::Align::ALIGN_START );
-	combatBox.set_valign( Gtk::Align::ALIGN_START );
+	chatBox.set_halign( Gtk::Align::ALIGN_START );
+	chatBox.set_valign( Gtk::Align::ALIGN_START );
 		
 	this->statsBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
-	combatBox.set_halign( Gtk::Align::ALIGN_START );
-	combatBox.set_valign( Gtk::Align::ALIGN_START );
+	statsBox.set_halign( Gtk::Align::ALIGN_START );
+	statsBox.set_valign( Gtk::Align::ALIGN_START );
 	
 	this->inventoryBox.set_orientation( Gtk::ORIENTATION_VERTICAL );
-	combatBox.set_halign( Gtk::Align::ALIGN_START );
-	combatBox.set_valign( Gtk::Align::ALIGN_START );
+	inventoryBox.set_halign( Gtk::Align::ALIGN_START );
+	inventoryBox.set_valign( Gtk::Align::ALIGN_START );
 	
 	this->scrolledWindow.override_background_color( Gdk::RGBA("white"));
 	//this->responseBox.set_policy( Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC );
@@ -229,36 +229,6 @@ void GameFrame::updateResponses() {
 			this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
 			this->show_all_children();
 		}
-
-		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
-		if(tokens.size() == 0){
-			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_markup( response );
-			pLabel->set_valign( Gtk::Align::ALIGN_START );
-			pLabel->set_halign( Gtk::Align::ALIGN_START );
-			this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-			m_adjustment = scrolledWindow.get_vadjustment();
-			printf("%d", m_adjustment->get_value());
-			m_adjustment->set_value(m_adjustment->get_value());
-			this->show_all_children();
-
-		}
-		else{
-			
-			for(std::string s : tokens){
-				std::string response = "<span color='black'>" + s + "</span>";
-				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-				pLabel->set_markup( response );
-				pLabel->set_valign( Gtk::Align::ALIGN_START );
-				pLabel->set_halign( Gtk::Align::ALIGN_START );
-				this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-				m_adjustment = scrolledWindow.get_vadjustment();
-				printf("%d", m_adjustment->get_value());
-				m_adjustment->set_value(m_adjustment->get_value());
-				this->show_all_children();
-			}
-		}*/
-		
 	}
 
 	if ( msg.header == GameCode::DESCRIPTION
@@ -316,10 +286,18 @@ void GameFrame::updateResponses() {
 
 	}
 	if ( msg.header == GameCode::INVENTORY) {
-				std::vector<std::string> tokens = tokenizeResponses(msg.body);
+
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_text( msg.body );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();	
+
+		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_markup( response );
+			pLabel->set_text( msg.body );
 			pLabel->set_valign( Gtk::Align::ALIGN_START );
 			pLabel->set_halign( Gtk::Align::ALIGN_START );
 			this->inventoryBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
@@ -337,10 +315,16 @@ void GameFrame::updateResponses() {
 				this->show_all_children();
 			}
 				
-		}
+		}*/
 	}
 	if ( msg.header == GameCode::ATTRIBUTES) {
-				std::vector<std::string> tokens = tokenizeResponses(msg.body);
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_text( msg.body );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		
+		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 			pLabel->set_text( response );
@@ -361,7 +345,7 @@ void GameFrame::updateResponses() {
 				this->show_all_children();
 			}
 				
-		}
+		}*/
 	}
 	
 	if( msg.header == GameCode::DISCONNECTED ){
