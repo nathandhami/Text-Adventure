@@ -200,16 +200,23 @@ void GameFrame::updateResponses() {
 	NetMessage msg = Game::getFrontResponse();
 
 	std::string response = "<span color='black'>" + msg.body + "</span>";
-
+	//std::string combatResponse = "<span color='red'>" + msg.body + "</span>";
+	
 	if ( msg.header != GameCode::NONE ) {
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 
 		if( msg.header == GameCode::DESCRIPTION
 		|| msg.header == GameCode::COMBAT
 		|| msg.header == GameCode::CHAT_ZONE
 		|| msg.header == GameCode::CHAT_PRIVATE
+		|| msg.header == GameCode::STATUS
 		|| msg.header == GameCode::INVALID ) {
 
-			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			
+			if(msg.header == GameCode::COMBAT) { pLabel->set_name( "combatColor" ); }
+			if(msg.header == GameCode::CHAT_ZONE) { pLabel->set_name( "zoneChatColor" ); }
+			if(msg.header == GameCode::CHAT_PRIVATE) { pLabel->set_name( "privateChatColor" ); }
+
 			pLabel->set_text( msg.body );
 			pLabel->set_valign( Gtk::Align::ALIGN_START );
 			pLabel->set_halign( Gtk::Align::ALIGN_START );
@@ -251,10 +258,11 @@ void GameFrame::updateResponses() {
 		
 	}
 
-	if ( msg.header == GameCode::DESCRIPTION ) {
+	if ( msg.header == GameCode::DESCRIPTION
+		|| msg.header == GameCode::STATUS ) {
 
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-		pLabel->set_markup( response );
+		pLabel->set_text( msg.body );
 		pLabel->set_valign( Gtk::Align::ALIGN_START );
 		pLabel->set_halign( Gtk::Align::ALIGN_START );
 		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
@@ -267,6 +275,7 @@ void GameFrame::updateResponses() {
 	if ( msg.header == GameCode::COMBAT ) {
 
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_name( "combatColor" );
 		pLabel->set_text( msg.body );
 		pLabel->set_valign( Gtk::Align::ALIGN_START );
 		pLabel->set_halign( Gtk::Align::ALIGN_START );
@@ -276,10 +285,24 @@ void GameFrame::updateResponses() {
 		this->show_all_children();
 	}
 
-	if ( msg.header == GameCode::CHAT_ZONE || msg.header == GameCode::CHAT_PRIVATE ) {
-				std::vector<std::string> tokens = tokenizeResponses(msg.body);
+	if ( msg.header == GameCode::CHAT_ZONE ) {
 
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_name( "zoneChatColor");
+		pLabel->set_text( msg.body );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
+		pLabel->set_line_wrap(TRUE);
+		this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		this->show_all_children();
+
+	}
+	
+	if ( msg.header == GameCode::CHAT_PRIVATE ) {
+
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_name( "privateChatColor");
 		pLabel->set_text( msg.body );
 		pLabel->set_valign( Gtk::Align::ALIGN_START );
 		pLabel->set_halign( Gtk::Align::ALIGN_START );
@@ -317,10 +340,10 @@ void GameFrame::updateResponses() {
 				std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
 			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_markup( response );
+			pLabel->set_text( response );
 			pLabel->set_valign( Gtk::Align::ALIGN_START );
 			pLabel->set_halign( Gtk::Align::ALIGN_START );
-			this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			//this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
 			this->show_all_children();
 		}
 		else{
@@ -328,10 +351,10 @@ void GameFrame::updateResponses() {
 			for(std::string s : tokens){
 				std::string response = "<span color='black'>" + s + "</span>";
 				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-				pLabel->set_markup( response );
+				pLabel->set_text( response );
 				pLabel->set_valign( Gtk::Align::ALIGN_START );
 				pLabel->set_halign( Gtk::Align::ALIGN_START );
-				this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+				//this->statsBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
 				this->show_all_children();
 			}
 				
