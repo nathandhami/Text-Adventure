@@ -398,6 +398,7 @@ class DatabaseTool{
 
 		static bool knowsSpell(int charID, string spellName);
 		static Spell getSpell(string spellName);
+		static bool aquireSpell(int charId, string spellName);
 	
 		static string findPlayerDescription(int lookerID, int zoneID, string name);
 		static string findNpcDescription(int zoneID, string word);

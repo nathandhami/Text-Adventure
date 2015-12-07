@@ -67,6 +67,7 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "pick up"			, CHARACTER },
 		
 	{ "drop"			, CHARACTER },
+	{ "buy spell" 		, CHARACTER },
 
 	{ "@"				, MESSENGER },
 	{ "#"				, MESSENGER }

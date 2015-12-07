@@ -32,6 +32,7 @@ private:
 	static std::string dropItem( int charId, std::string keyword );
 	static std::string equipItem( int charId, std::string keyword );
 	static std::string unequipItem( int charId, std::string keyword );
+	static std::string buySpell( int charId, std::string keyword );
 };
 
 

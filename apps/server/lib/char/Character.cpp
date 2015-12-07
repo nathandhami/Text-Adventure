@@ -18,6 +18,8 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 	const std::string CMD_DROP		= "drop";
 	const std::string CMD_EQUIP		= "equip";
 	const std::string CMD_UNEQUIP	= "unequip";
+	const std::string CMD_BUY_SPELL	= "buy spell";
+	
 	
 	if ( command.type == CMD_LOOK ) {
 		return std::make_pair( GameCode::DESCRIPTION, Character::look( charId, command.data ) );
@@ -33,7 +35,10 @@ std::pair< std::string, std::string > Character::performCommand( int charId, Com
 		return std::make_pair( GameCode::STATUS, Character::equipItem( charId, command.data ) );
 	} else if ( command.type == CMD_UNEQUIP ) {
 		return std::make_pair( GameCode::STATUS, Character::unequipItem( charId, command.data ) );
-	} else {
+	} else if ( command.type == CMD_BUY_SPELL) {
+		return std::make_pair( GameCode::STATUS, Character::buySpell( charId, command.data ) );
+	}
+	 else {
 		return std::make_pair( GameCode::ERROR, NOT_ALLOWED );
 	}
 }
@@ -182,6 +187,14 @@ std::string Character::unequipItem( int charId, std::string keyword ) {
 		return ( "You unequipped " + keyword + "." );
 	} else {
 		return ( "You are not wearing " + keyword + "." );
+	}
+}
+
+std::string Character::buySpell( int charId, std::string keyword ) {
+	if ( DatabaseTool::aquireSpell( charId, keyword ) ) {
+		return ( "You have aquired the spell " + keyword + "." );
+	} else {
+		return ( "You could not buy the spell " + keyword + "." );
 	}
 }
 

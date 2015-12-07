@@ -183,10 +183,11 @@ CREATE TABLE spells (
 CREATE TABLE knownSpells (
   knownID integer primary key,
   charID integer,
-  spellName text,
+  spellName text not null,
   resetTime integer,
   FOREIGN KEY(charID) REFERENCES characters(charID) on delete cascade,
-  FOREIGN KEY(spellName) REFERENCES spell(spellName) on delete cascade
+  FOREIGN KEY(spellName) REFERENCES spell(spellName) on delete cascade,
+  UNIQUE(charID, spellName)
 );
 
 CREATE TABLE spellTeacher (

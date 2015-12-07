@@ -2585,8 +2585,24 @@ int DatabaseTool::getNpcLocation(int npcInstanceID) {
 	}
 }
 
+bool DatabaseTool::aquireSpell(int charID, string spellName) {
+	try {
+		databaseMutex.lock();
+		database db( DB_LOCATION );
+		db << FOREIGN_KEY_ON;
 
+		db << "INSERT INTO knownSpells(charID, spellName, resetTime) VALUES (?, ?, 0);"
+		<<charID
+		<<spellName;
 
+		databaseMutex.unlock();
+		return true;
 
-
-
+	} catch(sqlite_exception e) {
+		if(verbosity > 0) {
+			std::cerr << e.what() << std::endl;
+		}
+		databaseMutex.unlock();
+		return false;
+	}
+}
