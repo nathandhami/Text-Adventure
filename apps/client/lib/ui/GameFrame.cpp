@@ -10,6 +10,7 @@
 #include <Locale.hpp>
 #include <ui/SubWindow.hpp>
 #include <ui/UINotebook.hpp>
+#include <ui/MainWindow.hpp>
 
 #include <string>
 #include <sstream>
@@ -24,7 +25,9 @@
 // ------------------- PUBLIC -------------------
 
 GameFrame::GameFrame()
-: commandEntryButton("Send")
+: commandEntryButton("Send"),
+  logoutButton("Logout"),
+  switchCharButton("Switch Char")
 {
 	this->prepareComponents();
 
@@ -125,7 +128,11 @@ void GameFrame::prepareComponents() {
 
 	this->commandEntry.signal_activate().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
 	this->commandEntryButton.signal_clicked().connect( sigc::mem_fun( *this, &GameFrame::enterCommand_signal ) );
-	
+
+	this->logoutButton.set_size_request( 220, 1 );
+	this->logoutButton.signal_clicked().connect( sigc::mem_fun( *this, &GameFrame::logoutCommand_signal ) );
+	this->switchCharButton.signal_clicked().connect( sigc::mem_fun( *this, &GameFrame::switchCommand_signal ) );	
+
 	this->updateDispatcher.connect( sigc::mem_fun( *this, &GameFrame::updateResponses ) );
 
 	this->subFrameNotebook.append_page(this->scrolledWindow, "All");
@@ -133,12 +140,17 @@ void GameFrame::prepareComponents() {
 	this->subFrameNotebook.append_page(this->combatWindow, "Combat");
 	this->subFrameNotebook.append_page(this->chatWindow, "Chat");
 
-	this->sideNotebook.set_size_request( 220, 120 );
+	this->sideNotebook.set_size_request( 220, 400 );
 	//this->sideNotebook.set_border_width( 5 );
 	
 	this->sideNotebook.append_page(this->statsWindow, "Stats");
 	this->sideNotebook.append_page(this->inventoryWindow, "Inventory");
 	//this->sideNotebook.append_page(this->spellsWindow, "Spells");
+
+	buttonGrid.attach( this->logoutButton, 0, 0, 1, 1);
+	buttonGrid.attach( this->switchCharButton, 0, 1, 1, 1);
+	subGrid.attach( this->sideNotebook, 0, 0, 1, 1);
+	subGrid.attach( this->buttonGrid, 0, 1, 1, 1);
 	
 	//this->layoutGrid.add( this->subFrameNotebook );
 	//this->layoutGrid.add( this->sideNotebook );
@@ -147,7 +159,8 @@ void GameFrame::prepareComponents() {
 	//this->layoutGrid.attach_next_to( this->subFrameNotebook, this->commandEntry, Gtk::POS_BOTTOM, 1, 1);
 	this->layoutGrid.attach( this->subFrameNotebook, 0, 0, 1, 1 );
 	this->layoutGrid.attach( this->commandEntry, 0, 1, 1, 1 );
-	this->layoutGrid.attach( this->sideNotebook, 1, 0, 1, 1 );	
+	//this->layoutGrid.attach( this->sideNotebook, 1, 0, 1, 1 );
+	this->layoutGrid.attach( this->subGrid, 1, 0, 1, 1 );	
 	this->layoutGrid.attach( this->commandEntryButton, 1, 1, 1, 1 );
 
 	this->add( layoutGrid );
@@ -492,4 +505,31 @@ void GameFrame::enterCommand_signal() {
 	std::cout << "Entered command:" << command << "\n";
 	
 	commandEntry.set_text("");
+}
+
+void GameFrame::logoutCommand_signal() {
+	Gtk::MessageDialog dlg( "Are you sure you want to logout?", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_YES_NO, true );
+		dlg.set_decorated( false );
+		dlg.set_title( "Warning" );
+		if(dlg.run() == Gtk::RESPONSE_YES) {
+			Game::logout();
+			MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+			if ( p_parentWindow ) {
+				p_parentWindow->openLoginFrame();
+			}
+		}
+		//dlg.run();
+}
+
+void GameFrame::switchCommand_signal() {
+	Gtk::MessageDialog dlg( "Are you sure you want to switch characters?", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_YES_NO, true );
+		dlg.set_decorated( false );
+		dlg.set_title( "Warning" );
+		if(dlg.run() == Gtk::RESPONSE_YES) {
+			Game::deselectCurrentCharacter();
+			MainWindow* p_parentWindow = ( MainWindow* )this->get_parent();
+			if ( p_parentWindow ) {
+				p_parentWindow->openCharacterFrame();
+			}
+		}
 }
