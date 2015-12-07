@@ -29,7 +29,7 @@ bool CastSpell::calculateVariable(string possibleVariable, int *value, Attribute
 		if (parsedDiceRoll.size() > 1) {
 			// Extract values from possible variables before rolling
 			int valueOne = 0;
-			if (!CastSpell::calculateVariable(parsedDiceRoll.at(0), &valueOne, caster, target) {
+			if (!CastSpell::calculateVariable(parsedDiceRoll.at(0), &valueOne, caster, target)) {
 				valueOne = boost::lexical_cast<int>(parsedDiceRoll.at(0));
 			}
 			int valueTwo = 0;
