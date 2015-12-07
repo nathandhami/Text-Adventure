@@ -199,26 +199,26 @@ void GameFrame::updateResponses() {
 //	std::cout << "It's done!" << std::endl;
 	NetMessage msg = Game::getFrontResponse();
 
-
-	
-	
 	std::string response = "<span color='black'>" + msg.body + "</span>";
-	if ( msg.header == GameCode::DESCRIPTION 
-	  	|| msg.header == GameCode::COMBAT
+
+	if ( msg.header != GameCode::NONE ) {
+
+		if( msg.header == GameCode::DESCRIPTION
+		|| msg.header == GameCode::COMBAT
 		|| msg.header == GameCode::CHAT_ZONE
 		|| msg.header == GameCode::CHAT_PRIVATE
-		|| msg.header == GameCode::INVALID
-		) {
+		|| msg.header == GameCode::INVALID ) {
 
-		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-		pLabel->set_markup( response );
-		pLabel->set_valign( Gtk::Align::ALIGN_START );
-		pLabel->set_halign( Gtk::Align::ALIGN_START );
-		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
-		pLabel->set_line_wrap(TRUE);
-		//pLabel->set_wrap_mode( Gtk::WrapMode::WRAP_WORD_CHAR );
-		this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-		this->show_all_children();
+			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+			pLabel->set_text( msg.body );
+			pLabel->set_valign( Gtk::Align::ALIGN_START );
+			pLabel->set_halign( Gtk::Align::ALIGN_START );
+			pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
+			pLabel->set_line_wrap(TRUE);
+			//pLabel->set_wrap_mode( Gtk::WrapMode::WRAP_WORD_CHAR );
+			this->responseBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+			this->show_all_children();
+		}
 
 		/*std::vector<std::string> tokens = tokenizeResponses(msg.body);
 		if(tokens.size() == 0){
@@ -253,79 +253,41 @@ void GameFrame::updateResponses() {
 
 	if ( msg.header == GameCode::DESCRIPTION ) {
 
-		std::vector<std::string> tokens = tokenizeResponses(msg.body);
-		if(tokens.size() == 0){
-			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_markup( response );
-			pLabel->set_valign( Gtk::Align::ALIGN_START );
-			pLabel->set_halign( Gtk::Align::ALIGN_START );
-			this->worldBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-			this->show_all_children();
-		}
-		else{
-			
-			for(std::string s : tokens){
-				std::string response = "<span color='black'>" + s + "</span>";
-				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-				pLabel->set_markup( response );
-				pLabel->set_valign( Gtk::Align::ALIGN_START );
-				pLabel->set_halign( Gtk::Align::ALIGN_START );
-				this->worldBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-				this->show_all_children();
-			}
-				
-		}
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_markup( response );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
+		pLabel->set_line_wrap(TRUE);
+		this->worldBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		this->show_all_children();
 
 	}
 
 	if ( msg.header == GameCode::COMBAT ) {
-		std::vector<std::string> tokens = tokenizeResponses(msg.body);
-		if(tokens.size() == 0){
-			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_markup( response );
-			pLabel->set_valign( Gtk::Align::ALIGN_START );
-			pLabel->set_halign( Gtk::Align::ALIGN_START );
-			this->combatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-			this->show_all_children();
-		}
-		else{
-			
-			for(std::string s : tokens){
-				std::string response = "<span color='black'>" + s + "</span>";
-				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-				pLabel->set_markup( response );
-				pLabel->set_valign( Gtk::Align::ALIGN_START );
-				pLabel->set_halign( Gtk::Align::ALIGN_START );
-				this->combatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-				this->show_all_children();
-			}
-				
-		}
+
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_text( msg.body );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
+		pLabel->set_line_wrap(TRUE);
+		this->combatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		this->show_all_children();
 	}
 
 	if ( msg.header == GameCode::CHAT_ZONE || msg.header == GameCode::CHAT_PRIVATE ) {
 				std::vector<std::string> tokens = tokenizeResponses(msg.body);
-		if(tokens.size() == 0){
-			Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-			pLabel->set_markup( response );
-			pLabel->set_valign( Gtk::Align::ALIGN_START );
-			pLabel->set_halign( Gtk::Align::ALIGN_START );
-			this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-			this->show_all_children();
-		}
-		else{
-			
-			for(std::string s : tokens){
-				std::string response = "<span color='black'>" + s + "</span>";
-				Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
-				pLabel->set_markup( response );
-				pLabel->set_valign( Gtk::Align::ALIGN_START );
-				pLabel->set_halign( Gtk::Align::ALIGN_START );
-				this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
-				this->show_all_children();
-			}
-				
-		}
+
+		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
+		pLabel->set_text( msg.body );
+		pLabel->set_valign( Gtk::Align::ALIGN_START );
+		pLabel->set_halign( Gtk::Align::ALIGN_START );
+		pLabel->set_line_wrap_mode(Pango::WrapMode::WRAP_WORD_CHAR);
+		pLabel->set_line_wrap(TRUE);
+		this->chatBox.pack_start( *pLabel, Gtk::PACK_EXPAND_PADDING );
+		this->show_all_children();
+
 	}
 	if ( msg.header == GameCode::INVENTORY) {
 				std::vector<std::string> tokens = tokenizeResponses(msg.body);
@@ -376,14 +338,14 @@ void GameFrame::updateResponses() {
 		}
 	}
 	
-	/*if( msg.header != GameCode::NONE ){
-//		std::cout << "Inside" << std::endl;
-		Glib::RefPtr< Gtk::Adjustment > p_adjustment = this->scrolledWindow.get_vadjustment();
-		p_adjustment->set_value( p_adjustment->get_upper() + 500 );
-		this->scrolledWindow.set_vadjustment( p_adjustment );
-		this->show_all_children();
-		this->show();
-	}*/
+	if( msg.header == GameCode::DISCONNECTED ){
+		Gtk::MessageDialog dlg( "Disconnected from Server", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true );
+		dlg.set_decorated( false );
+		dlg.set_title( "Error" );
+		dlg.run();
+
+		exit(1);
+	}
 }
 
 
