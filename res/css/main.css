@@ -28,7 +28,11 @@ GtkWindow {
 }
 
 #privateChatColor {
-	color: @color_main_blue;
+	color: @color_main_black;
+}
+
+#notebookColor {
+	background: rgba( 0, 0, 0, 0.6 );
 }
 
 GtkFrame {

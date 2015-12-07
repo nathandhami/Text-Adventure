@@ -45,6 +45,9 @@ void GameFrame::prepareComponents() {
 //	this->scrolledWindow.add(*pButton);
 	
 //	 Gdk::RGBA color;
+
+	this->subFrameNotebook.set_name( "notebookColor" );
+	this->sideNotebook.set_name( "notebookColor" );
 	
 	/*main notebook*/
 	
