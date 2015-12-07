@@ -302,9 +302,11 @@ void GameFrame::updateResponses() {
 
 	}
 	if ( msg.header == GameCode::INVENTORY ) {
+		std::vector< std::string > listTokens;
+		boost::split( listTokens, msg.body, boost::is_any_of( ";" ) );
 
-		if(  msg.header != GameCode::INVALID ) { }
-		
+		//std::cout << listTokens[0] + listTokens[1] + listTokens[2] << std::endl;	
+
 		Gtk::Label* pLabel = Gtk::manage( new Gtk::Label() );
 		pLabel->set_text( msg.body );
 		pLabel->set_valign( Gtk::Align::ALIGN_START );
