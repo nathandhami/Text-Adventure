@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Building &mdash; Faloodah 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Faloodah 1.0 documentation" href="index.html" />
+    <link rel="next" title="Launching The Game" href="run.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="run.html" title="Launching The Game"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Faloodah 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Building</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-install-dependencies">How to Install Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-compliation-guidelines">Basic Compliation Guidelines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="run.html">Launching The Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="login.html">Login Screen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Creation Screen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="control.html">Player Controls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuring.html">Configuring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="building">
+<h1>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>textadventure depends on the following libraries:</p>
+<ul class="simple">
+<li>boost</li>
+<li>sqlite (database)</li>
+<li>gtkmm  (gui)</li>
+<li>sphinx (doc)</li>
+</ul>
+</div>
+<div class="section" id="how-to-install-dependencies">
+<h2>How to Install Dependencies<a class="headerlink" href="#how-to-install-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>To install all the neccessary dependancies on your machine go to the project&#8217;s root and run:</p>
+<p>sudo bash get-deps.sh</p>
+<p>This process might take a while, so grab some coffee.</p>
+</div>
+<div class="section" id="basic-compliation-guidelines">
+<h2>Basic Compliation Guidelines<a class="headerlink" href="#basic-compliation-guidelines" title="Permalink to this headline">¶</a></h2>
+<p>Make sure all the necessary dependencies are installed first.
+In project&#8217;s root folder:</p>
+<ol class="arabic">
+<li><p class="first">Create a new directory for building.</p>
+<blockquote>
+<div><p>mkdir -p build</p>
+</div></blockquote>
+</li>
+<li><p class="first">Change into the new directory.</p>
+<blockquote>
+<div><p>cd build</p>
+</div></blockquote>
+</li>
+<li><p class="first">Run CMake inside build folder exactly like this:</p>
+<blockquote>
+<div><p>cmake ..</p>
+</div></blockquote>
+</li>
+<li><p class="first">Run make inside build folder</p>
+<blockquote>
+<div><p>make</p>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="run.html" title="Launching The Game"
+             >next</a></li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">Faloodah 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Pavol Kozlovsky, Devon Briere, Matthew Fraser, Gener Iglesias, Brady Will, Nathan Dhami, Kenan Abdulkarim, Lim.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

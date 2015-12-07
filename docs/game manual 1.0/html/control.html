@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Player Controls &mdash; Faloodah 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Faloodah 1.0 documentation" href="index.html" />
+    <link rel="next" title="Configuring" href="configuring.html" />
+    <link rel="prev" title="Character Creation Screen" href="character.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="configuring.html" title="Configuring"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="character.html" title="Character Creation Screen"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Faloodah 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run.html">Launching The Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="login.html">Login Screen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Creation Screen</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Player Controls</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creator-commands">Creator Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combat-commands">Combat Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-commands">Basic Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#movement-commands">Movement Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuring.html">Configuring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="player-controls">
+<h1>Player Controls<a class="headerlink" href="#player-controls" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="creator-commands">
+<h2>Creator Commands<a class="headerlink" href="#creator-commands" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Create and delete zones:</li>
+</ol>
+<ul class="simple">
+<li>create zone [The name of your zone] seen as [Description of your zone]</li>
+<li>delete zone [zoneID]</li>
+</ul>
+<ol class="arabic simple" start="2">
+<li>Add extended description to the zone:</li>
+</ol>
+<ul class="simple">
+<li>describe zone [zoneID] as [keyword] telling [your extended description here]</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li>Create and delete doors</li>
+</ol>
+<ul class="simple">
+<li>create door [keyword] in [zoneID] at [direction] to [zoneID] seen as [Door&#8217;s description]</li>
+<li>delete door [doorID]</li>
+</ul>
+<ol class="arabic simple" start="4">
+<li>Create and delete items</li>
+</ol>
+<ul class="simple">
+<li>create item [item name] seen as [what you see] upclose [the long description] recognized as [keywords]</li>
+</ul>
+<ol class="arabic simple" start="5">
+<li>Spawn a created item in the same zone the user is in</li>
+</ol>
+<ul class="simple">
+<li>spawn object [objectid]</li>
+</ul>
+</div>
+<div class="section" id="combat-commands">
+<h2>Combat Commands<a class="headerlink" href="#combat-commands" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>fight</li>
+<li>attack</li>
+<li>retreat</li>
+<li>accept challenge</li>
+</ol>
+</div>
+<div class="section" id="basic-commands">
+<h2>Basic Commands<a class="headerlink" href="#basic-commands" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>zone chat:</li>
+</ol>
+<ul class="simple">
+<li># &#8220;enter message here&#8221;</li>
+</ul>
+<ol class="arabic simple" start="2">
+<li>private message:</li>
+</ol>
+<ul class="simple">
+<li>&#64;</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li>equip</li>
+<li>drop</li>
+<li>pick up</li>
+</ol>
+</div>
+<div class="section" id="movement-commands">
+<h2>Movement Commands<a class="headerlink" href="#movement-commands" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>move</li>
+<li>go</li>
+<li>look</li>
+<li>look at</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="configuring.html" title="Configuring"
+             >next</a></li>
+        <li class="right" >
+          <a href="character.html" title="Character Creation Screen"
+             >previous</a> |</li>
+        <li><a href="index.html">Faloodah 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Pavol Kozlovsky, Devon Briere, Matthew Fraser, Gener Iglesias, Brady Will, Nathan Dhami, Kenan Abdulkarim, Lim.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
