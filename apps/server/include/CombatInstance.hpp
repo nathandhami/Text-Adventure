@@ -6,7 +6,7 @@
 #include "Server.hpp"
 #include "Zone.hpp"
 #include "char/Character.hpp"
-#include "Spellcasting.hpp"
+#include "CastSpell.hpp"
 #include <deque>
 #include <unistd.h>
 #include <thread>

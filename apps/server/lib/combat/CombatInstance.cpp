@@ -144,7 +144,7 @@ void CombatInstance::executePlayerCastSpell(int player) {
 	}
 	Spell currentSpell = DatabaseTool::getSpell(playersSpellQueue.at(player).front());
 	playersSpellQueue.at(player).pop_front();
-	Spellcasting::immediatelyCastSpell(&currentSpell, &caster, &target, targetType);
+	CastSpell::immediatelyCastSpell(&currentSpell, &caster, &target, targetType);
 }
 
 void CombatInstance::executePlayerRetreat(int player) {
