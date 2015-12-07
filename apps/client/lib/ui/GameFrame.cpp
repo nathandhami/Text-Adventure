@@ -307,9 +307,50 @@ void GameFrame::updateResponses() {
 	}
 	if ( msg.header == GameCode::INVENTORY ) {
 		std::vector< std::string > listTokens;
+		std::vector< std::string > itemsVector;
+		std::vector< std::string > quantityVector;
+		std::vector< std::string > equippedVector;
+		std::string isEquipped, inventory;
+		std::vector< std::string > inventoryVector;
 		boost::split( listTokens, msg.body, boost::is_any_of( ";\n" ) );
+	
+		for(int i = 0; i < listTokens.size(); i++) {
+				
+			if(i % 3 == 0) {
+				itemsVector.push_back(listTokens[i]);
+			}
+			
+			if(i % 3 == 1) {
+				quantityVector.push_back(listTokens[i]);
+			}
+
+		}
+
+		for(int i = 2; i < listTokens.size(); i+=3) {
+			if(listTokens[i] == "0") {
+				equippedVector.push_back("Not Equipped");
+			} else {
+				equippedVector.push_back("Equipped");
+			}
+			
+		}
+	
+		for(int i = 0; i < itemsVector.size(); i++) {
+			inventoryVector.push_back(quantityVector[i] + "x " +
+							itemsVector[i] + "\n" + 
+							equippedVector[i] + "\n\n");
+
+			inventory += inventoryVector[i];
+		}
 		
-		inventoryLabel.set_text(msg.body);
+		/*for(int i = 0; i < inventoryVector.size(); i++) {
+			inventoryLabel.set_text(inventoryVector[i]);
+			//std::cout << inventoryVector[i] << std::endl;
+		}*/
+
+		inventoryLabel.set_text( inventory );
+		
+		//inventoryLabel.set_text(msg.body);
 	
 		/*this->item = listTokens[1];
 		this->intStats = listTokens[3];
