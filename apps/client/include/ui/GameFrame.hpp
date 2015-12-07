@@ -18,6 +18,7 @@ public:
 private:
 	Gtk::Grid layoutGrid;
 	Gtk::Grid subGrid;
+	Gtk::Grid buttonGrid;
 	Gtk::ScrolledWindow subWindow;
 	
 	Gtk::ScrolledWindow scrolledWindow;
@@ -36,6 +37,8 @@ private:
 	Gtk::Box spellsBox;
 	Gtk::Entry commandEntry;
 	Gtk::Button commandEntryButton;
+	Gtk::Button logoutButton;
+	Gtk::Button switchCharButton;
 	Gtk::Label outputTabLabel;
 	Gtk::Label statsLabel;
 	Gtk::Label inventoryLabel;
@@ -68,6 +71,10 @@ private:
 	void updateResponses();
 	
 	void enterCommand_signal();
+	
+	void logoutCommand_signal();
+	
+	void switchCommand_signal();
 	
 	void updateScrollPosition( Gtk::Allocation& alloc );
 
