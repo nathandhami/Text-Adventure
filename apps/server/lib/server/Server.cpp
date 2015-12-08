@@ -56,6 +56,7 @@ void Server::destroySession( std::string identifierString ) {
 
 bool Server::sendMessageToCharacter( int characterId, std::string header, std::string body ) {
 	std::cout << "Contacted Server Service Locator." << std::endl;
+	std::cout << "[Server] charid: " << characterId << std::endl;
 	
 	std::string sessionIdString = DatabaseTool::getSessionID( characterId );
 	std::cout << "[Server] got ID: " << sessionIdString << std::endl;

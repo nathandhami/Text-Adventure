@@ -7,6 +7,7 @@
 namespace GameCode {
 	// Sent by client
 	// Request headers
+	const std::string REGISTER 		= "reg";
 	const std::string LOGIN 		= "lgn";
 	const std::string LOGOUT 		= "lgo";
 	const std::string CHAR_CREATE 	= "ccr";
@@ -19,13 +20,18 @@ namespace GameCode {
 	// Confirmation headers
 	const std::string CORRECT 		= "cor";
 	const std::string WRONG 		= "wrg";
-	const std::string INVALID 		= "inv";
+	const std::string INVALID 		= "ivd";
 	
 	// Dynamics headers
 	const std::string DESCRIPTION 	= "des";
 	const std::string STATUS 		= "sts";
 	const std::string ALERT 		= "alr";
 	const std::string COMBAT 		= "cmb";
+	
+	// Update headers
+	const std::string INVENTORY 	= "ivt";
+	const std::string ATTRIBUTES 	= "atr";
+	const std::string SPELLS	 	= "spl";
 	
 	// Chat headers
 	const std::string CHAT_ZONE 	= "chz";
@@ -35,7 +41,8 @@ namespace GameCode {
 	const std::string DISCONNECTED 	= "dsc";
 	const std::string NONE		 	= "non";
 	const std::string FAUX_HEADER	= "fhd";
-	const std::string OK			= "okk";
+	const std::string OK			= "ok_";
+	const std::string ERROR			= "err";
 
 }
 

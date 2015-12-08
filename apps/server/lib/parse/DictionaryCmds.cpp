@@ -27,18 +27,18 @@ using namespace CommandHeader;
 
 std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	//Movement commands
-	{ "move"			, WORLD },
-	{ "go"				, WORLD },
-	{ "north"			, WORLD },
-	{ "south"			, WORLD },
-	{ "east"			, WORLD },
-	{ "west"			, WORLD },
-	{ "northeast"		, WORLD },
-	{ "northwest"		, WORLD },
-	{ "southeast"		, WORLD },
-	{ "southwest"		, WORLD },
-	{ "look"			, WORLD },
-	{ "look at"			, WORLD },
+	{ "move"			, CHARACTER },
+	{ "go"				, CHARACTER },
+	{ "north"			, CHARACTER },
+	{ "south"			, CHARACTER },
+	{ "east"			, CHARACTER },
+	{ "west"			, CHARACTER },
+	{ "northeast"		, CHARACTER },
+	{ "northwest"		, CHARACTER },
+	{ "southeast"		, CHARACTER },
+	{ "southwest"		, CHARACTER },
+	{ "look"			, CHARACTER },
+	{ "look at"			, CHARACTER },
 
 	// EDITOR commands
 	{ "create"			, INCOMPLETE },
@@ -59,14 +59,20 @@ std::map< std::string,  int > DictionaryCmds::COMMAND_DICTIONARY = {
 	{ "attack"			, COMBAT },
 	{ "retreat"			, COMBAT },
 	{ "accept challenge", COMBAT },
+	{ "reject challenge", COMBAT },
+	{ "retract challenge", COMBAT },
+
+	{ "cast"			, CASTING },
 
 	{ "pick"			, INCOMPLETE },
 	{ "accept"			, INCOMPLETE },
+	{ "reject"			, INCOMPLETE },
+	{ "retract"			, INCOMPLETE },
 
 	{ "equip"			, CHARACTER },
-	{ "pick up"			, WORLD },
+	{ "pick up"			, CHARACTER },
 		
-	{ "drop"			, WORLD },
+	{ "drop"			, CHARACTER },
 
 	{ "@"				, MESSENGER },
 	{ "#"				, MESSENGER }

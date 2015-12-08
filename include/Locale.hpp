@@ -4,6 +4,7 @@
 
 namespace GameLocale {
 	const std::string TITLE = "Text Gale Online";
+	const std::string SUBWINDOWTITLE = "SubWindow";
 }
 
 

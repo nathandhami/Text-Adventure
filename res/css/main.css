@@ -1,0 +1,52 @@
+@import url( "util/_Color.css" );
+
+GtkWindow {
+	border: 1px solid @color_main_green;
+	border-top-width: 0;
+	background-image: url( "../img/bg_login.jpg" );
+	background-size: 100%;
+	font-family: Sans;
+/*	font-family: NanumBarunGorthic;*/
+	color: @color_main_green;
+}
+
+#window-login {
+	background-image: url( "../img/bg_login.jpg" );
+}
+
+#window-character {
+	background-image: url( "../img/bg_char.jpg" );
+/*	background-image: url( "../img/bg_anim_char.gif" );*/
+}
+
+#combatColor {
+	color: @color_main_yellow;
+}
+
+#zoneChatColor {
+	color: @color_main_blue;
+}
+
+#privateChatColor {
+	color: @color_main_purple;
+}
+
+#notebookColor {
+	background: rgba( 0, 0, 0, 0.8 );
+	border-radius: 0;
+	border: none;
+	border-top: 1px solid @color_main_green;
+}
+
+GtkFrame {
+	border: 1px solid @color_main_green;
+	border-top: none;
+}
+
+@import url( "frames/_LoginFrame.css" );
+@import url( "frames/_CharacterFrame.css" );
+@import url( "frames/_CreateFrame.css" );
+@import url( "components/_Button.css" );
+@import url( "components/_Label.css" );
+@import url( "components/_Dialog.css" );
+@import url( "components/_Entry.css" );

@@ -30,10 +30,10 @@ int main(int argc, char* argv[])
 
       // cout << DatabaseTool::getPassword(1) << endl;
       // cout << DatabaseTool::getPassword(2) << endl;
-    //   cout << DatabaseTool::getPassword(99999) << endl;
+      // cout << DatabaseTool::getPassword(99999) << endl;
 
-      // cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 1, "human male") << endl;
-    //   cout << DatabaseTool::addCharacter("leeeroooy jeeenkins", 9909, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("testChar1", 1, "human male") << endl;
+      // cout << DatabaseTool::addCharacter("testChar2", 2, "femal elf") << endl;
 
 
 
@@ -112,9 +112,26 @@ int main(int argc, char* argv[])
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizaragfafar", 3001) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3054) << endl;
       // cout << DatabaseTool::getNpcInstanceIDFromName("wizard", 3001) << endl;        
-  
-      lookTest();
-      //DatabaseTool::executeCommands();
+
+      //charOnlineTest();
+      //DatabaseTool::equipItem(1, "sword");
+      //lookTest();
+      //npcInstanceTest();
+      //DatabaseTool::setAllNotInCombat();
+
+
+      // cout << DatabaseTool::checkCommand("move") << endl;
+      // cout << DatabaseTool::checkCommand("delete") << endl;
+      // cout << DatabaseTool::checkCommand("@") << endl;
+
+      // Spell spell = DatabaseTool::getSpell("flamestrike");
+      // cout << spell.spellName << endl;
+      // cout << spell.effect << endl;
+
+      //cout << DatabaseTool::getCharacterDescription(1) << endl;
+      cout << DatabaseTool::getNpcLocation(1) << endl;
+
+
    }
    catch(runtime_error e){
       cout << e.what() << endl;
@@ -123,8 +140,14 @@ int main(int argc, char* argv[])
 
 void lookTest() {
 
+   // cout << DatabaseTool::look(1, "") << endl << endl;
+   // cout << DatabaseTool::look(1, "odin") << endl << endl;
+   // cout << DatabaseTool::look(1, "south") << endl << endl;
+   // cout << DatabaseTool::look(1, "objects") << endl << endl;
+   // cout << DatabaseTool::look(1, "people") << endl << endl;
+   // cout << DatabaseTool::look(1, "players") << endl << endl;
    cout << DatabaseTool::look(1, "inventory") << endl << endl;
-   // cout << DatabaseTool::look(1, "testChar1") << endl;
+
 }
 
 void inventoryTest() {
@@ -135,23 +158,30 @@ void inventoryTest() {
 }
 
 void updateAttributesTest() {
-   Attributes attributes = DatabaseTool::getAttributes(1, Target::npc);
-   attributes.print();
-   attributes.level = 99;
-   DatabaseTool::updateAttributes(attributes, Target::npc);
+   // Attributes attributes = DatabaseTool::getAttributes(1, Target::character);
+   // attributes.print();
+   // attributes.level = 1;
+   // attributes.experience = 99;
+   // DatabaseTool::updateAttributes(attributes, Target::character);
+   Attributes attributes;
+   attributes.level = 1;
+   attributes.experience = 99;
+   attributes.requiredExperience = 999;
+   attributes.id = 1;
+   attributes.health = 15;
+   attributes.maxHealth = 15;
+   attributes.mana = 15;
+   attributes.maxMana = 15;
+   attributes.strength = 1;
+   attributes.intelligence = 1;
+   attributes.dexterity = 1;
+   attributes.charisma =1;
+   DatabaseTool::updateAttributes(attributes, Target::character);
 
 }
 
 void npcInstanceTest() {
-   vector<string> keywords;
-   keywords.push_back("wizard");
-   DatabaseTool::addNpc(3000, 
-       " The wizard looks old and senile, and yet he looks like a very powerful wizard. He is equipped with fine clothing, and is wearing many fine rings and bracelets.", 
-      keywords,
-      "A wizard walks around behind the counter, talking to himself.",
-      "the wizard");
 
-   DatabaseTool::createNpcInstance(3000, 3054);
    vector<int> npcsInZone = DatabaseTool::getAllAliveNpcsInZone(3054);
    for(auto& npcInstanceID: npcsInZone) {
       cout << DatabaseTool::getNpcDesc(npcInstanceID) << endl << endl;;

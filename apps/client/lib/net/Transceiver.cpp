@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <chrono>
 #include <iomanip>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 
 #include "Transceiver.hpp"
@@ -22,7 +24,11 @@ using boost::asio::ip::tcp;
 
 Transceiver::Transceiver() {
 	tcp::resolver resolver( ioService );
-	tcp::resolver::query query( HOST_ADDRESS_IP4, std::to_string( HOST_PORT ) );
+	
+	boost::property_tree::ptree configurationTree;
+	boost::property_tree::ini_parser::read_ini( "game.ini", configurationTree );
+	
+	tcp::resolver::query query( configurationTree.get< std::string >( "server.address" ), configurationTree.get< std::string >( "server.port" ) );
 	endpointIterator = resolver.resolve( query );
 	
 	this->connection = std::make_shared< ServerConnection >( ioService, endpointIterator );

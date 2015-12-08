@@ -51,7 +51,7 @@ private:
 	std::string identifierString;
 	bool terminating = false;
 	
-	// theads
+	// threads
 	std::thread readerThread;
 	std::thread writerThread;
 	
@@ -62,6 +62,7 @@ private:
 	std::queue< NetMessage > responseMessageQueue;
 	std::mutex messageQueueLock;
 	bool writeInProgress = false;
+	int requestCounter;
 	
 	//Autherization data
 	User currentUser;
@@ -79,16 +80,24 @@ private:
 	typedef std::map< std::string, ExecuteFunction > ExecFuncMap;
 	
 	ExecFuncMap funcMap = {
+		{ GameCode::REGISTER	, &Session::registerUser },
 		{ GameCode::LOGIN		, &Session::login },
 		{ GameCode::LOGOUT		, &Session::logout },
+		{ GameCode::CHAR_CREATE	, &Session::createCharacter },
+		{ GameCode::CHAR_DELETE	, &Session::deleteCharacter },
+		{ GameCode::CHAR_SELECT	, &Session::selectCharacter },
+		{ GameCode::CHAR_DELECT	, &Session::deselectCurrentCharacter },
 		{ GameCode::COMMAND		, &Session::doGameCommand }
 	};
 	
 //	NetMessage stripAndExecute( std::string header, std::string body );
 	
+	void registerUser( const std::string& credentials );
 	void login( const std::string& credentials );
 	void logout( const std::string& placeholder );
 	
+	void createCharacter( const std::string& charData );
+	void deleteCharacter( const std::string& charName );
 	void selectCharacter( const std::string& characterName );
 	void deselectCurrentCharacter( const std::string& placeholder );
 	void doGameCommand( const std::string& commandString );

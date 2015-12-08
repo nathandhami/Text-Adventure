@@ -1,0 +1,6 @@
+#entry-command {
+	border-radius: 0;
+	border: 1px solid @color_main_green;
+	background: rgba( 0, 0, 0, 0.8 );
+	color: @color_main_green;
+}

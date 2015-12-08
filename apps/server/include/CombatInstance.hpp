@@ -5,53 +5,69 @@
 #include "DatabaseTool.hpp"
 #include "Server.hpp"
 #include "Zone.hpp"
+#include "char/Character.hpp"
+#include "CastSpell.hpp"
 #include <deque>
 #include <unistd.h>
 #include <thread>
+#include <limits>
 
-#define RETREAT_NOTIFICATION "Your opponent turns to flee.\n"
-#define VICTORY_NOTIFICATION "You defeated your opponent!\n"
-#define DEFEAT_NOTIFICATION "You were defeated!\n"
+#define RETREAT_NOTIFICATION "Your opponent turns to run away!"
+#define LEAVE_NOTIFICATION "Your opponent got away!"
+#define VICTORY_NOTIFICATION "You defeated your opponent!"
+#define DEFEAT_NOTIFICATION "You were defeated!"
+
 
 using namespace std;
 
 class CombatInstance {
 	static const int HEARTBEAT_SECONDS = 1;
 	static const int CHALLENGE_TIMEOUT = 30;
+	static const int MAX_ACTIONS_QUEUE = 10;
+	// --- Do not change these ---
 	static const int PLAYER_ONE = 0;
 	static const int PLAYER_TWO = 1;
+	// ---------------------------
 
-	static bool challengeAccepted;
-	static bool keepFighting;
-	static bool readyForCleanup;
+	bool challengeAccepted = false;
+	bool playerTwoPresent = false;
+	bool keepFighting = true;
+	bool endingCombat = false;
+	bool readyForCleanup = false;
 
-	static int combatZoneID;
-	static int enemyType;
-	static int playerOneID;
-	static int playerTwoID;
+	int combatZoneID = 0;
+	
+	int playerOneID = 0;
+	Target playerOneTarget = Target::character;
+	int playerTwoID = 0;
+	Target playerTwoTarget = Target::null;
 
-	// For testing combat until we have equipment and attribute data
-	static int damageDealt;
-	static int playerOneHealthRemaining;
-	static int playerTwoHealthRemaining;
+	int prioritize = PLAYER_ONE;
 
-	static std::thread combatThread;
+	thread combatThread;
 
-	static deque<deque<int>> playersActionQueue;
+	deque<deque<int>> playersActionQueue;
+	deque<deque<string>> playersSpellQueue;
 
+	void removePlayerFromCombat(int playerID, Target playerType, string message);
+	void removePlayersFromCombat(string message);
 
-	void removePlayersFromCombat(int playerID, int playerType);
-	void removePlayersFromCombat();
+	void pushPlayerAction(int player, int action);
 
 	void waitForChallengeAccept();
 
-	void notifyAttack(int player, int characterType, int damageDealt, int healthRemaining);
+	void notifyAttack(int player, Target characterType, int damageDealt, int healthRemaining);
 	
-	void executePlayerAttack(int player, int characterType);
+	void playerWin(int playerID);
+	void playerLose(int playerID);
+
+	void executePlayerAttack(int attacker, Target characterType);
+	void executePlayerCastSpell(int player);
 	
 	void executePlayerRetreat(int player);
+	void executePlayerLeave(int player);
 
-	void executePlayerAction(int player, int characterType);
+	void executePlayerAction(int player, Target characterType);
 
 	void runCombat();
 
@@ -59,16 +75,27 @@ class CombatInstance {
 public:
 
 	bool isCombatant(int playerID);
+	bool isInitiator(int playerID);
+	void getOpponent(int playerID, int *opponentID, Target *opponentType);
 
 	bool inZone(int zoneID);
 
-	void queuePlayerAction(int playerID, int action);
+	bool isStillFighting();
+
+	bool isReadyForCleanup();
+
+	string queuePlayerAction(int playerID, int action);
+	string queuePlayerAction(int playerID, int action, Spell *currentSpell);
 
 	void acceptChallenge();
+	void rejectChallenge();
+	void retractChallenge();
 
 	void endCombat(string message);
+
+	void playerDisconnect(int playerID);
 	
-	CombatInstance(int playerID, int enemyID, int givenEnemyType, int zoneID);
+	CombatInstance(int playerID, int enemyID, Target givenEnemyType, int zoneID);
 
 	~CombatInstance();
 

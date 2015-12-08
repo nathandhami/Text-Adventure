@@ -5,6 +5,7 @@
 //#include "MainWindow.hpp"
 #include "Game.hpp"
 #include <ui/MainWindow.hpp>
+#include <ui/SubWindow.hpp>
 
 #include <cstdlib>
 #include <boost/algorithm/string/join.hpp>
@@ -25,6 +26,13 @@ int main( int argc, char* argv[] ) {
 	
 	MainWindow mainWindow;
 	app->run( mainWindow );
+
+	//argc = 1;
+	//Glib::RefPtr< Gtk::Application > app2 = Gtk::Application::create( argc, argv, "ca.sfu.cmpt373.textgaleonlinesub" );
+	//app->set_flags( Gio::ApplicationFlags::APPLICATION_NON_UNIQUE );
+
+	//SubWindow subWindow;
+	//app2->run ( subWindow );
 	
 	Game::stop();
 
