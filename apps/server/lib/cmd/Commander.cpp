@@ -39,17 +39,17 @@ std::pair< std::string, std::string > Commander::handleCommand( User user, std::
 			responseBody = "Message delivered to " + std::to_string( numSentTo ) + " players.";
 		}
 	} else if ( commandHeader == CommandHeader::COMBAT ) {
-		std::string combatMessage = Combat::executeCommand( user.getUserId(), command );
+		std::string combatMessage = Combat::executeCommand( user.getSelectedCharacterId(), command );
 		
 		responseHeader = GameCode::COMBAT;
 		responseBody = combatMessage;
 	} else if ( commandHeader == CommandHeader::EDITOR ) {
-		std::string worthyMessage = Editor::judgeAndPerform( user.getUserId(), user.getUserId(), command );
+		std::string worthyMessage = Editor::judgeAndPerform( user.getUserId(), user.getSelectedCharacterId(), command );
 		
 		responseHeader = GameCode::STATUS;
 		responseBody = worthyMessage;
 	} else if ( commandHeader == CommandHeader::CASTING ) {
-		std::string castingMessage = Spellcasting::executeCommand( user.getUserId(), command );
+		std::string castingMessage = Spellcasting::executeCommand( user.getSelectedCharacterId(), command );
 
 		responseHeader = GameCode::COMBAT;
 		responseBody = castingMessage;

@@ -125,6 +125,9 @@ std::string Character::lookAt( int charId, std::string keyword ) {
 		std::string objects = DatabaseTool::findItemDescription( charId, currentZoneId, keyword );
 		if ( !objects.empty() ) kwDescriptions.push_back( objects );
 		
+		std::string extendedDescriptions = DatabaseTool::getZoneExtendedDesc( currentZoneId, keyword);
+		if( !extendedDescriptions.empty() ) kwDescriptions.push_back( extendedDescriptions );
+		
 		if( kwDescriptions.empty() ) return ( "You don't see any " + keyword + "." );
 		return ( boost::algorithm::join( kwDescriptions, ", " ) );
 	}
